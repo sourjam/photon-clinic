@@ -5,6 +5,7 @@ import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
+import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
@@ -103,6 +104,16 @@ export function VisitWorkspace() {
               reviewed={workflow.state.reviewed}
               reviewerName={REVIEWER.name}
               reviewerTime={REVIEWER.time}
+            />
+            <PatientFollowUpCard
+              clinicianReply={workflow.state.clinicianReply}
+              onClinicianReplyChange={workflow.actions.setClinicianReply}
+              onFillExample={workflow.actions.fillPatientExample}
+              onPatientDraftChange={workflow.actions.setPatientDraft}
+              onSendClinician={workflow.actions.sendClinicianReply}
+              onSendPatient={workflow.actions.sendPatientMessage}
+              patientDraft={workflow.state.patientDraft}
+              thread={workflow.state.thread}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
