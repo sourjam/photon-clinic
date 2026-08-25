@@ -1,6 +1,7 @@
 "use client";
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
+import { ActionBar } from "./components/ActionBar";
 import { AiErrorCard } from "./components/AiErrorCard";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
@@ -14,7 +15,9 @@ import { PhotonErrorCard } from "./components/PhotonErrorCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
+import { Toast } from "./components/Toast";
 import { buildLog, buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import type { Phase } from "./types";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -42,6 +45,16 @@ const columnClasses = [
   "wide:overflow-x-hidden",
   "wide:pr-1",
 ].join(" ");
+
+function getActionHint(phase: Phase, reviewed: boolean): string {
+  if (phase === "idle") return "";
+  if (phase === "loading") return "Generating Spanish instructions…";
+  if (phase === "final") return "Handoff prepared · no prescription was created by this app";
+  if (phase === "aiError") return "Generation failed · nothing sent to Photon";
+  if (phase === "apiError") return "Treatment lookup failed · handoff blocked";
+  if (reviewed) return "Reviewed · ready to finalize the handoff";
+  return "Mark the AI output reviewed to enable the handoff";
+}
 
 export function VisitWorkspace() {
   const workflow = useVisitWorkflow();
@@ -76,6 +89,7 @@ export function VisitWorkspace() {
 
   return (
     <div className="flex h-screen flex-col bg-page">
+      <Toast message={workflow.state.toast} />
       <div data-region="prototype-chrome" />
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
@@ -154,7 +168,15 @@ export function VisitWorkspace() {
             <EvidenceLogCard entries={evidenceEntries} />
           </aside>
         </div>
-        <div data-region="action-bar" />
+        <ActionBar
+          canCopy={derived.hasInstructions}
+          canFinalize={derived.canFinalize}
+          finalized={derived.finalized}
+          hint={getActionHint(workflow.state.phase, workflow.state.reviewed)}
+          onCopy={workflow.actions.copySpanishInstructions}
+          onFinalize={workflow.actions.finalize}
+          onReset={workflow.actions.reset}
+        />
       </div>
     </div>
   );

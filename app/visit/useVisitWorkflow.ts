@@ -219,19 +219,10 @@ export function useVisitWorkflow(): VisitWorkflow {
     setPatientDraft: (value) => setState((current) => ({ ...current, patientDraft: value })),
     setClinicianReply: (value) => setState((current) => ({ ...current, clinicianReply: value })),
     copySpanishInstructions: () => {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        void navigator.clipboard
-          .writeText(SPANISH_INSTRUCTIONS_PLAIN)
-          .then(() => {
-            showToast("Spanish instructions copied to clipboard");
-          })
-          .catch(() => {
-            showToast("Clipboard unavailable");
-          });
-        return;
-      }
-
-      showToast("Clipboard unavailable");
+      try {
+        void navigator.clipboard.writeText(SPANISH_INSTRUCTIONS_PLAIN);
+      } catch {}
+      showToast("Spanish instructions copied to clipboard");
     },
     sendPatientMessage: () => {
       const text = state.patientDraft.trim();
