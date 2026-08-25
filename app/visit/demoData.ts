@@ -1,4 +1,4 @@
-import type { VisitState } from "./types";
+import type { SafetyCheckKey, VisitState } from "./types";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
@@ -50,6 +50,29 @@ export const REVIEWER = { name: "Dr. A. Okafor", time: "10:42" } as const;
 export const AI_MODEL = "OpenAI · gpt-4o-mini";
 
 export const PATIENT_FOLLOWUP_EXAMPLE = "¿Es seguro usar esta crema mientras estoy amamantando?";
+
+export const SAFETY_CHECKS = [
+  {
+    key: "allergy",
+    text: "Allergy record synced for Photon screening",
+    meta: "GET /allergies · 1 record (sulfa) · no screening performed here",
+  },
+  {
+    key: "interaction",
+    text: "Medication history synced for Photon screening",
+    meta: "GET /medication_history · 1 record (prenatal vitamin)",
+  },
+  {
+    key: "dose",
+    text: "Strength, quantity and duration verified",
+    meta: "2.5% · 30 g · 7 days · 0 refills",
+  },
+  {
+    key: "lactation",
+    text: "Lactation guidance confirmed with patient",
+    meta: "Clinician-confirmed — not an AI or API determination",
+  },
+] as const satisfies readonly { key: SafetyCheckKey; text: string; meta: string }[];
 
 export const INITIAL_STATE: VisitState = {
   phase: "idle",

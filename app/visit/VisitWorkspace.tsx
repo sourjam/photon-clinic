@@ -4,6 +4,7 @@ import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
+import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { MEDICATION, PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
@@ -88,6 +89,12 @@ export function VisitWorkspace() {
               medication={MEDICATION}
               treatmentId={PHOTON.treatmentId}
               treatmentIdState={treatmentIdState}
+            />
+            <SafetyReviewCard
+              allChecked={derived.allChecked}
+              checks={workflow.state.checks}
+              onToggle={workflow.actions.toggleCheck}
+              syncedCount={derived.syncedCount}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
