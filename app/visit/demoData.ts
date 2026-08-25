@@ -1,4 +1,4 @@
-import type { SafetyCheckKey, VisitState } from "./types";
+import type { Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
@@ -85,3 +85,45 @@ export const INITIAL_STATE: VisitState = {
   clinicianReply: "",
   toast: "",
 };
+
+export function buildMilestones(phase: Phase): Milestone[] {
+  const mk = (label: string, status: MilestoneStatus, id = ""): Milestone => ({ label, status, id });
+
+  if (phase === "idle" || phase === "aiError") {
+    return [
+      mk("Auth check", "pending"),
+      mk("Patient sync", "pending"),
+      mk("Treatment lookup", "pending"),
+      mk("Allergy history", "pending"),
+      mk("Medication history", "pending"),
+    ];
+  }
+
+  if (phase === "loading") {
+    return [
+      mk("Auth check", "ok", "token · 3600s"),
+      mk("Patient sync", "loading"),
+      mk("Treatment lookup", "pending"),
+      mk("Allergy history", "pending"),
+      mk("Medication history", "pending"),
+    ];
+  }
+
+  if (phase === "apiError") {
+    return [
+      mk("Auth check", "ok", "token · 3600s"),
+      mk("Patient sync", "ok", "pat_01HQ7K4M2Z"),
+      mk("Treatment lookup", "error", "503 · retry available"),
+      mk("Allergy history", "ok", "1 record · sulfa"),
+      mk("Medication history", "ok", "1 record · prenatal vitamin"),
+    ];
+  }
+
+  return [
+    mk("Auth check", "ok", "token · 3600s"),
+    mk("Patient sync", "ok", "pat_01HQ7K4M2Z"),
+    mk("Treatment lookup", "ok", "med_8f21c94a"),
+    mk("Allergy history", "ok", "1 record · sulfa"),
+    mk("Medication history", "ok", "1 record · prenatal vitamin"),
+  ];
+}

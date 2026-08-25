@@ -6,9 +6,11 @@ import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
+import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
-import { MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
+import { buildMilestones, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -116,7 +118,15 @@ export function VisitWorkspace() {
               thread={workflow.state.thread}
             />
           </section>
-          <aside className={columnClasses} data-region="right" />
+          <aside className={columnClasses} data-region="right">
+            <PhotonConnectionCard
+              connected={derived.connOk}
+              host={PHOTON.host}
+              prescribeScope={PHOTON.prescribeScope}
+              scope={PHOTON.scope}
+            />
+            <SyncMilestonesCard milestones={buildMilestones(workflow.state.phase)} />
+          </aside>
         </div>
         <div data-region="action-bar" />
       </div>
