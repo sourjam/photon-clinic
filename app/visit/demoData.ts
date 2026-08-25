@@ -1,4 +1,4 @@
-import type { HandoffRow, Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
+import type { HandoffRow, LogEntry, Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
@@ -134,4 +134,42 @@ export function buildMilestones(phase: Phase): Milestone[] {
     mk("Allergy history", "ok", "1 record · sulfa"),
     mk("Medication history", "ok", "1 record · prenatal vitamin"),
   ];
+}
+
+export function buildLog(phase: Phase, finalized: boolean): LogEntry[] {
+  const L = (t: string, code: string, msg: string, isError = false): LogEntry => ({ t, code, msg, isError });
+
+  let log: LogEntry[] = [];
+
+  if (phase === "idle") {
+    log = [];
+  } else if (phase === "loading") {
+    log = [L("10:38:02", "200", "POST /auth/token")];
+  } else if (phase === "aiError") {
+    log = [L("10:38:02", "200", "POST /auth/token"), L("10:39:11", "504", "openai · instructions.generate", true)];
+  } else if (phase === "apiError") {
+    log = [
+      L("10:38:02", "200", "POST /auth/token"),
+      L("10:38:44", "200", "openai · instructions.generate"),
+      L("10:39:03", "201", "POST /patients → pat_01HQ7K4M2Z"),
+      L("10:39:20", "503", "GET /catalog/treatments", true),
+      L("10:39:26", "200", "GET /allergies → 1 record"),
+      L("10:39:31", "200", "GET /medication_history → 1 record"),
+    ];
+  } else {
+    log = [
+      L("10:38:02", "200", "POST /auth/token"),
+      L("10:38:44", "200", "openai · instructions.generate"),
+      L("10:39:03", "201", "POST /patients → pat_01HQ7K4M2Z"),
+      L("10:39:18", "200", "GET /catalog/treatments → med_8f21c94a"),
+      L("10:39:26", "200", "GET /allergies → 1 record"),
+      L("10:39:31", "200", "GET /medication_history → 1 record"),
+    ];
+  }
+
+  if (finalized) {
+    log = [...log, L("10:42:07", "200", "handoff prepared · no Rx written")];
+  }
+
+  return log;
 }
