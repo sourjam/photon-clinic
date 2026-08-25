@@ -1,5 +1,7 @@
 "use client";
 
+import { useVisitWorkflow } from "./useVisitWorkflow";
+
 const bodyClasses = [
   "flex",
   "flex-col",
@@ -27,6 +29,9 @@ const columnClasses = [
 ].join(" ");
 
 export function VisitWorkspace() {
+  const workflow = useVisitWorkflow();
+  void workflow;
+
   return (
     <div className="flex h-screen flex-col bg-page">
       <div data-region="prototype-chrome" />
