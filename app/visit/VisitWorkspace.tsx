@@ -12,6 +12,7 @@ import { PatientContextCard } from "./components/PatientContextCard";
 import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
 import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
 import { PhotonErrorCard } from "./components/PhotonErrorCard";
+import { PrototypeSwitcher } from "./components/PrototypeSwitcher";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
@@ -56,6 +57,8 @@ function getActionHint(phase: Phase, reviewed: boolean): string {
   return "Mark the AI output reviewed to enable the handoff";
 }
 
+const showPrototypeSwitcher = import.meta.env.DEV || import.meta.env.VITE_SHOW_PROTOTYPE_CONTROLS === "true";
+
 export function VisitWorkspace() {
   const workflow = useVisitWorkflow();
   const { derived } = workflow;
@@ -89,8 +92,10 @@ export function VisitWorkspace() {
 
   return (
     <div className="flex h-screen flex-col bg-page">
+      {showPrototypeSwitcher ? (
+        <PrototypeSwitcher onPick={workflow.actions.setPhase} phase={workflow.state.phase} />
+      ) : null}
       <Toast message={workflow.state.toast} />
-      <div data-region="prototype-chrome" />
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
           environment={PHOTON.env}
