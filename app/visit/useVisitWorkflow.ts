@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE, PHOTON } from "./demoData";
+import { INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE, PHOTON, SPANISH_INSTRUCTIONS_PLAIN } from "./demoData";
 import type { Phase, SafetyCheckKey, VisitState } from "./types";
 
 const GENERATE_DELAY_MS = 1400;
@@ -35,6 +35,7 @@ type VisitActions = {
   setNote: (value: string) => void;
   setPatientDraft: (value: string) => void;
   setClinicianReply: (value: string) => void;
+  copySpanishInstructions: () => void;
   sendPatientMessage: () => void;
   sendClinicianReply: () => void;
   fillPatientExample: () => void;
@@ -217,6 +218,21 @@ export function useVisitWorkflow(): VisitWorkflow {
     setNote: (value) => setState((current) => ({ ...current, note: value })),
     setPatientDraft: (value) => setState((current) => ({ ...current, patientDraft: value })),
     setClinicianReply: (value) => setState((current) => ({ ...current, clinicianReply: value })),
+    copySpanishInstructions: () => {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        void navigator.clipboard
+          .writeText(SPANISH_INSTRUCTIONS_PLAIN)
+          .then(() => {
+            showToast("Spanish instructions copied to clipboard");
+          })
+          .catch(() => {
+            showToast("Clipboard unavailable");
+          });
+        return;
+      }
+
+      showToast("Clipboard unavailable");
+    },
     sendPatientMessage: () => {
       const text = state.patientDraft.trim();
       if (!text) {

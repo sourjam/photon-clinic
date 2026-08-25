@@ -3,6 +3,7 @@
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { PatientContextCard } from "./components/PatientContextCard";
+import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
@@ -66,6 +67,15 @@ export function VisitWorkspace() {
               note={workflow.state.note}
               onGenerate={workflow.actions.generate}
               onNoteChange={workflow.actions.setNote}
+            />
+            <SpanishInstructionsCard
+              hasInstructions={derived.hasInstructions}
+              isAiError={derived.isAiError}
+              isIdle={derived.isIdle}
+              isLoading={derived.isLoading}
+              onCopy={workflow.actions.copySpanishInstructions}
+              onRegenerate={workflow.actions.regenerate}
+              reviewed={workflow.state.reviewed}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
