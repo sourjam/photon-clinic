@@ -1,6 +1,7 @@
 "use client";
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
+import { PatientContextCard } from "./components/PatientContextCard";
 import { PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
@@ -51,7 +52,14 @@ export function VisitWorkspace() {
           visitSummary={PATIENT.visit}
         />
         <div className={bodyClasses}>
-          <section className={columnClasses} data-region="left" />
+          <section className={columnClasses} data-region="left">
+            <PatientContextCard
+              allergies={PATIENT.allergies}
+              currentMeds={PATIENT.currentMeds}
+              raisedInVisit={PATIENT.raisedInVisit}
+              visitReason={PATIENT.visitReason}
+            />
+          </section>
           <aside className={columnClasses} data-region="right" />
         </div>
         <div data-region="action-bar" />
