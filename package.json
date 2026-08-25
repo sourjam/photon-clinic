@@ -8,7 +8,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-server-dom-webpack": "latest",
-    "vinext": "latest"
+    "vinext": "latest",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "latest",
@@ -21,12 +22,14 @@
     "tailwindcss": "latest",
     "typescript": "latest",
     "vite": "latest",
+    "vitest": "^4.1.11",
     "wrangler": "^4.125.0"
   },
   "type": "module",
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
+    "test": "vitest run --config vitest.config.ts",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json",
     "preview": "npm run build && npm run start --",

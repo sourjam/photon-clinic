@@ -18,7 +18,7 @@ import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
 import { Toast } from "./components/Toast";
 import { SectionHeader } from "./components/ui/SectionHeader";
-import { buildLog, buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import { HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import type { Phase } from "./types";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
@@ -82,7 +82,7 @@ export function VisitWorkspace() {
         ? "notFinalized"
         : "waiting";
   const evidenceEntries = [
-    ...buildLog(workflow.state.phase, derived.finalized),
+    ...workflow.state.logEntries,
     ...workflow.state.thread.map((message) => ({
       t: message.time,
       code: "200",
@@ -98,7 +98,7 @@ export function VisitWorkspace() {
       ) : null}
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
-          environment={PHOTON.env}
+          environment={workflow.state.integrationMode === "fixture" ? "Fixture mode · no live credentials" : PHOTON.env}
           patientMeta={PATIENT.meta}
           patientName={PATIENT.name}
           status={status}
@@ -125,16 +125,18 @@ export function VisitWorkspace() {
             ) : null}
             <SpanishInstructionsCard
               hasInstructions={derived.hasInstructions}
+              headingEs={workflow.state.instructionsHeading}
               isAiError={derived.isAiError}
               isIdle={derived.isIdle}
               isLoading={derived.isLoading}
+              blocks={workflow.state.instructions}
               onCopy={workflow.actions.copySpanishInstructions}
               onRegenerate={workflow.actions.regenerate}
               reviewed={workflow.state.reviewed}
             />
             <MedicationPrepCard
               medication={MEDICATION}
-              treatmentId={PHOTON.treatmentId}
+              treatmentId={workflow.state.treatmentId}
               treatmentIdState={treatmentIdState}
             />
             <SafetyReviewCard
@@ -169,9 +171,16 @@ export function VisitWorkspace() {
               prescribeScope={PHOTON.prescribeScope}
               scope={PHOTON.scope}
             />
-            <SyncMilestonesCard milestones={buildMilestones(workflow.state.phase)} />
+            <SyncMilestonesCard milestones={workflow.state.milestones} />
             {derived.isApiError ? <PhotonErrorCard onRetry={workflow.actions.retryApi} /> : null}
-            <HandoffCard rows={HANDOFF_ROWS} status={handoffStatus} />
+            <HandoffCard
+              rows={HANDOFF_ROWS.map((row) => {
+                if (row.k === "Photon patient") return { ...row, v: workflow.state.patientId };
+                if (row.k === "Treatment") return { ...row, v: workflow.state.treatmentId };
+                return row;
+              })}
+              status={handoffStatus}
+            />
             <EvidenceLogCard entries={evidenceEntries} />
           </aside>
         </div>

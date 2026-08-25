@@ -17,3 +17,37 @@ in development. To include it in a production preview build for an interview dem
 ```sh
 VITE_SHOW_PROTOTYPE_CONTROLS=true
 ```
+
+## Live API seams
+
+The app renders in fixture mode when OpenAI or Photon credentials are not configured. Fixture mode is labeled in the
+header and uses the same route boundaries as live mode.
+
+Set local values in an ignored `.env.local` file or Cloudflare Worker secrets:
+
+```sh
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+PHOTON_CLIENT_ID=
+PHOTON_CLIENT_SECRET=
+PHOTON_TOKEN_URL=https://auth.neutron.health/oauth/token
+PHOTON_AUDIENCE=https://api.neutron.health
+PHOTON_API_URL=https://api.neutron.health/graphql
+PHOTON_CATALOG_API_URL=https://clinical-api.neutron.health/graphql
+PHOTON_AUTH_TOKEN=
+```
+
+Wrangler already defines the non-secret API defaults in `wrangler.jsonc`. Add the secret values through
+interactive prompts before deploying:
+
+```sh
+npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put PHOTON_CLIENT_ID
+npx wrangler secret put PHOTON_CLIENT_SECRET
+npx wrangler secret put PHOTON_AUTH_TOKEN
+```
+
+For local Worker testing after `npm run build`, copy `.dev.vars.example` to `.dev.vars` and fill the same four
+secret values before running `npm run start`.
+
+The MVP syncs patient and treatment context only. It does not create prescriptions or request prescribing scope.

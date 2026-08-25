@@ -21,7 +21,15 @@
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"vars": {
+		"OPENAI_MODEL": "gpt-4.1-mini",
+		"PHOTON_TOKEN_URL": "https://auth.neutron.health/oauth/token",
+		"PHOTON_AUDIENCE": "https://api.neutron.health",
+		"PHOTON_API_URL": "https://api.neutron.health/graphql",
+		"PHOTON_CATALOG_API_URL": "https://clinical-api.neutron.health/graphql",
+		"VITE_SHOW_PROTOTYPE_CONTROLS": "true"
+	}
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -39,7 +47,6 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
 	/**
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
