@@ -2,9 +2,10 @@
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
+import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
-import { PATIENT, PHOTON } from "./demoData";
+import { MEDICATION, PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -41,6 +42,12 @@ export function VisitWorkspace() {
     : derived.isAiError || derived.isApiError
       ? "actionNeeded"
       : "preparing";
+  const treatmentIdState: TreatmentIdState =
+    derived.isIdle || derived.isAiError || derived.isLoading
+      ? "awaiting"
+      : derived.isApiError
+        ? "failed"
+        : "resolved";
 
   return (
     <div className="flex h-screen flex-col bg-page">
@@ -76,6 +83,11 @@ export function VisitWorkspace() {
               onCopy={workflow.actions.copySpanishInstructions}
               onRegenerate={workflow.actions.regenerate}
               reviewed={workflow.state.reviewed}
+            />
+            <MedicationPrepCard
+              medication={MEDICATION}
+              treatmentId={PHOTON.treatmentId}
+              treatmentIdState={treatmentIdState}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
