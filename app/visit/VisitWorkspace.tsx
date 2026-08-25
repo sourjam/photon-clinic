@@ -1,6 +1,7 @@
 "use client";
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
+import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
@@ -58,6 +59,13 @@ export function VisitWorkspace() {
               currentMeds={PATIENT.currentMeds}
               raisedInVisit={PATIENT.raisedInVisit}
               visitReason={PATIENT.visitReason}
+            />
+            <ClinicianNoteCard
+              hasInstructions={derived.hasInstructions}
+              isLoading={derived.isLoading}
+              note={workflow.state.note}
+              onGenerate={workflow.actions.generate}
+              onNoteChange={workflow.actions.setNote}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
