@@ -37,4 +37,17 @@ PHOTON_CATALOG_API_URL=https://clinical-api.neutron.health/graphql
 PHOTON_AUTH_TOKEN=
 ```
 
+Wrangler already defines the non-secret API defaults in `wrangler.jsonc`. Add the secret values through
+interactive prompts before deploying:
+
+```sh
+npx wrangler secret put OPENAI_API_KEY
+npx wrangler secret put PHOTON_CLIENT_ID
+npx wrangler secret put PHOTON_CLIENT_SECRET
+npx wrangler secret put PHOTON_AUTH_TOKEN
+```
+
+For local Worker testing after `npm run build`, copy `.dev.vars.example` to `.dev.vars` and fill the same four
+secret values before running `npm run start`.
+
 The MVP syncs patient and treatment context only. It does not create prescriptions or request prescribing scope.
