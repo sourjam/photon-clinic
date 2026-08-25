@@ -133,6 +133,11 @@ async function searchAllergen(token: string): Promise<string> {
   return allergen.id;
 }
 
+function isAlreadyAttachedClinicalRecordError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /already exists on patient/i.test(message);
+}
+
 async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string> {
   const headers = { Authorization: `Bearer ${token}` };
   const apiUrl = process.env.PHOTON_API_URL as string;
@@ -151,12 +156,14 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
   );
 
   const existing = patients.patients.find((patient) => patient.externalId === externalId);
-  const variables = {
+  const baseVariables = {
     externalId,
     name: { first: "Maria", last: "Gonzalez" },
     dateOfBirth: "1988-04-12",
     sex: "FEMALE",
     phone: "+12025550102",
+  };
+  const clinicalHistoryVariables = {
     allergies: [{ allergenId: ids.allergyId }],
     medicationHistory: [
       {
@@ -166,11 +173,13 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
       },
     ],
   };
+  const variables = { ...baseVariables, ...clinicalHistoryVariables };
 
   if (existing) {
-    const updated = await graphqlRequest<{ updatePatient: { id: string } }>(
-      apiUrl,
-      `mutation UpdatePatient(
+    const updateExistingPatient = (updateVariables: Record<string, unknown>) =>
+      graphqlRequest<{ updatePatient: { id: string } }>(
+        apiUrl,
+        `mutation UpdatePatient(
         $id: ID!
         $externalId: ID
         $name: NameInput
@@ -193,10 +202,18 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
           id
         }
       }`,
-      { id: existing.id, ...variables },
-      headers,
-    );
-    return updated.updatePatient.id;
+        { id: existing.id, ...updateVariables },
+        headers,
+      );
+
+    try {
+      const updated = await updateExistingPatient(variables);
+      return updated.updatePatient.id;
+    } catch (error) {
+      if (!isAlreadyAttachedClinicalRecordError(error)) throw error;
+      const updated = await updateExistingPatient(baseVariables);
+      return updated.updatePatient.id;
+    }
   }
 
   const created = await graphqlRequest<{ createPatient: { id: string } }>(

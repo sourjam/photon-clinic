@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST as postInstructions } from "./instructions/route";
 import { POST as postPhotonSync } from "./photon/sync/route";
 import { POST as postTranslate } from "./translate/route";
@@ -27,6 +27,10 @@ beforeEach(() => {
   for (const key of secretKeys) {
     delete process.env[key];
   }
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe("integration route seams", () => {
@@ -93,5 +97,36 @@ describe("integration route seams", () => {
       treatmentId: "med_8f21c94a",
     });
     expect(json.milestones).toHaveLength(5);
+  });
+
+  it("returns live Photon sync success when existing clinical history records are already attached", async () => {
+    process.env.PHOTON_CLIENT_ID = "client-id";
+    process.env.PHOTON_CLIENT_SECRET = "client-secret";
+    process.env.PHOTON_TOKEN_URL = "https://auth.example.test/oauth/token";
+    process.env.PHOTON_API_URL = "https://api.example.test/graphql";
+    process.env.PHOTON_CATALOG_API_URL = "https://catalog.example.test/graphql";
+    process.env.PHOTON_AUTH_TOKEN = "catalog-token";
+
+    const responses = [
+      { access_token: "live-token", expires_in: 86400 },
+      { data: { treatments: [{ id: "med_hydrocortisone", name: "Hydrocortisone" }] } },
+      { data: { allergens: [{ id: "alg_sulfa", name: "Sulfa" }] } },
+      { data: { treatments: [{ id: "med_prenatal", name: "Prenatal vitamin" }] } },
+      { data: { patients: [{ id: "pat_existing", externalId: "phoclinic2-maria-gonzalez" }] } },
+      { errors: [{ message: "Allergen alg_sulfa already exists on patient pat_existing" }] },
+      { data: { updatePatient: { id: "pat_existing" } } },
+    ];
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => {
+      const body = responses.shift();
+
+      return Response.json(body);
+    });
+
+    const response = await postPhotonSync();
+    const json = (await response.json()) as { mode: string; ok: boolean; patientId: string };
+
+    expect(response.status).toBe(200);
+    expect(json).toMatchObject({ mode: "live", ok: true, patientId: "pat_existing" });
+    expect(fetchMock).toHaveBeenCalledTimes(7);
   });
 });
