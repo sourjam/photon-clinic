@@ -1,6 +1,7 @@
 "use client";
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
+import { AiErrorCard } from "./components/AiErrorCard";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
 import { EvidenceLogCard } from "./components/EvidenceLogCard";
@@ -9,6 +10,7 @@ import { MedicationPrepCard, type TreatmentIdState } from "./components/Medicati
 import { PatientContextCard } from "./components/PatientContextCard";
 import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
 import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
+import { PhotonErrorCard } from "./components/PhotonErrorCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
@@ -98,6 +100,9 @@ export function VisitWorkspace() {
               onGenerate={workflow.actions.generate}
               onNoteChange={workflow.actions.setNote}
             />
+            {derived.isAiError ? (
+              <AiErrorCard onRetry={workflow.actions.generate} onWriteManually={workflow.actions.manualEntry} />
+            ) : null}
             <SpanishInstructionsCard
               hasInstructions={derived.hasInstructions}
               isAiError={derived.isAiError}
@@ -144,6 +149,7 @@ export function VisitWorkspace() {
               scope={PHOTON.scope}
             />
             <SyncMilestonesCard milestones={buildMilestones(workflow.state.phase)} />
+            {derived.isApiError ? <PhotonErrorCard onRetry={workflow.actions.retryApi} /> : null}
             <HandoffCard rows={HANDOFF_ROWS} status={handoffStatus} />
             <EvidenceLogCard entries={evidenceEntries} />
           </aside>

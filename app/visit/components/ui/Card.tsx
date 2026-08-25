@@ -1,11 +1,10 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 type CardTone = "plain" | "ok" | "warn" | "err";
 
-type CardProps = {
+type CardProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
   tone?: CardTone;
-  className?: string;
 };
 
 const toneClasses: Record<CardTone, string> = {
@@ -15,9 +14,9 @@ const toneClasses: Record<CardTone, string> = {
   err: "bg-err-bg-2 border-err-line-2",
 };
 
-export function Card({ children, tone = "plain", className }: CardProps) {
+export function Card({ children, tone = "plain", className, ...props }: CardProps) {
   return (
-    <div className={["border rounded-[9px]", toneClasses[tone], className].filter(Boolean).join(" ")}>
+    <div className={["border rounded-[9px]", toneClasses[tone], className].filter(Boolean).join(" ")} {...props}>
       {children}
     </div>
   );
