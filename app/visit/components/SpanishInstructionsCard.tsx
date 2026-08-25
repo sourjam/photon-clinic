@@ -4,12 +4,15 @@ import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
 import { CardHeader } from "./ui/CardHeader";
+import type { InstructionBlock } from "../types";
 
 type SpanishInstructionsCardProps = {
   isIdle: boolean;
   isLoading: boolean;
   isAiError: boolean;
   hasInstructions: boolean;
+  headingEs: string;
+  blocks: InstructionBlock[];
   reviewed: boolean;
   onRegenerate: () => void;
   onCopy: () => void;
@@ -49,26 +52,29 @@ function Skeleton() {
   );
 }
 
-function Content({ onCopy, onRegenerate }: Pick<SpanishInstructionsCardProps, "onCopy" | "onRegenerate">) {
+function Content({
+  headingEs,
+  blocks,
+  onCopy,
+  onRegenerate,
+}: Pick<SpanishInstructionsCardProps, "headingEs" | "blocks" | "onCopy" | "onRegenerate">) {
   return (
     <div className="flex flex-col gap-[11px] p-[14px]">
       <div className="rounded-[8px] border border-brand-line-2 bg-brand-bg-2 px-[15px] py-[14px]" lang="es">
-        <h2 className="mb-2 text-[13px] font-bold text-brand-ink">Crema de hidrocortisona 2.5% — cómo usarla</h2>
+        <h2 className="mb-2 text-[13px] font-bold text-brand-ink">{headingEs}</h2>
         <div className="flex flex-col gap-2 text-[13px] leading-[1.65] text-ink-2">
-          <p>
-            Lo que vemos parece un brote de eczema en los antebrazos. La piel está irritada, pero se controla bien
-            con cuidado diario.
-          </p>
-          <p>
-            Aplique una capa fina de la crema en las zonas afectadas{" "}
-            <strong>dos veces al día, por 7 días</strong>. Luego deténgase. No la use en la cara ni cerca de los ojos.
-          </p>
-          <p>Use jabón y crema humectante sin fragancia todos los días, incluso cuando la piel esté mejor.</p>
-          <p className="rounded-[0_6px_6px_0] border-l-[3px] border-warn bg-warn-bg px-[11px] py-[9px] text-warn-ink-4">
-            Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia, pero{" "}
-            <strong>su médico debe confirmarlo con usted antes de empezar</strong>. No la aplique en el pecho.
-          </p>
-          <p>Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.</p>
+          {blocks.map((block, index) =>
+            block.kind === "callout" ? (
+              <p
+                className="rounded-[0_6px_6px_0] border-l-[3px] border-warn bg-warn-bg px-[11px] py-[9px] text-warn-ink-4"
+                key={`${block.kind}-${index}`}
+              >
+                {block.es}
+              </p>
+            ) : (
+              <p key={`${block.kind}-${index}`}>{block.es}</p>
+            ),
+          )}
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-[9px]">
@@ -90,6 +96,8 @@ export function SpanishInstructionsCard({
   isLoading,
   isAiError,
   hasInstructions,
+  headingEs,
+  blocks,
   reviewed,
   onRegenerate,
   onCopy,
@@ -104,7 +112,9 @@ export function SpanishInstructionsCard({
 
       {isIdle ? <EmptyState /> : null}
       {isLoading ? <Skeleton /> : null}
-      {hasInstructions ? <Content onCopy={onCopy} onRegenerate={onRegenerate} /> : null}
+      {hasInstructions ? (
+        <Content blocks={blocks} headingEs={headingEs} onCopy={onCopy} onRegenerate={onRegenerate} />
+      ) : null}
     </Card>
   );
 }

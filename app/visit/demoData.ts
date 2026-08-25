@@ -1,21 +1,8 @@
 import type { HandoffRow, LogEntry, Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
+import { fixtureInstructions, fixturePhotonSyncResponse } from "../../lib/fixtures";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
-
-/** Plain-text version used by the clipboard action (T-16). Note it is NOT the same shape as
- * the rendered panel: the rendered version splits into styled blocks (T-07). */
-export const SPANISH_INSTRUCTIONS_PLAIN = `Crema de hidrocortisona 2.5%
-
-Lo que vemos parece un brote de eczema en los antebrazos. La piel está irritada, pero se controla bien con cuidado diario.
-
-Aplique una capa fina de la crema en las zonas afectadas dos veces al día, por 7 días. Luego deténgase. No la use en la cara ni cerca de los ojos.
-
-Use jabón y crema humectante sin fragancia todos los días, incluso cuando la piel esté mejor.
-
-Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia, pero su médico debe confirmarlo con usted antes de empezar. No la aplique en el pecho.
-
-Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.`;
 
 export const PATIENT = {
   name: "Maria Gonzalez",
@@ -80,6 +67,14 @@ export const INITIAL_STATE: VisitState = {
   reviewed: false,
   finalized: false,
   checks: { allergy: false, interaction: false, dose: false, lactation: false },
+  integrationMode: "fixture",
+  instructionsHeading: fixtureInstructions.headingEs,
+  instructions: fixtureInstructions.blocks,
+  instructionsPlainText: fixtureInstructions.plainText,
+  patientId: fixturePhotonSyncResponse().patientId,
+  treatmentId: fixturePhotonSyncResponse().treatmentId,
+  milestones: buildMilestones("idle"),
+  logEntries: buildLog("idle", false),
   thread: [],
   patientDraft: "",
   clinicianReply: "",

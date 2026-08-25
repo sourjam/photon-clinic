@@ -43,12 +43,26 @@ export type LogEntry = {
   isError?: boolean;
 };
 
+export type IntegrationMode = "fixture" | "live";
+
+export type InstructionBlock =
+  | { kind: "text"; es: string }
+  | { kind: "callout"; es: string };
+
 export type VisitState = {
   phase: Phase;
   note: string;
   reviewed: boolean;
   finalized: boolean;
   checks: SafetyChecks;
+  integrationMode: IntegrationMode;
+  instructionsHeading: string;
+  instructions: InstructionBlock[];
+  instructionsPlainText: string;
+  patientId: string;
+  treatmentId: string;
+  milestones: Milestone[];
+  logEntries: LogEntry[];
   thread: ThreadMessage[];
   patientDraft: string;
   clinicianReply: string;

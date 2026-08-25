@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE, PHOTON, SPANISH_INSTRUCTIONS_PLAIN } from "./demoData";
+import { buildLog, buildMilestones, INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE } from "./demoData";
 import type { Phase, SafetyCheckKey, VisitState } from "./types";
+import type { InstructionsResponse, PhotonSyncResponse, TranslateDirection, TranslateResponse } from "../../lib/types";
 
-const GENERATE_DELAY_MS = 1400;
 const TOAST_DELAY_MS = 2200;
 const SYNCED_KEYS = ["allergy", "interaction", "dose"] as const satisfies readonly SafetyCheckKey[];
 
@@ -49,11 +49,36 @@ export type VisitWorkflow = {
   actions: VisitActions;
 };
 
-function getPhasePreset(phase: Phase): Pick<VisitState, "phase" | "reviewed" | "finalized"> {
+function getPhasePreset(
+  phase: Phase,
+): Pick<
+  VisitState,
+  | "phase"
+  | "reviewed"
+  | "finalized"
+  | "integrationMode"
+  | "instructionsHeading"
+  | "instructions"
+  | "instructionsPlainText"
+  | "patientId"
+  | "treatmentId"
+  | "milestones"
+  | "logEntries"
+> {
+  const finalized = phase === "final";
+
   return {
     phase,
-    reviewed: phase === "final",
-    finalized: phase === "final",
+    reviewed: finalized,
+    finalized,
+    integrationMode: "fixture",
+    instructionsHeading: INITIAL_STATE.instructionsHeading,
+    instructions: INITIAL_STATE.instructions,
+    instructionsPlainText: INITIAL_STATE.instructionsPlainText,
+    patientId: INITIAL_STATE.patientId,
+    treatmentId: INITIAL_STATE.treatmentId,
+    milestones: buildMilestones(phase),
+    logEntries: buildLog(phase, finalized),
   };
 }
 
@@ -116,17 +141,33 @@ function isClinical(text: string): boolean {
   return /amamant|lactan|pecho|seno|duele|dolor|arde|quema|embarazo|alergia|efecto|seguro|segura/i.test(text);
 }
 
+async function postJson<TResponse>(url: string, body?: Record<string, unknown>): Promise<TResponse> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!response.ok) throw new Error(`${url} failed with ${response.status}`);
+  return response.json() as Promise<TResponse>;
+}
+
+function combineMode(instructionsMode: InstructionsResponse["mode"], photonMode: PhotonSyncResponse["mode"]) {
+  return instructionsMode === "live" || photonMode === "live" ? "live" : "fixture";
+}
+
+function mergeLogEntries(instructions: InstructionsResponse, photon: PhotonSyncResponse) {
+  const [authLog, ...remainingPhotonLogs] = photon.logEntries;
+  return authLog ? [authLog, instructions.logEntry, ...remainingPhotonLogs] : [instructions.logEntry];
+}
+
+async function requestTranslation(text: string, direction: TranslateDirection): Promise<TranslateResponse> {
+  return postJson<TranslateResponse>("/api/translate", { text, direction });
+}
+
 export function useVisitWorkflow(): VisitWorkflow {
   const [state, setState] = useState<VisitState>(INITIAL_STATE);
-  const generateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearGenerateTimer = () => {
-    if (generateTimerRef.current) {
-      clearTimeout(generateTimerRef.current);
-      generateTimerRef.current = null;
-    }
-  };
 
   const clearToastTimer = () => {
     if (toastTimerRef.current) {
@@ -144,18 +185,81 @@ export function useVisitWorkflow(): VisitWorkflow {
     }, TOAST_DELAY_MS);
   };
 
-  const beginGenerate = () => {
-    clearGenerateTimer();
-    setState((current) => ({ ...current, phase: "loading", reviewed: false, finalized: false }));
-    generateTimerRef.current = setTimeout(() => {
-      setState((current) => ({ ...current, phase: "review", reviewed: false, finalized: false }));
-      generateTimerRef.current = null;
-    }, GENERATE_DELAY_MS);
+  const beginGenerate = async () => {
+    setState((current) => ({
+      ...current,
+      phase: "loading",
+      reviewed: false,
+      finalized: false,
+      milestones: buildMilestones("loading"),
+      logEntries: buildLog("loading", false),
+    }));
+
+    const [instructionsResult, photonResult] = await Promise.allSettled([
+      postJson<InstructionsResponse>("/api/instructions", { note: state.note }),
+      postJson<PhotonSyncResponse>("/api/photon/sync"),
+    ]);
+
+    if (instructionsResult.status === "rejected") {
+      setState((current) => ({
+        ...current,
+        phase: "aiError",
+        reviewed: false,
+        finalized: false,
+        milestones: photonResult.status === "fulfilled" ? photonResult.value.milestones : buildMilestones("aiError"),
+        logEntries:
+          photonResult.status === "fulfilled"
+            ? [
+                ...photonResult.value.logEntries,
+                {
+                  t: new Date().toTimeString().slice(0, 8),
+                  code: "502",
+                  msg: "openai · instructions.generate",
+                  isError: true,
+                },
+              ]
+            : buildLog("aiError", false),
+      }));
+      return;
+    }
+
+    if (photonResult.status === "rejected") {
+      const instructions = instructionsResult.value;
+      setState((current) => ({
+        ...current,
+        phase: "apiError",
+        reviewed: false,
+        finalized: false,
+        integrationMode: instructions.mode,
+        instructionsHeading: instructions.headingEs,
+        instructions: instructions.blocks,
+        instructionsPlainText: instructions.plainText,
+        milestones: buildMilestones("apiError"),
+        logEntries: buildLog("apiError", false),
+      }));
+      return;
+    }
+
+    const instructions = instructionsResult.value;
+    const photon = photonResult.value;
+    setState((current) => ({
+      ...current,
+      phase: "review",
+      reviewed: false,
+      finalized: false,
+      integrationMode: combineMode(instructions.mode, photon.mode),
+      instructionsHeading: instructions.headingEs,
+      instructions: instructions.blocks,
+      instructionsPlainText: instructions.plainText,
+      patientId: photon.patientId,
+      treatmentId: photon.treatmentId,
+      milestones: photon.milestones,
+      logEntries: mergeLogEntries(instructions, photon),
+    }));
   };
 
   useEffect(() => {
     return () => {
-      clearGenerateTimer();
       clearToastTimer();
     };
   }, []);
@@ -164,19 +268,17 @@ export function useVisitWorkflow(): VisitWorkflow {
 
   const actions: VisitActions = {
     setPhase: (phase) => {
-      clearGenerateTimer();
       setState((current) => ({ ...current, ...getPhasePreset(phase) }));
     },
     generate: beginGenerate,
     regenerate: beginGenerate,
     manualEntry: () => {
-      clearGenerateTimer();
       setState((current) => ({ ...current, phase: "review", reviewed: false, finalized: false }));
       showToast("Switched to manual entry");
     },
     retryApi: () => {
       setState((current) => ({ ...current, phase: "review", reviewed: false, finalized: false }));
-      showToast(`Treatment lookup succeeded · ${PHOTON.treatmentId}`);
+      showToast(`Treatment lookup succeeded · ${state.treatmentId}`);
     },
     toggleReviewed: () => {
       if (!derived.hasInstructions) {
@@ -207,11 +309,18 @@ export function useVisitWorkflow(): VisitWorkflow {
         showToast("Complete the safety review first");
         return;
       }
-      setState((current) => ({ ...current, phase: "final", finalized: true }));
+      setState((current) => ({
+        ...current,
+        phase: "final",
+        finalized: true,
+        logEntries: [
+          ...current.logEntries,
+          { t: new Date().toTimeString().slice(0, 8), code: "200", msg: "handoff prepared · no Rx written" },
+        ],
+      }));
       showToast("Handoff prepared — continue in Photon");
     },
     reset: () => {
-      clearGenerateTimer();
       clearToastTimer();
       setState(INITIAL_STATE);
     },
@@ -220,17 +329,23 @@ export function useVisitWorkflow(): VisitWorkflow {
     setClinicianReply: (value) => setState((current) => ({ ...current, clinicianReply: value })),
     copySpanishInstructions: () => {
       try {
-        void navigator.clipboard.writeText(SPANISH_INSTRUCTIONS_PLAIN);
+        void navigator.clipboard.writeText(state.instructionsPlainText);
       } catch {}
       showToast("Spanish instructions copied to clipboard");
     },
-    sendPatientMessage: () => {
+    sendPatientMessage: async () => {
       const text = state.patientDraft.trim();
       if (!text) {
         showToast("Escriba una pregunta primero");
         return;
       }
-      const flagged = isClinical(text);
+      let translated = esToEn(text);
+      let flagged = isClinical(text);
+      try {
+        const result = await requestTranslation(text, "es→en");
+        translated = result.translated;
+        flagged = result.isClinicalQuestion;
+      } catch {}
       setState((current) => ({
         ...current,
         patientDraft: "",
@@ -240,7 +355,7 @@ export function useVisitWorkflow(): VisitWorkflow {
             id: `msg_${current.thread.length + 1}`,
             from: "patient",
             es: text,
-            en: esToEn(text),
+            en: translated,
             time: stamp(current.thread.length),
             flagged,
           },
@@ -248,12 +363,16 @@ export function useVisitWorkflow(): VisitWorkflow {
       }));
       if (flagged) showToast("Clinical question flagged for clinician");
     },
-    sendClinicianReply: () => {
+    sendClinicianReply: async () => {
       const text = state.clinicianReply.trim();
       if (!text) {
         showToast("Type a reply first");
         return;
       }
+      let translated = enToEs(text);
+      try {
+        translated = (await requestTranslation(text, "en→es")).translated;
+      } catch {}
       setState((current) => ({
         ...current,
         clinicianReply: "",
@@ -262,7 +381,7 @@ export function useVisitWorkflow(): VisitWorkflow {
           {
             id: `msg_${current.thread.length + 1}`,
             from: "clinician",
-            es: enToEs(text),
+            es: translated,
             en: text,
             time: stamp(current.thread.length),
           },
