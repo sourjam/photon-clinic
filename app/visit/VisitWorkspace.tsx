@@ -2,11 +2,12 @@
 
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
+import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
-import { MEDICATION, PATIENT, PHOTON } from "./demoData";
+import { MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -95,6 +96,13 @@ export function VisitWorkspace() {
               checks={workflow.state.checks}
               onToggle={workflow.actions.toggleCheck}
               syncedCount={derived.syncedCount}
+            />
+            <ClinicianReviewCard
+              canReview={derived.canReview}
+              onToggleReviewed={workflow.actions.toggleReviewed}
+              reviewed={workflow.state.reviewed}
+              reviewerName={REVIEWER.name}
+              reviewerTime={REVIEWER.time}
             />
           </section>
           <aside className={columnClasses} data-region="right" />
