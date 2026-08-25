@@ -1,4 +1,4 @@
-import type { Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
+import type { HandoffRow, Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
@@ -85,6 +85,14 @@ export const INITIAL_STATE: VisitState = {
   clinicianReply: "",
   toast: "",
 };
+
+export const HANDOFF_ROWS: HandoffRow[] = [
+  { k: "Photon patient", v: "pat_01HQ7K4M2Z", mono: true },
+  { k: "Treatment", v: "med_8f21c94a", mono: true },
+  { k: "Safety data", v: "allergy + med history synced for screening", mono: false },
+  { k: "Spanish instructions", v: "reviewed", mono: false },
+  { k: "Medication prep", v: "2.5% · 30 g · 7 days · 0 refills", mono: false },
+];
 
 export function buildMilestones(phase: Phase): Milestone[] {
   const mk = (label: string, status: MilestoneStatus, id = ""): Milestone => ({ label, status, id });

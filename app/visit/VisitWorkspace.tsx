@@ -3,6 +3,7 @@
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
+import { HandoffCard, type HandoffStatus } from "./components/HandoffCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
@@ -10,7 +11,7 @@ import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
-import { buildMilestones, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import { buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -53,6 +54,13 @@ export function VisitWorkspace() {
       : derived.isApiError
         ? "failed"
         : "resolved";
+  const handoffStatus: HandoffStatus = derived.finalized
+    ? "ready"
+    : derived.isApiError
+      ? "blocked"
+      : derived.hasInstructions
+        ? "notFinalized"
+        : "waiting";
 
   return (
     <div className="flex h-screen flex-col bg-page">
@@ -126,6 +134,7 @@ export function VisitWorkspace() {
               scope={PHOTON.scope}
             />
             <SyncMilestonesCard milestones={buildMilestones(workflow.state.phase)} />
+            <HandoffCard rows={HANDOFF_ROWS} status={handoffStatus} />
           </aside>
         </div>
         <div data-region="action-bar" />

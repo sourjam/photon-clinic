@@ -28,6 +28,12 @@ export type Milestone = {
   id: string;
 };
 
+export type HandoffRow = {
+  k: string;
+  v: string;
+  mono: boolean;
+};
+
 export type LogEntry = {
   /** "HH:MM:SS" */
   t: string;
