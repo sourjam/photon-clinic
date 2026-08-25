@@ -3,6 +3,7 @@
 import { AppHeader, type OverallStatus } from "./components/AppHeader";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
+import { EvidenceLogCard } from "./components/EvidenceLogCard";
 import { HandoffCard, type HandoffStatus } from "./components/HandoffCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
@@ -11,7 +12,7 @@ import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
-import { buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import { buildLog, buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -61,6 +62,15 @@ export function VisitWorkspace() {
       : derived.hasInstructions
         ? "notFinalized"
         : "waiting";
+  const evidenceEntries = [
+    ...buildLog(workflow.state.phase, derived.finalized),
+    ...workflow.state.thread.map((message) => ({
+      t: message.time,
+      code: "200",
+      msg: `openai · message.translate (${message.from === "patient" ? "es→en" : "en→es"})`,
+      isError: false,
+    })),
+  ];
 
   return (
     <div className="flex h-screen flex-col bg-page">
@@ -135,6 +145,7 @@ export function VisitWorkspace() {
             />
             <SyncMilestonesCard milestones={buildMilestones(workflow.state.phase)} />
             <HandoffCard rows={HANDOFF_ROWS} status={handoffStatus} />
+            <EvidenceLogCard entries={evidenceEntries} />
           </aside>
         </div>
         <div data-region="action-bar" />
