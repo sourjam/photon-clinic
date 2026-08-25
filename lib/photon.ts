@@ -61,7 +61,7 @@ async function graphqlRequest<T>(
   return json.data;
 }
 
-async function searchTreatment(token: string, term: string): Promise<string> {
+async function searchTreatment(token: string, terms: string | string[]): Promise<string> {
   const query = `query Treatments($filter: TreatmentFilter!) {
       treatments(filter: $filter) {
         id
@@ -90,21 +90,24 @@ async function searchTreatment(token: string, term: string): Promise<string> {
     });
   }
 
+  const searchTerms = Array.isArray(terms) ? terms : [terms];
   const errors: string[] = [];
-  for (const attempt of attempts) {
-    try {
-      const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
-        attempt.url,
-        query,
-        { filter: { term } },
-        attempt.headers,
-      );
+  for (const term of searchTerms) {
+    for (const attempt of attempts) {
+      try {
+        const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
+          attempt.url,
+          query,
+          { filter: { term } },
+          attempt.headers,
+        );
 
-      const treatment = data.treatments[0];
-      if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
-      return treatment.id;
-    } catch (error) {
-      errors.push(`${attempt.label}: ${error instanceof Error ? error.message : String(error)}`);
+        const treatment = data.treatments[0];
+        if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
+        return treatment.id;
+      } catch (error) {
+        errors.push(`${attempt.label} (${term}): ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   }
 
@@ -233,7 +236,7 @@ export async function syncPhotonClinicalData(): Promise<PhotonSyncResponse> {
   const logEntries = [{ t: now(), code: "200", msg: "POST /auth/token" }];
 
   const treatmentId = await withStage("treatment lookup", () =>
-    searchTreatment(token.access_token, "hydrocortisone cream 2.5%"),
+    searchTreatment(token.access_token, ["hydrocortisone cream 2.5%", "hydrocortisone cream", "hydrocortisone"]),
   );
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${treatmentId}` });
 
@@ -241,7 +244,7 @@ export async function syncPhotonClinicalData(): Promise<PhotonSyncResponse> {
   logEntries.push({ t: now(), code: "200", msg: `GET /allergens → ${allergyId}` });
 
   const medicationHistoryId = await withStage("medication history lookup", () =>
-    searchTreatment(token.access_token, "prenatal vitamin"),
+    searchTreatment(token.access_token, ["prenatal vitamin", "prenatal"]),
   );
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${medicationHistoryId}` });
 
