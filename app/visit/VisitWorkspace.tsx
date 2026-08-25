@@ -1,5 +1,7 @@
 "use client";
 
+import { AppHeader, type OverallStatus } from "./components/AppHeader";
+import { PATIENT, PHOTON } from "./demoData";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
 const bodyClasses = [
@@ -30,13 +32,24 @@ const columnClasses = [
 
 export function VisitWorkspace() {
   const workflow = useVisitWorkflow();
-  void workflow;
+  const { derived } = workflow;
+  const status: OverallStatus = derived.finalized
+    ? "prepared"
+    : derived.isAiError || derived.isApiError
+      ? "actionNeeded"
+      : "preparing";
 
   return (
     <div className="flex h-screen flex-col bg-page">
       <div data-region="prototype-chrome" />
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
-        <header data-region="header" />
+        <AppHeader
+          environment={PHOTON.env}
+          patientMeta={PATIENT.meta}
+          patientName={PATIENT.name}
+          status={status}
+          visitSummary={PATIENT.visit}
+        />
         <div className={bodyClasses}>
           <section className={columnClasses} data-region="left" />
           <aside className={columnClasses} data-region="right" />
