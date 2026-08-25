@@ -17,6 +17,7 @@ import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
 import { Toast } from "./components/Toast";
+import { SectionHeader } from "./components/ui/SectionHeader";
 import { buildLog, buildMilestones, HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
 import type { Phase } from "./types";
 import { useVisitWorkflow } from "./useVisitWorkflow";
@@ -95,7 +96,6 @@ export function VisitWorkspace() {
       {showPrototypeSwitcher ? (
         <PrototypeSwitcher onPick={workflow.actions.setPhase} phase={workflow.state.phase} />
       ) : null}
-      <Toast message={workflow.state.toast} />
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
           environment={PHOTON.env}
@@ -105,7 +105,8 @@ export function VisitWorkspace() {
           visitSummary={PATIENT.visit}
         />
         <div className={bodyClasses}>
-          <section className={columnClasses} data-region="left">
+          <section aria-label="AI Prep" className={columnClasses} data-region="left">
+            <SectionHeader meta="OpenAI · clinician-reviewed" title="AI Prep" />
             <PatientContextCard
               allergies={PATIENT.allergies}
               currentMeds={PATIENT.currentMeds}
@@ -160,7 +161,8 @@ export function VisitWorkspace() {
               thread={workflow.state.thread}
             />
           </section>
-          <aside className={columnClasses} data-region="right">
+          <aside aria-label="Photon API" className={columnClasses} data-region="right">
+            <SectionHeader meta="Clinical API · no Elements" title="Photon API" />
             <PhotonConnectionCard
               connected={derived.connOk}
               host={PHOTON.host}
@@ -183,6 +185,7 @@ export function VisitWorkspace() {
           onReset={workflow.actions.reset}
         />
       </div>
+      <Toast message={workflow.state.toast} />
     </div>
   );
 }
