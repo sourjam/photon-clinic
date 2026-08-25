@@ -27,7 +27,7 @@ Set local values in an ignored `.env.local` file or Cloudflare Worker secrets:
 
 ```sh
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
+OPENAI_MODEL=gpt-4.1-mini
 PHOTON_CLIENT_ID=
 PHOTON_CLIENT_SECRET=
 PHOTON_TOKEN_URL=https://auth.neutron.health/oauth/token

@@ -23,7 +23,7 @@
 	},
 	"upload_source_maps": true,
 	"vars": {
-		"OPENAI_MODEL": "gpt-4o-mini",
+		"OPENAI_MODEL": "gpt-4.1-mini",
 		"PHOTON_TOKEN_URL": "https://auth.neutron.health/oauth/token",
 		"PHOTON_AUDIENCE": "https://api.neutron.health",
 		"PHOTON_API_URL": "https://api.neutron.health/graphql",

@@ -67,11 +67,15 @@ async function callOpenAiJson(input: string, schemaName: string, schema: Record<
     }),
   });
 
+  const data = await response.json();
   if (!response.ok) {
-    throw new Error(`OpenAI request failed: ${response.status}`);
+    const message = z
+      .object({ error: z.object({ message: z.string() }).passthrough().optional() })
+      .passthrough()
+      .safeParse(data);
+    throw new Error(`OpenAI request failed: ${response.status} ${message.success ? (message.data.error?.message ?? "") : ""}`);
   }
 
-  const data = await response.json();
   const outputText = extractOutputText(data);
   if (!outputText) throw new Error("OpenAI response had no output text");
   return JSON.parse(outputText);
@@ -99,20 +103,13 @@ export async function generatePatientInstructions(note: string): Promise<Instruc
           type: "array",
           minItems: 1,
           items: {
-            anyOf: [
-              {
-                type: "object",
-                additionalProperties: false,
-                required: ["kind", "es"],
-                properties: { kind: { const: "text" }, es: { type: "string" } },
-              },
-              {
-                type: "object",
-                additionalProperties: false,
-                required: ["kind", "es"],
-                properties: { kind: { const: "callout" }, es: { type: "string" } },
-              },
-            ],
+            type: "object",
+            additionalProperties: false,
+            required: ["kind", "es"],
+            properties: {
+              kind: { type: "string", enum: ["text", "callout"] },
+              es: { type: "string" },
+            },
           },
         },
         plainText: { type: "string" },

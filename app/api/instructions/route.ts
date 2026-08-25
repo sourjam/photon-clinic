@@ -13,7 +13,8 @@ export async function POST(request: Request) {
 
   try {
     return Response.json(await generatePatientInstructions(parsed.data.note));
-  } catch {
+  } catch (error) {
+    console.error("Instruction generation failed", error instanceof Error ? error.message : error);
     return Response.json({ error: "Instruction generation failed" }, { status: 502 });
   }
 }

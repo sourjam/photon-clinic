@@ -62,28 +62,53 @@ async function graphqlRequest<T>(
 }
 
 async function searchTreatment(token: string, term: string): Promise<string> {
-  const url = process.env.PHOTON_CATALOG_API_URL ?? process.env.PHOTON_API_URL;
-  if (!url) throw new Error("Missing Photon catalog API URL");
-
-  const headers: Record<string, string> = process.env.PHOTON_AUTH_TOKEN
-    ? { "x-photon-auth-token": process.env.PHOTON_AUTH_TOKEN, "x-photon-auth-token-type": "auth0" }
-    : { Authorization: `Bearer ${token}` };
-
-  const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
-    url,
-    `query Treatments($filter: TreatmentFilter!) {
+  const query = `query Treatments($filter: TreatmentFilter!) {
       treatments(filter: $filter) {
         id
         name
       }
-    }`,
-    { filter: { term } },
-    headers,
-  );
+    }`;
 
-  const treatment = data.treatments[0];
-  if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
-  return treatment.id;
+  const attempts: { label: string; url: string; headers: Record<string, string> }[] = [];
+  if (process.env.PHOTON_AUTH_TOKEN && process.env.PHOTON_CATALOG_API_URL) {
+    attempts.push({
+      label: "catalog auth token",
+      url: process.env.PHOTON_CATALOG_API_URL,
+      headers: { "x-photon-auth-token": process.env.PHOTON_AUTH_TOKEN, "x-photon-auth-token-type": "auth0" },
+    });
+  }
+  if (process.env.PHOTON_CATALOG_API_URL) {
+    attempts.push({
+      label: "catalog authorization token",
+      url: process.env.PHOTON_CATALOG_API_URL,
+      headers: { authorization: token },
+    });
+    attempts.push({
+      label: "catalog authorization bearer token",
+      url: process.env.PHOTON_CATALOG_API_URL,
+      headers: { authorization: `Bearer ${token}` },
+    });
+  }
+
+  const errors: string[] = [];
+  for (const attempt of attempts) {
+    try {
+      const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
+        attempt.url,
+        query,
+        { filter: { term } },
+        attempt.headers,
+      );
+
+      const treatment = data.treatments[0];
+      if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
+      return treatment.id;
+    } catch (error) {
+      errors.push(`${attempt.label}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  throw new Error(errors.join(" | ") || "No Photon catalog API URL configured");
 }
 
 async function searchAllergen(token: string): Promise<string> {
@@ -204,19 +229,25 @@ export async function syncPhotonClinicalData(): Promise<PhotonSyncResponse> {
   if (!hasPhotonCredentials()) return fixturePhotonSyncResponse();
 
   const now = () => new Date().toTimeString().slice(0, 8);
-  const token = await exchangeToken();
+  const token = await withStage("auth exchange", () => exchangeToken());
   const logEntries = [{ t: now(), code: "200", msg: "POST /auth/token" }];
 
-  const treatmentId = await searchTreatment(token.access_token, "hydrocortisone cream 2.5%");
+  const treatmentId = await withStage("treatment lookup", () =>
+    searchTreatment(token.access_token, "hydrocortisone cream 2.5%"),
+  );
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${treatmentId}` });
 
-  const allergyId = await searchAllergen(token.access_token);
+  const allergyId = await withStage("allergen lookup", () => searchAllergen(token.access_token));
   logEntries.push({ t: now(), code: "200", msg: `GET /allergens → ${allergyId}` });
 
-  const medicationHistoryId = await searchTreatment(token.access_token, "prenatal vitamin");
+  const medicationHistoryId = await withStage("medication history lookup", () =>
+    searchTreatment(token.access_token, "prenatal vitamin"),
+  );
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${medicationHistoryId}` });
 
-  const patientId = await upsertPatient(token.access_token, { allergyId, medicationHistoryId });
+  const patientId = await withStage("patient sync", () =>
+    upsertPatient(token.access_token, { allergyId, medicationHistoryId }),
+  );
   logEntries.push({ t: now(), code: "200", msg: `POST /patients → ${patientId}` });
 
   return {
@@ -233,4 +264,13 @@ export async function syncPhotonClinicalData(): Promise<PhotonSyncResponse> {
     ],
     logEntries,
   };
+}
+
+async function withStage<T>(stage: string, action: () => Promise<T>): Promise<T> {
+  try {
+    return await action();
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`${stage}: ${detail}`);
+  }
 }

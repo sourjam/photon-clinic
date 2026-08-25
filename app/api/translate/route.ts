@@ -12,5 +12,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid translation request" }, { status: 400 });
   }
 
-  return Response.json(await translateText(parsed.data.text, parsed.data.direction));
+  try {
+    return Response.json(await translateText(parsed.data.text, parsed.data.direction));
+  } catch (error) {
+    console.error("Translation failed", error instanceof Error ? error.message : error);
+    return Response.json({ error: "Translation failed" }, { status: 502 });
+  }
 }
