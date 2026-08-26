@@ -13,7 +13,6 @@ type PatientContextCardProps = {
   syncStatus: PatientSyncStatus;
   photonPatientId: string;
   visitContext: VisitContext;
-  onBlankVisit: () => void;
   onToggleEdit: () => void;
   onSync: () => void;
   onDraftChange: (field: keyof VisitPatient, value: string) => void;
@@ -86,9 +85,6 @@ export function PatientContextCard(props: PatientContextCardProps) {
           <Badge tone={syncBadge.tone}>{syncBadge.label}</Badge>
           <Button dimmed={syncing} disabled={syncing} onClick={props.onSync} size="sm">
             {syncing ? "Syncing..." : "Sync patient"}
-          </Button>
-          <Button onClick={props.onBlankVisit} size="sm" variant="ghost">
-            Blank visit
           </Button>
           <Button onClick={props.onToggleEdit} size="sm" variant="ghost">
             {props.editing ? "Close" : "Edit patient"}

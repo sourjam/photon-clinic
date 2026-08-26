@@ -28,7 +28,6 @@ function renderPatientCard() {
       dirty: false,
       draftPatient: patient,
       editing: false,
-      onBlankVisit: vi.fn(),
       onCancel: vi.fn(),
       onDraftChange: vi.fn(),
       onSave: vi.fn(),
@@ -48,7 +47,7 @@ describe("PatientContextCard", () => {
     const markup = renderPatientCard();
 
     expect(markup).toContain("Sync patient");
-    expect(markup).toContain("Blank visit");
+    expect(markup).not.toContain("Blank visit");
     expect(markup).toContain("Sync this patient to Photon");
     expect(markup).not.toContain("Generate Spanish instructions to sync");
   });
@@ -59,7 +58,6 @@ describe("PatientContextCard", () => {
         dirty: false,
         draftPatient: patient,
         editing: true,
-        onBlankVisit: vi.fn(),
         onCancel: vi.fn(),
         onDraftChange: vi.fn(),
         onSave: vi.fn(),

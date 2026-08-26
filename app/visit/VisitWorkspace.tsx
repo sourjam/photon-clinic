@@ -117,7 +117,6 @@ export function VisitWorkspace() {
             dirty={workflow.state.patientDirty}
             draftPatient={workflow.state.draftPatient}
             editing={workflow.state.patientEditing}
-            onBlankVisit={workflow.actions.startBlankVisit}
             onCancel={workflow.actions.cancelPatientEdit}
             onDraftChange={workflow.actions.setDraftPatientField}
             onSave={workflow.actions.savePatient}
@@ -220,6 +219,7 @@ export function VisitWorkspace() {
           hint={getActionHint(workflow.state.phase, workflow.state.reviewed)}
           onCopy={workflow.actions.copySpanishInstructions}
           onFinalize={workflow.actions.finalize}
+          onNewVisit={workflow.actions.startBlankVisit}
           onReset={workflow.actions.reset}
         />
       </div>
