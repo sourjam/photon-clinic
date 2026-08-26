@@ -2,6 +2,18 @@
 
 This project was created with create-vinext-app.
 
+## Live Deploy
+
+Deployed app: https://photon-clinic.jimyyang-cf.workers.dev
+
+### Desktop
+
+![Photon Clinic live deploy desktop screenshot](docs/readme-screenshots/live-deploy-desktop.png)
+
+### Mobile
+
+![Photon Clinic live deploy mobile screenshot](docs/readme-screenshots/live-deploy-mobile.png)
+
 ## Scripts
 
 - `pnpm run dev` starts the vinext dev server.
