@@ -114,6 +114,7 @@ export function VisitWorkspace() {
             onCancel={workflow.actions.cancelPatientEdit}
             onDraftChange={workflow.actions.setDraftPatientField}
             onSave={workflow.actions.savePatient}
+            onSync={workflow.actions.syncPatient}
             onToggleEdit={workflow.actions.togglePatientEdit}
             patient={workflow.state.patient}
             photonPatientId={workflow.state.patientId}

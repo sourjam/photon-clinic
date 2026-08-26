@@ -17,6 +17,7 @@ type PatientContextCardProps = {
   currentMeds: string;
   raisedInVisit: string;
   onToggleEdit: () => void;
+  onSync: () => void;
   onDraftChange: (field: keyof VisitPatient, value: string) => void;
   onSave: () => void;
   onCancel: () => void;
@@ -77,12 +78,16 @@ function getSyncBadge(syncStatus: PatientSyncStatus, dirty: boolean): { tone: "n
 
 export function PatientContextCard(props: PatientContextCardProps) {
   const syncBadge = getSyncBadge(props.syncStatus, props.dirty);
+  const syncing = props.syncStatus === "pending";
 
   return (
     <Card className="overflow-hidden">
       <CardHeader title="Patient context">
         <div className="flex items-center gap-2">
           <Badge tone={syncBadge.tone}>{syncBadge.label}</Badge>
+          <Button dimmed={syncing} disabled={syncing} onClick={props.onSync} size="sm">
+            {syncing ? "Syncing..." : "Sync patient"}
+          </Button>
           <Button onClick={props.onToggleEdit} size="sm" variant="ghost">
             {props.editing ? "Close" : "Edit patient"}
           </Button>
@@ -169,7 +174,7 @@ export function PatientContextCard(props: PatientContextCardProps) {
             <Button onClick={props.onCancel} size="sm" variant="ghost">
               Cancel
             </Button>
-            <span className="text-[11px] text-muted-2">Saving stages the change · Generate writes it to Photon</span>
+            <span className="text-[11px] text-muted-2">Saving stages the change · Sync patient writes it to Photon</span>
           </div>
         </div>
       ) : (
@@ -206,7 +211,7 @@ export function PatientContextCard(props: PatientContextCardProps) {
               ? "Existing Photon patient was updated"
               : props.syncStatus === "synced"
                 ? "Patient record synced to Photon"
-                : "Use Generate Spanish instructions to sync this patient to Photon"}
+                : "Sync this patient to Photon"}
         </span>
       </div>
       <dl className="flex flex-wrap">

@@ -48,6 +48,7 @@ type VisitActions = {
   searchTreatmentTerm: (term: string) => void;
   selectTreatment: (id: string) => void;
   togglePatientEdit: () => void;
+  syncPatient: () => void;
   setDraftPatientField: (field: keyof VisitPatient, value: string) => void;
   savePatient: () => void;
   cancelPatientEdit: () => void;
@@ -193,13 +194,8 @@ async function getJson<TResponse>(url: string): Promise<TResponse> {
   return response.json() as Promise<TResponse>;
 }
 
-function combineMode(instructionsMode: InstructionsResponse["mode"], photonMode: PhotonSyncResponse["mode"]) {
-  return instructionsMode === "live" || photonMode === "live" ? "live" : "fixture";
-}
-
-function mergeLogEntries(instructions: InstructionsResponse, photon: PhotonSyncResponse) {
-  const [authLog, ...remainingPhotonLogs] = photon.logEntries;
-  return authLog ? [authLog, instructions.logEntry, ...remainingPhotonLogs] : [instructions.logEntry];
+function combineSingleMode(currentMode: InstructionsResponse["mode"], nextMode: InstructionsResponse["mode"]) {
+  return currentMode === "live" || nextMode === "live" ? "live" : "fixture";
 }
 
 async function requestTranslation(text: string, direction: TranslateDirection): Promise<TranslateResponse> {
@@ -254,96 +250,80 @@ export function useVisitWorkflow(): VisitWorkflow {
       phase: "loading",
       reviewed: false,
       finalized: false,
-      patientSyncStatus: "pending",
-      milestones: buildMilestones("loading"),
-      logEntries: buildLog("loading", false),
     }));
 
-    const [instructionsResult, photonResult] = await Promise.allSettled([
-      postJson<InstructionsResponse>("/api/instructions", {
+    try {
+      const instructions = await postJson<InstructionsResponse>("/api/instructions", {
         note: state.note,
         patient: toPhotonPatientInput(state.patient),
         treatment: state.selectedTreatment,
-      }),
-      postJson<PhotonSyncResponse>("/api/photon/sync", {
-        patient: toPhotonPatientInput(state.patient),
-        treatment: state.selectedTreatment,
-      }),
-    ]);
-
-    if (instructionsResult.status === "rejected") {
+      });
+      setState((current) => ({
+        ...current,
+        phase: "review",
+        reviewed: false,
+        finalized: false,
+        integrationMode: combineSingleMode(current.integrationMode, instructions.mode),
+        instructionsHeading: instructions.headingEs,
+        instructions: instructions.blocks,
+        instructionsPlainText: instructions.plainText,
+        logEntries: [...current.logEntries, instructions.logEntry],
+      }));
+    } catch {
       setState((current) => ({
         ...current,
         phase: "aiError",
         reviewed: false,
         finalized: false,
-        patientSyncStatus:
-          photonResult.status === "fulfilled" ? (current.patientDirty ? "updated" : "synced") : "none",
-        patientDirty: photonResult.status === "fulfilled" ? false : current.patientDirty,
-        patientId: photonResult.status === "fulfilled" ? photonResult.value.patientId : current.patientId,
-        patient:
-          photonResult.status === "fulfilled" && photonResult.value.patient
-            ? fromPhotonPatientInput(photonResult.value.patient)
-            : current.patient,
-        draftPatient:
-          photonResult.status === "fulfilled" && photonResult.value.patient
-            ? fromPhotonPatientInput(photonResult.value.patient)
-            : current.draftPatient,
-        milestones: photonResult.status === "fulfilled" ? photonResult.value.milestones : buildMilestones("aiError"),
-        logEntries:
-          photonResult.status === "fulfilled"
-            ? [
-                ...photonResult.value.logEntries,
-                {
-                  t: new Date().toTimeString().slice(0, 8),
-                  code: "502",
-                  msg: "openai · instructions.generate",
-                  isError: true,
-                },
-              ]
-            : buildLog("aiError", false),
+        logEntries: [
+          ...current.logEntries,
+          {
+            t: new Date().toTimeString().slice(0, 8),
+            code: "502",
+            msg: "openai · instructions.generate",
+            isError: true,
+          },
+        ],
       }));
-      return;
     }
+  };
 
-    if (photonResult.status === "rejected") {
-      const instructions = instructionsResult.value;
+  const syncPatient = async () => {
+    setState((current) => ({
+      ...current,
+      patientSyncStatus: "pending",
+      finalized: false,
+      milestones: buildMilestones("loading"),
+    }));
+
+    try {
+      const photon = await postJson<PhotonSyncResponse>("/api/photon/sync", {
+        patient: toPhotonPatientInput(state.patient),
+        treatment: state.selectedTreatment,
+      });
+      setState((current) => ({
+        ...current,
+        phase: current.phase === "apiError" ? "review" : current.phase,
+        integrationMode: combineSingleMode(current.integrationMode, photon.mode),
+        patientId: photon.patientId,
+        treatmentId: photon.treatmentId,
+        patientSyncStatus: current.patientDirty ? "updated" : "synced",
+        patientDirty: false,
+        patient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.patient,
+        draftPatient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.draftPatient,
+        milestones: photon.milestones,
+        logEntries: [...current.logEntries, ...photon.logEntries],
+      }));
+    } catch {
       setState((current) => ({
         ...current,
         phase: "apiError",
-        reviewed: false,
-        finalized: false,
         patientSyncStatus: "none",
-        integrationMode: instructions.mode,
-        instructionsHeading: instructions.headingEs,
-        instructions: instructions.blocks,
-        instructionsPlainText: instructions.plainText,
         milestones: buildMilestones("apiError"),
         logEntries: buildLog("apiError", false),
       }));
-      return;
+      showToast("Photon patient sync failed");
     }
-
-    const instructions = instructionsResult.value;
-    const photon = photonResult.value;
-    setState((current) => ({
-      ...current,
-      phase: "review",
-      reviewed: false,
-      finalized: false,
-      integrationMode: combineMode(instructions.mode, photon.mode),
-      instructionsHeading: instructions.headingEs,
-      instructions: instructions.blocks,
-      instructionsPlainText: instructions.plainText,
-      patientId: photon.patientId,
-      treatmentId: photon.treatmentId,
-      patientSyncStatus: current.patientDirty ? "updated" : "synced",
-      patientDirty: false,
-      patient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.patient,
-      draftPatient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.draftPatient,
-      milestones: photon.milestones,
-      logEntries: mergeLogEntries(instructions, photon),
-    }));
   };
 
   const runTreatmentSearch = async (rawTerm: string) => {
@@ -426,11 +406,11 @@ export function useVisitWorkflow(): VisitWorkflow {
         return;
       }
       if (derived.patientDirty) {
-        showToast("Use Generate Spanish instructions to sync patient edits to Photon first");
+        showToast("Use Sync patient before finalizing");
         return;
       }
       if (!derived.patientSynced) {
-        showToast("Use Generate Spanish instructions to sync the patient to Photon first");
+        showToast("Sync the patient to Photon first");
         return;
       }
       if (!state.reviewed) {
@@ -489,6 +469,7 @@ export function useVisitWorkflow(): VisitWorkflow {
         patientEditing: !current.patientEditing,
       }));
     },
+    syncPatient: () => void syncPatient(),
     setDraftPatientField: (field, value) => {
       setState((current) => ({
         ...current,
@@ -507,7 +488,7 @@ export function useVisitWorkflow(): VisitWorkflow {
           { t: new Date().toTimeString().slice(0, 8), code: "200", msg: "Patient saved locally" },
         ],
       }));
-      showToast("Patient saved · use Generate Spanish instructions to sync Photon");
+      showToast("Patient saved · use Sync patient to write it to Photon");
     },
     cancelPatientEdit: () => {
       setState((current) => ({
