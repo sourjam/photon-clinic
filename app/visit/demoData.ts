@@ -29,6 +29,15 @@ export const DEFAULT_PATIENT = {
   externalId: PATIENT.externalId,
 } as const;
 
+export const DEFAULT_VISIT_CONTEXT = {
+  language: "Spanish",
+  specialty: "Dermatology",
+  visitReason: PATIENT.visitReason,
+  allergies: PATIENT.allergies,
+  currentMeds: PATIENT.currentMeds,
+  raisedInVisit: PATIENT.raisedInVisit,
+} as const;
+
 export const PHOTON = {
   env: "NEUTRON · sandbox",
   host: "api.neutron.health · oauth2",
@@ -94,6 +103,7 @@ export const INITIAL_STATE: VisitState = {
   patientDirty: false,
   patientSyncStatus: "none",
   patientId: "",
+  visitContext: DEFAULT_VISIT_CONTEXT,
   treatmentId: fixturePhotonSyncResponse().treatmentId,
   selectedTreatment: DEFAULT_TREATMENT,
   treatmentQuery: "hydrocortisone",

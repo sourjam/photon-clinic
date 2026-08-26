@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildLog, buildMilestones, INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE } from "./demoData";
-import type { PatientSex, Phase, SafetyCheckKey, VisitPatient, VisitState } from "./types";
+import type { PatientSex, Phase, SafetyCheckKey, VisitContext, VisitPatient, VisitState } from "./types";
 import type {
   InstructionsResponse,
   PhotonPatientInput,
@@ -14,6 +14,58 @@ import type {
 
 const TOAST_DELAY_MS = 2200;
 const SYNCED_KEYS = ["allergy", "interaction", "dose"] as const satisfies readonly SafetyCheckKey[];
+const BLANK_PATIENT: VisitPatient = {
+  firstName: "",
+  lastName: "",
+  dateOfBirth: "",
+  sex: "",
+  phone: "",
+  externalId: "",
+};
+const BLANK_TREATMENT = { id: "", name: "" } satisfies VisitState["selectedTreatment"];
+const BLANK_VISIT_CONTEXT = {
+  language: "Spanish",
+  specialty: "",
+  visitReason: "",
+  allergies: "",
+  currentMeds: "",
+  raisedInVisit: "",
+} satisfies VisitState["visitContext"];
+
+export function createBlankVisitState(current: VisitState): VisitState {
+  return {
+    ...current,
+    phase: "idle",
+    note: "",
+    reviewed: false,
+    finalized: false,
+    checks: { allergy: false, interaction: false, dose: false, lactation: false },
+    instructions: [],
+    instructionsHeading: "",
+    instructionsPlainText: "",
+    patient: { ...BLANK_PATIENT },
+    draftPatient: { ...BLANK_PATIENT },
+    patientEditing: true,
+    patientDirty: false,
+    patientSyncStatus: "none",
+    patientId: "",
+    visitContext: { ...BLANK_VISIT_CONTEXT },
+    treatmentId: "",
+    selectedTreatment: { ...BLANK_TREATMENT },
+    treatmentQuery: "",
+    treatmentResults: [],
+    treatmentSearchStatus: "idle",
+    milestones: buildMilestones("idle"),
+    logEntries: [
+      ...current.logEntries,
+      { t: new Date().toTimeString().slice(0, 8), code: "200", msg: "Blank visit started" },
+    ],
+    thread: [],
+    patientDraft: "",
+    clinicianReply: "",
+    toast: "",
+  };
+}
 
 type DerivedVisitState = {
   isIdle: boolean;
@@ -42,7 +94,9 @@ type VisitActions = {
   toggleReviewed: () => void;
   finalize: () => void;
   reset: () => void;
+  startBlankVisit: () => void;
   setNote: (value: string) => void;
+  setVisitContextField: (field: keyof Omit<VisitContext, "language">, value: string) => void;
   setTreatmentQuery: (value: string) => void;
   searchTreatments: () => void;
   searchTreatmentTerm: (term: string) => void;
@@ -85,6 +139,7 @@ function getPhasePreset(
   | "patientDirty"
   | "patientSyncStatus"
   | "patientId"
+  | "visitContext"
   | "treatmentId"
   | "milestones"
   | "logEntries"
@@ -105,6 +160,7 @@ function getPhasePreset(
     patientDirty: false,
     patientSyncStatus: phase === "idle" ? "none" : "synced",
     patientId: phase === "idle" ? "" : "pat_01HQ7K4M2Z",
+    visitContext: INITIAL_STATE.visitContext,
     treatmentId: INITIAL_STATE.treatmentId,
     milestones: buildMilestones(phase),
     logEntries: buildLog(phase, finalized),
@@ -224,6 +280,15 @@ function fromPhotonPatientInput(patient: PhotonPatientInput & { externalId: stri
   };
 }
 
+function hasRequiredPatientFields(patient: VisitPatient): boolean {
+  return Boolean(
+    patient.firstName.trim() &&
+      patient.lastName.trim() &&
+      /^\d{4}-\d{2}-\d{2}$/.test(patient.dateOfBirth.trim()) &&
+      patient.sex,
+  );
+}
+
 export function useVisitWorkflow(): VisitWorkflow {
   const [state, setState] = useState<VisitState>(INITIAL_STATE);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -245,6 +310,11 @@ export function useVisitWorkflow(): VisitWorkflow {
   };
 
   const beginGenerate = async () => {
+    if (!state.note.trim()) {
+      showToast("Enter a clinician note first");
+      return;
+    }
+
     setState((current) => ({
       ...current,
       phase: "loading",
@@ -256,7 +326,8 @@ export function useVisitWorkflow(): VisitWorkflow {
       const instructions = await postJson<InstructionsResponse>("/api/instructions", {
         note: state.note,
         patient: toPhotonPatientInput(state.patient),
-        treatment: state.selectedTreatment,
+        treatment: state.selectedTreatment.id ? state.selectedTreatment : undefined,
+        visitContext: state.visitContext,
       });
       setState((current) => ({
         ...current,
@@ -289,6 +360,15 @@ export function useVisitWorkflow(): VisitWorkflow {
   };
 
   const syncPatient = async () => {
+    if (state.patientEditing) {
+      showToast("Save patient before syncing");
+      return;
+    }
+    if (!hasRequiredPatientFields(state.patient)) {
+      showToast("Enter first name, last name, date of birth, and sex");
+      return;
+    }
+
     setState((current) => ({
       ...current,
       patientSyncStatus: "pending",
@@ -299,7 +379,7 @@ export function useVisitWorkflow(): VisitWorkflow {
     try {
       const photon = await postJson<PhotonSyncResponse>("/api/photon/sync", {
         patient: toPhotonPatientInput(state.patient),
-        treatment: state.selectedTreatment,
+        treatment: state.selectedTreatment.id ? state.selectedTreatment : undefined,
       });
       setState((current) => ({
         ...current,
@@ -405,6 +485,10 @@ export function useVisitWorkflow(): VisitWorkflow {
         showToast("Generate the Spanish instructions first");
         return;
       }
+      if (!state.selectedTreatment.id) {
+        showToast("Select a treatment first");
+        return;
+      }
       if (derived.patientDirty) {
         showToast("Use Sync patient before finalizing");
         return;
@@ -436,7 +520,18 @@ export function useVisitWorkflow(): VisitWorkflow {
       clearToastTimer();
       setState(INITIAL_STATE);
     },
+    startBlankVisit: () => {
+      clearToastTimer();
+      setState((current) => createBlankVisitState(current));
+    },
     setNote: (value) => setState((current) => ({ ...current, note: value })),
+    setVisitContextField: (field, value) => {
+      setState((current) => ({
+        ...current,
+        visitContext: { ...current.visitContext, [field]: value },
+        finalized: false,
+      }));
+    },
     setTreatmentQuery: (value) => setState((current) => ({ ...current, treatmentQuery: value })),
     searchTreatments: () => void runTreatmentSearch(state.treatmentQuery),
     searchTreatmentTerm: (term) => void runTreatmentSearch(term),
@@ -477,6 +572,10 @@ export function useVisitWorkflow(): VisitWorkflow {
       }));
     },
     savePatient: () => {
+      if (!hasRequiredPatientFields(state.draftPatient)) {
+        showToast("Enter first name, last name, date of birth, and sex");
+        return;
+      }
       setState((current) => ({
         ...current,
         patient: { ...current.draftPatient },

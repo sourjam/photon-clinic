@@ -59,6 +59,27 @@ describe("integration route seams", () => {
     expect(json).toEqual({ error: "Invalid instruction request" });
   });
 
+  it("accepts blank-slate visit context for instruction generation", async () => {
+    const response = await postInstructions(
+      jsonRequest("/api/instructions", {
+        note: "New rash on hands; reviewed gentle skin care.",
+        visitContext: {
+          language: "Spanish",
+          specialty: "Primary care",
+          visitReason: "Hand rash",
+          allergies: "No known drug allergies",
+          currentMeds: "Metformin",
+          raisedInVisit: "Work exposure question",
+        },
+      }),
+    );
+    const json = (await response.json()) as { mode: string; headingEs: string };
+
+    expect(response.status).toBe(200);
+    expect(json.mode).toBe("fixture");
+    expect(json.headingEs).toContain("hidrocortisona");
+  });
+
   it("returns fixture translation and clinical classification without OpenAI credentials", async () => {
     const response = await postTranslate(
       jsonRequest("/api/translate", {

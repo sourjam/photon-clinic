@@ -1,4 +1,4 @@
-import type { InstructionBlock, IntegrationMode, LogEntry, Milestone } from "../app/visit/types";
+import type { InstructionBlock, IntegrationMode, LogEntry, Milestone, VisitContext } from "../app/visit/types";
 
 export type InstructionsResponse = {
   mode: IntegrationMode;
@@ -26,6 +26,7 @@ export type InstructionsRequest = {
   note: string;
   treatment?: SelectedTreatmentInput;
   patient?: PhotonPatientInput;
+  visitContext?: VisitContext;
 };
 
 export type PhotonSyncRequest = {

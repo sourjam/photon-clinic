@@ -18,7 +18,7 @@ import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
 import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
 import { Toast } from "./components/Toast";
 import { SectionHeader } from "./components/ui/SectionHeader";
-import { HANDOFF_ROWS, MEDICATION, PATIENT, PHOTON, REVIEWER } from "./demoData";
+import { HANDOFF_ROWS, MEDICATION, PHOTON, REVIEWER } from "./demoData";
 import type { Phase } from "./types";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
@@ -63,6 +63,9 @@ const showPrototypeSwitcher = import.meta.env.DEV || import.meta.env.VITE_SHOW_P
 export function VisitWorkspace() {
   const workflow = useVisitWorkflow();
   const { derived } = workflow;
+  const visitSummary = [workflow.state.visitContext.specialty, workflow.state.visitContext.visitReason]
+    .filter(Boolean)
+    .join(" · ");
   const status: OverallStatus = derived.finalized
     ? "prepared"
     : derived.isAiError || derived.isApiError
@@ -99,28 +102,32 @@ export function VisitWorkspace() {
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
           environment={workflow.state.integrationMode === "fixture" ? "Fixture mode · no live credentials" : PHOTON.env}
-          patientMeta={`DOB ${workflow.state.patient.dateOfBirth} · Spanish`}
+          patientMeta={[
+            workflow.state.patient.dateOfBirth ? `DOB ${workflow.state.patient.dateOfBirth}` : "",
+            workflow.state.visitContext.language,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
           patientName={`${workflow.state.patient.firstName} ${workflow.state.patient.lastName}`.trim() || "No patient"}
           status={status}
-          visitSummary={PATIENT.visit}
+          visitSummary={visitSummary || "Blank visit"}
         />
         <div className="px-[14px] pt-[14px] wide:px-5 wide:pt-4">
           <PatientContextCard
-            allergies={PATIENT.allergies}
-            currentMeds={PATIENT.currentMeds}
             dirty={workflow.state.patientDirty}
             draftPatient={workflow.state.draftPatient}
             editing={workflow.state.patientEditing}
+            onBlankVisit={workflow.actions.startBlankVisit}
             onCancel={workflow.actions.cancelPatientEdit}
             onDraftChange={workflow.actions.setDraftPatientField}
             onSave={workflow.actions.savePatient}
             onSync={workflow.actions.syncPatient}
             onToggleEdit={workflow.actions.togglePatientEdit}
+            onVisitContextChange={workflow.actions.setVisitContextField}
             patient={workflow.state.patient}
             photonPatientId={workflow.state.patientId}
-            raisedInVisit={PATIENT.raisedInVisit}
             syncStatus={workflow.state.patientSyncStatus}
-            visitReason={PATIENT.visitReason}
+            visitContext={workflow.state.visitContext}
           />
         </div>
         <div className={bodyClasses}>
