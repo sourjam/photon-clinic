@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{background:#F1F3F7;font-family:'Public Sans',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#1A1D24;}
+  a{color:#3A50E4;text-decoration:none;}
+  a:hover{color:#2E40C4;text-decoration:underline;}
+  textarea{font-family:inherit;}
+  textarea::placeholder{color:#A6ABBA;}
+  button{font-family:inherit;cursor:pointer;}
+  ::-webkit-scrollbar{height:8px;width:8px;}
+  ::-webkit-scrollbar-thumb{background:#C9CEDA;border-radius:6px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+</style>
+</helmet>
+
+<div style="{{ pageStyle }}">
+
+  <!-- Prototype chrome (not product UI) -->
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:7px 16px;background:#22262F;color:#fff;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#8E95A8;border:1px solid #3A3F4C;border-radius:4px;padding:2px 7px;">Prototype control · not product UI</span>
+    <div style="display:flex;gap:2px;background:#171A21;border-radius:6px;padding:2px;">
+      <sc-for list="{{ demoStates }}" as="d" hint-placeholder-count="6">
+        <button onClick="{{ d.onPick }}" style="{{ d.style }}">{{ d.label }}</button>
+      </sc-for>
+    </div>
+    <span style="font-size:11px;color:#8E95A8;">{{ demoHint }}</span>
+  </div>
+
+  <div style="{{ appStyle }}">
+
+  <!-- Header -->
+  <div style="{{ headerStyle }}">
+    <div style="display:flex;align-items:center;gap:11px;">
+      <div style="width:17px;height:17px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <span style="font-size:15px;font-weight:700;letter-spacing:-0.01em;">Photon Clinic</span>
+        <span style="font-size:11.5px;color:#8A90A0;font-weight:500;">Clinician workspace</span>
+      </div>
+    </div>
+
+    <div style="width:1px;height:26px;background:#E4E7EF;"></div>
+
+    <div style="display:flex;align-items:baseline;gap:7px;">
+      <span style="font-size:13.5px;font-weight:600;">Maria Gonzalez</span>
+      <span style="font-size:11.5px;color:#7A8090;">DOB 1988-04-12 · Spanish</span>
+    </div>
+    <div style="font-size:11.5px;color:#7A8090;">Dermatology · suspected eczema flare</div>
+
+    <div style="flex:1;min-width:8px;"></div>
+
+    <div style="display:flex;align-items:center;gap:6px;background:#F4F6FB;border:1px solid #DDE3F0;border-radius:6px;padding:4px 9px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#6B7CE8;"></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#3F4A8C;">NEUTRON · sandbox</span>
+    </div>
+    <div style="{{ overallPillStyle }}">
+      <span style="{{ overallDotStyle }}"></span>
+      <span style="font-size:11.5px;font-weight:600;">{{ overallLabel }}</span>
+    </div>
+  </div>
+
+  <!-- Body: two columns -->
+  <div style="{{ bodyStyle }}">
+
+    <!-- ========== LEFT: AI PREP ========== -->
+    <div style="{{ leftStyle }}">
+
+      <!-- Section header -->
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;">
+        <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4A5162;">AI Prep</h2>
+        <div style="flex:1;height:1px;background:#E1E5EE;"></div>
+        <span style="font-size:11px;color:#8A90A0;">OpenAI · clinician-reviewed</span>
+      </div>
+
+      <!-- Patient context -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="padding:10px 14px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:700;">Patient context</div>
+        <div style="display:flex;flex-wrap:wrap;">
+          <div style="flex:1 1 150px;padding:10px 14px;border-right:1px solid #F0F2F6;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Visit reason</div><div style="font-size:12.5px;font-weight:600;">Suspected eczema flare</div></div>
+          <div style="flex:1 1 130px;padding:10px 14px;border-right:1px solid #F0F2F6;background:#FDF8EE;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Allergies</div><div style="font-size:12.5px;font-weight:600;color:#7A5400;">Sulfa</div></div>
+          <div style="flex:1 1 140px;padding:10px 14px;border-right:1px solid #F0F2F6;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Current meds</div><div style="font-size:12.5px;font-weight:600;">Prenatal vitamin</div></div>
+          <div style="flex:1 1 160px;padding:10px 14px;background:#FDF8EE;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Raised in visit</div><div style="font-size:12.5px;font-weight:600;color:#7A5400;">Breastfeeding question</div></div>
+        </div>
+      </div>
+
+      <!-- Clinician note -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">Clinician note</div>
+          <span style="font-size:11px;color:#8A90A0;">English · source of truth</span>
+        </div>
+        <div style="padding:12px 14px;">
+          <textarea value="{{ note }}" onChange="{{ onNote }}" placeholder="Enter visit notes in English…" style="width:100%;border:1px solid #DDE1EA;border-radius:7px;background:#FCFCFE;padding:11px 12px;min-height:82px;font-size:13px;line-height:1.55;color:#22262F;resize:vertical;outline:none;"></textarea>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+            <button onClick="{{ generate }}" style="{{ genBtnStyle }}">
+              <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+                <span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></span>
+              </sc-if>
+              <span>{{ genBtnLabel }}</span>
+            </button>
+            <span style="font-size:11.5px;color:#8A90A0;">{{ genHint }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI error -->
+      <sc-if value="{{ isAiError }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FEF4F3;border:1px solid #F2C9C4;border-radius:9px;padding:13px 14px;display:flex;gap:11px;align-items:flex-start;">
+          <div style="width:20px;height:20px;border-radius:50%;background:#C5352A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">!</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;font-weight:700;color:#A32A21;">Instruction generation failed</div>
+            <div style="font-size:12px;color:#8C443C;margin-top:3px;line-height:1.5;">OpenAI request timed out. The note was not sent to Photon. Retry, or write the Spanish instructions manually.</div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button onClick="{{ generate }}" style="background:#C5352A;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Retry generation</button>
+              <button onClick="{{ manualEntry }}" style="background:#fff;color:#8C443C;border:1px solid #E5BDB8;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Write manually</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Spanish instructions -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">Spanish patient instructions</div>
+          <span style="{{ aiBadgeStyle }}">{{ aiBadgeLabel }}</span>
+        </div>
+
+        <sc-if value="{{ isIdle }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:26px 16px;text-align:center;font-size:12.5px;color:#9096A6;">Instructions appear here once generated from the clinician note.</div>
+        </sc-if>
+
+        <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:16px 14px;display:flex;flex-direction:column;gap:9px;">
+            <div style="height:11px;border-radius:4px;background:#EDEFF4;width:82%;animation:pulse 1.3s ease-in-out infinite;"></div>
+            <div style="height:11px;border-radius:4px;background:#EDEFF4;width:94%;animation:pulse 1.3s ease-in-out .15s infinite;"></div>
+            <div style="height:11px;border-radius:4px;background:#EDEFF4;width:71%;animation:pulse 1.3s ease-in-out .3s infinite;"></div>
+            <div style="font-size:11.5px;color:#8A90A0;margin-top:4px;">Generating patient-friendly Spanish from the clinician note…</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasInstructions }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:14px;display:flex;flex-direction:column;gap:11px;">
+            <div style="background:#F7F9FF;border:1px solid #DFE5F6;border-radius:8px;padding:14px 15px;">
+              <div style="font-size:13px;font-weight:700;color:#2A3AB0;margin-bottom:8px;">Crema de hidrocortisona 2.5% — cómo usarla</div>
+              <div style="font-size:13px;line-height:1.65;color:#22262F;display:flex;flex-direction:column;gap:8px;">
+                <div>Lo que vemos parece un brote de eczema en los antebrazos. La piel está irritada, pero se controla bien con cuidado diario.</div>
+                <div>Aplique una capa fina de la crema en las zonas afectadas <strong>dos veces al día, por 7 días</strong>. Luego deténgase. No la use en la cara ni cerca de los ojos.</div>
+                <div>Use jabón y crema humectante sin fragancia todos los días, incluso cuando la piel esté mejor.</div>
+                <div style="background:#FDF8EE;border-left:3px solid #E8B44A;padding:9px 11px;border-radius:0 6px 6px 0;color:#6A5420;">Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia, pero <strong>su médico debe confirmarlo con usted antes de empezar</strong>. No la aplique en el pecho.</div>
+                <div>Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+              <span style="font-size:11px;color:#8A90A0;">Reading level: plain Spanish · tone: respectful</span>
+              <div style="flex:1;"></div>
+              <button onClick="{{ regenerate }}" style="background:#fff;color:#3F4658;border:1px solid #D5DAE4;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;">Regenerate</button>
+              <button onClick="{{ copyEs }}" style="background:#fff;color:#3F4658;border:1px solid #D5DAE4;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;">Copy</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- Medication prep -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">Medication prep</div>
+          <span style="font-size:11px;color:#8A90A0;">Prepared for Photon · not prescribed here</span>
+        </div>
+        <div style="padding:13px 14px;display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;">
+          <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Medication</div><div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;"><span style="font-size:13.5px;font-weight:700;">Hydrocortisone cream 2.5%</span><span style="{{ txIdStyle }}">{{ txIdLabel }}</span></div></div>
+          <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Directions</div><div style="font-size:12.5px;font-weight:500;line-height:1.5;">Apply thin layer to affected areas twice daily for 7 days</div></div>
+          <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Quantity</div><div style="font-size:12.5px;font-weight:600;">30 g tube</div></div>
+          <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Refills</div><div style="font-size:12.5px;font-weight:600;">0</div></div>
+          <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Notes to pharmacist</div><div style="font-size:12.5px;line-height:1.5;color:#3A3F4C;">Patient is breastfeeding; clinician reviewed counseling.</div></div>
+        </div>
+      </div>
+
+      <!-- Safety checklist -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">Safety review</div>
+          <span style="{{ safetyBadgeStyle }}">{{ safetyBadgeLabel }}</span>
+        </div>
+        <div style="padding:6px 14px 12px;">
+          <sc-for list="{{ safetyItems }}" as="c" hint-placeholder-count="4">
+            <div onClick="{{ c.onToggle }}" style="{{ c.rowStyle }}">
+              <div style="{{ c.boxStyle }}">{{ c.mark }}</div>
+              <div style="flex:1;">
+                <div style="{{ c.textStyle }}">{{ c.text }}</div>
+                <div style="font-size:11px;color:#8A90A0;margin-top:1px;">{{ c.meta }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- Clinician review -->
+      <div style="{{ reviewCardStyle }}">
+        <div style="display:flex;align-items:flex-start;gap:11px;">
+          <div style="{{ reviewIconStyle }}">{{ reviewIcon }}</div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;font-weight:700;color:{{ reviewTitleColor }};">{{ reviewTitle }}</div>
+            <div style="font-size:12px;line-height:1.5;color:#5A6072;margin-top:3px;">{{ reviewBody }}</div>
+          </div>
+          <sc-if value="{{ canReview }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ toggleReviewed }}" style="{{ reviewBtnStyle }}">{{ reviewBtnLabel }}</button>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- Patient follow-up thread -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">Patient follow-up</div>
+          <span style="font-size:11px;color:#8A90A0;">OpenAI translation · questions routed to clinician</span>
+        </div>
+
+        <sc-if value="{{ noThread }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:20px 16px;text-align:center;font-size:12.5px;color:#9096A6;">No follow-up questions yet. Either side can start the thread below.</div>
+        </sc-if>
+
+        <sc-if value="{{ hasThread }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:9px;">
+            <sc-for list="{{ thread }}" as="t" hint-placeholder-count="0">
+              <div style="{{ t.wrapStyle }}">
+                <div style="{{ t.bubbleStyle }}">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:9px;margin-bottom:4px;">
+                    <span style="{{ t.labelStyle }}">{{ t.label }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#A0A6B4;">{{ t.time }}</span>
+                  </div>
+                  <div style="font-size:12.5px;line-height:1.55;color:#1A1D24;">{{ t.es }}</div>
+                  <div style="{{ t.enStyle }}">{{ t.en }}</div>
+                  <sc-if value="{{ t.flagged }}" hint-placeholder-val="{{ false }}">
+                    <div style="margin-top:7px;display:flex;align-items:center;gap:6px;background:#FDF8EE;border:1px solid #EBD9B4;border-radius:5px;padding:4px 8px;">
+                      <span style="width:5px;height:5px;border-radius:50%;background:#E8B44A;flex-shrink:0;"></span>
+                      <span style="font-size:10.5px;font-weight:600;color:#8A6510;">Clinical question — flagged for clinician, not answered by AI</span>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="padding:12px 14px;border-top:1px solid #EEF0F5;background:#FCFCFE;display:flex;flex-direction:column;gap:11px;">
+          <div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8088BE;margin-bottom:6px;">Paciente · escriba en español</div>
+            <textarea value="{{ patientDraft }}" onChange="{{ onPatientDraft }}" placeholder="¿Puedo usar la crema si me duele la piel?" style="width:100%;border:1px solid #CDD5EE;border-radius:7px;background:#fff;padding:10px 11px;min-height:52px;font-size:12.5px;line-height:1.5;color:#22262F;resize:vertical;outline:none;"></textarea>
+            <div style="display:flex;gap:7px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+              <button onClick="{{ fillDemoEs }}" style="background:#fff;border:1px solid #CDD5EE;color:#5A66C0;font-size:11px;font-weight:500;padding:5px 10px;border-radius:13px;">Ejemplo: lactancia</button>
+              <div style="flex:1;"></div>
+              <button onClick="{{ sendPatient }}" style="background:#3A50E4;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Translate to English →</button>
+            </div>
+          </div>
+          <div style="border-top:1px dashed #E4E7EF;padding-top:11px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:6px;">Clinician reply · English</div>
+            <textarea value="{{ clinicianReply }}" onChange="{{ onClinicianReply }}" placeholder="Yes — it is safe to keep using it while breastfeeding…" style="width:100%;border:1px solid #DDE1EA;border-radius:7px;background:#fff;padding:10px 11px;min-height:52px;font-size:12.5px;line-height:1.5;color:#22262F;resize:vertical;outline:none;"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+              <button onClick="{{ sendClinician }}" style="background:#3A50E4;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Translate to Spanish →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========== RIGHT: PHOTON API ========== -->
+    <div style="{{ rightStyle }}">
+
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;">
+        <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4A5162;">Photon API</h2>
+        <div style="flex:1;height:1px;background:#E1E5EE;"></div>
+        <span style="font-size:11px;color:#8A90A0;">Clinical API · no Elements</span>
+      </div>
+
+      <!-- Connection -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;padding:12px 14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div>
+            <div style="font-size:12.5px;font-weight:700;">Connection</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7A8090;margin-top:3px;">api.neutron.health · oauth2</div>
+          </div>
+          <span style="{{ connBadgeStyle }}">{{ connBadgeLabel }}</span>
+        </div>
+        <div style="display:flex;gap:14px;margin-top:11px;padding-top:11px;border-top:1px solid #F0F2F6;">
+          <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;">Scope</div><div style="font-size:11.5px;font-weight:600;">read · write:patient</div></div>
+          <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;">Prescribe scope</div><div style="font-size:11.5px;font-weight:600;color:#8A90A0;">not requested</div></div>
+        </div>
+      </div>
+
+      <!-- Milestones -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="padding:10px 14px;border-bottom:1px solid #EEF0F5;font-size:12.5px;font-weight:700;">Sync milestones</div>
+        <div style="padding:4px 0;">
+          <sc-for list="{{ milestones }}" as="m" hint-placeholder-count="4">
+            <div style="{{ m.rowStyle }}">
+              <div style="{{ m.dotStyle }}">{{ m.mark }}</div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                  <span style="font-size:12.5px;font-weight:600;color:{{ m.labelColor }};">{{ m.label }}</span>
+                  <span style="{{ m.badgeStyle }}">{{ m.status }}</span>
+                </div>
+                <div style="{{ m.idStyle }}">{{ m.id }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- Photon error -->
+      <sc-if value="{{ isApiError }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FEF4F3;border:1px solid #F2C9C4;border-radius:9px;padding:13px 14px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#C5352A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">!</div>
+            <div style="flex:1;">
+              <div style="font-size:12.5px;font-weight:700;color:#A32A21;">Treatment lookup failed</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8C443C;margin-top:3px;">503 · GET /catalog/treatments</div>
+              <div style="font-size:12px;color:#8C443C;margin-top:5px;line-height:1.5;">Patient and safety sync succeeded. Handoff is blocked until the treatment resolves.</div>
+              <button onClick="{{ retryApi }}" style="background:#C5352A;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;margin-top:10px;">Retry lookup</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- Handoff card -->
+      <div style="{{ handoffCardStyle }}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div style="font-size:12.5px;font-weight:700;color:{{ handoffTitleColor }};">Prepared for Photon</div>
+          <span style="{{ handoffBadgeStyle }}">{{ handoffBadgeLabel }}</span>
+        </div>
+        <div style="font-size:11.5px;line-height:1.5;color:#5A6072;margin-top:5px;">{{ handoffBody }}</div>
+
+        <sc-if value="{{ isFinalized }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid #CFE6DA;display:flex;flex-direction:column;gap:8px;">
+            <sc-for list="{{ handoffRows }}" as="h" hint-placeholder-count="5">
+              <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;">
+                <span style="font-size:11.5px;color:#5A6072;">{{ h.k }}</span>
+                <span style="{{ h.vStyle }}">{{ h.v }}</span>
+              </div>
+            </sc-for>
+            <div style="font-size:11px;color:#5A8A74;line-height:1.5;margin-top:4px;padding-top:9px;border-top:1px dashed #CFE6DA;">Prescribing happens in Photon, outside this MVP. Nothing here has been sent to a pharmacy.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- Evidence log -->
+      <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+          <div style="font-size:12.5px;font-weight:700;">API evidence log</div>
+          <span style="font-size:11px;color:#8A90A0;">{{ logCount }}</span>
+        </div>
+        <div style="padding:9px 12px;display:flex;flex-direction:column;gap:6px;max-height:200px;overflow:auto;">
+          <sc-if value="{{ noLog }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:14px 2px;font-size:11.5px;color:#9096A6;text-align:center;">No calls yet.</div>
+          </sc-if>
+          <sc-for list="{{ log }}" as="l" hint-placeholder-count="0">
+            <div style="display:flex;gap:9px;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.5;">
+              <span style="color:#A0A6B4;flex-shrink:0;">{{ l.t }}</span>
+              <span style="{{ l.codeStyle }}">{{ l.code }}</span>
+              <span style="color:#4A5162;flex:1;">{{ l.msg }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Action bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 20px;background:#fff;border-top:1px solid #E1E5EE;">
+    <div style="font-size:11.5px;color:#7A8090;">{{ actionHint }}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onClick="{{ reset }}" style="background:#fff;color:#5A6072;border:1px solid #D5DAE4;padding:9px 14px;border-radius:7px;font-size:12.5px;font-weight:600;">Reset demo</button>
+      <button onClick="{{ copyEs }}" style="{{ copyBtnStyle }}">Copy Spanish instructions</button>
+      <button onClick="{{ finalize }}" style="{{ finalizeBtnStyle }}">{{ finalizeLabel }}</button>
+    </div>
+  </div>
+
+  </div>
+
+  <sc-if value="{{ showToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1A1D24;color:#fff;font-size:12.5px;font-weight:500;padding:9px 17px;border-radius:9px;box-shadow:0 12px 30px -8px rgba(0,0,0,.4);z-index:50;">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1360,&quot;height&quot;:900}}">
+const NOTE = 'Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.';
+
+const ES = `Crema de hidrocortisona 2.5%
+
+Lo que vemos parece un brote de eczema en los antebrazos. La piel está irritada, pero se controla bien con cuidado diario.
+
+Aplique una capa fina de la crema en las zonas afectadas dos veces al día, por 7 días. Luego deténgase. No la use en la cara ni cerca de los ojos.
+
+Use jabón y crema humectante sin fragancia todos los días, incluso cuando la piel esté mejor.
+
+Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia, pero su médico debe confirmarlo con usted antes de empezar. No la aplique en el pecho.
+
+Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.`;
+
+class Component extends DCLogic {
+  state = {
+    phase: 'final',     // idle | loading | review | final | aiError | apiError
+    note: NOTE,
+    reviewed: true,
+    finalized: true,
+    checks: { allergy: true, interaction: true, lactation: true, dose: true },
+    vw: 1280,
+    toast: '',
+    thread: [],
+    patientDraft: '',
+    clinicianReply: '',
+  };
+
+  stamp() {
+    const base = 10 * 60 + 44 + this.state.thread.length * 2;
+    const h = Math.floor(base / 60), m = base % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  }
+
+  esToEn(t) {
+    const l = t.toLowerCase();
+    if (/amamant|lactan|pecho|seno/.test(l)) return "Is it safe to use this cream while I'm breastfeeding?";
+    if (/duele|dolor|arde|quema/.test(l)) return 'Can I use the cream if my skin hurts or stings?';
+    if (/cuánto|cuanto|tiempo|días|dias/.test(l)) return 'How long do I need to use the cream?';
+    return '"' + t + '" — translated for clinician review.';
+  }
+  enToEs(t) {
+    const l = t.toLowerCase();
+    if (/safe|breastfeed/.test(l)) return 'Sí, puede seguir usando la crema mientras amamanta. No la aplique en el pecho y avíseme si algo cambia.';
+    if (/stop|days|week/.test(l)) return 'Úsela durante 7 días y luego deténgase. Si no mejora, llame a la clínica.';
+    return '«' + t + '» — traducción para la paciente.';
+  }
+  isClinical(t) {
+    return /amamant|lactan|pecho|seno|duele|dolor|arde|quema|embarazo|alergia|efecto|seguro|segura/i.test(t);
+  }
+
+  componentDidMount() {
+    this._r = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this._r);
+    this._r();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._r); clearTimeout(this._t); clearTimeout(this._g); }
+
+  toastMsg(m) {
+    this.setState({ toast: m });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2200);
+  }
+
+  setPhase(p) {
+    const presets = {
+      idle:     { reviewed: false, finalized: false },
+      loading:  { reviewed: false, finalized: false },
+      review:   { reviewed: false, finalized: false },
+      final:    { reviewed: true,  finalized: true  },
+      aiError:  { reviewed: false, finalized: false },
+      apiError: { reviewed: false, finalized: false },
+    };
+    this.setState({ phase: p, ...presets[p] });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const p = s.phase;
+    const wide = s.vw >= 880;
+
+    const isIdle = p === 'idle';
+    const isLoading = p === 'loading';
+    const isAiError = p === 'aiError';
+    const isApiError = p === 'apiError';
+    const hasInstructions = p === 'review' || p === 'final' || p === 'apiError';
+    const reviewed = s.reviewed;
+    const finalized = s.finalized && p === 'final';
+
+    const checksDone = Object.values(s.checks).filter(Boolean).length;
+    const allChecked = checksDone === 4;
+
+    // ---------- layout ----------
+    const pageStyle = { display: 'flex', flexDirection: 'column', height: '100vh', background: '#F1F3F7' };
+    const appStyle = { display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, background: '#F1F3F7', overflow: wide ? 'hidden' : 'auto' };
+    const headerStyle = { display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', padding: wide ? '11px 20px' : '12px 16px', background: '#fff', borderBottom: '1px solid #E1E5EE' };
+    const bodyStyle = {
+      display: wide ? 'grid' : 'flex',
+      flexDirection: wide ? null : 'column',
+      gridTemplateColumns: wide ? 'minmax(0,62fr) minmax(330px,38fr)' : null,
+      gap: '16px',
+      padding: wide ? '16px 20px 20px' : '14px 14px 18px',
+      alignItems: 'stretch',
+      flex: 1,
+      minHeight: 0,
+      overflow: wide ? 'hidden' : 'visible',
+    };
+    const colBase = wide
+      ? { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', paddingRight: '4px' }
+      : { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 };
+
+    // ---------- overall status ----------
+    let overallLabel, oBg, oBorder, oColor, oDot;
+    if (finalized) { overallLabel = 'Prepared for Photon'; oBg = '#EAF7F0'; oBorder = '#BFE3CF'; oColor = '#0B6B47'; oDot = '#0E8A5A'; }
+    else if (isAiError || isApiError) { overallLabel = 'Action needed'; oBg = '#FEF1EF'; oBorder = '#F0C4BF'; oColor = '#A32A21'; oDot = '#C5352A'; }
+    else { overallLabel = 'Preparing for Photon'; oBg = '#FDF8EE'; oBorder = '#EBD9B4'; oColor = '#8A6510'; oDot = '#E8B44A'; }
+
+    // ---------- demo switcher ----------
+    const states = [
+      ['idle', 'Initial'], ['loading', 'AI loading'], ['review', 'Review needed'],
+      ['final', 'Prepared'], ['aiError', 'AI error'], ['apiError', 'API error'],
+    ];
+    const demoStates = states.map(([k, label]) => ({
+      label,
+      onPick: () => this.setPhase(k),
+      style: {
+        border: 'none', borderRadius: '5px', padding: '5px 10px', fontSize: '11.5px', fontWeight: 600,
+        background: p === k ? '#3A50E4' : 'transparent',
+        color: p === k ? '#fff' : '#9AA1B4',
+      },
+    }));
+    const demoHints = {
+      idle: 'Nothing generated or synced yet.',
+      loading: 'OpenAI request in flight.',
+      review: 'AI output awaiting clinician sign-off.',
+      final: 'Happy path — reviewed and handed off.',
+      aiError: 'Generation failed; Photon untouched.',
+      apiError: 'Treatment lookup failed; handoff blocked.',
+    };
+
+    // ---------- AI badge ----------
+    let aiBadgeLabel, aBg, aBorder, aColor;
+    if (isLoading) { aiBadgeLabel = 'Generating…'; aBg = '#F4F6FB'; aBorder = '#DDE3F0'; aColor = '#3F4A8C'; }
+    else if (isAiError) { aiBadgeLabel = 'Failed'; aBg = '#FEF1EF'; aBorder = '#F0C4BF'; aColor = '#A32A21'; }
+    else if (hasInstructions && reviewed) { aiBadgeLabel = 'AI generated · reviewed'; aBg = '#EAF7F0'; aBorder = '#BFE3CF'; aColor = '#0B6B47'; }
+    else if (hasInstructions) { aiBadgeLabel = 'AI generated · needs review'; aBg = '#FDF8EE'; aBorder = '#EBD9B4'; aColor = '#8A6510'; }
+    else { aiBadgeLabel = 'Not generated'; aBg = '#F4F5F8'; aBorder = '#E1E5EE'; aColor = '#7A8090'; }
+    const badge = (bg, bd, c) => ({ fontSize: '10.5px', fontWeight: 700, letterSpacing: '.02em', padding: '3px 9px', borderRadius: '12px', background: bg, border: '1px solid ' + bd, color: c, whiteSpace: 'nowrap' });
+
+    // ---------- safety checklist ----------
+    const CHECKS = [
+      { k: 'allergy', text: 'Allergy record synced for Photon screening', meta: 'GET /allergies · 1 record (sulfa) · no screening performed here' },
+      { k: 'interaction', text: 'Medication history synced for Photon screening', meta: 'GET /medication_history · 1 record (prenatal vitamin)' },
+      { k: 'dose', text: 'Strength, quantity and duration verified', meta: '2.5% · 30 g · 7 days · 0 refills' },
+      { k: 'lactation', text: 'Lactation guidance confirmed with patient', meta: 'Clinician-confirmed — not an AI or API determination' },
+    ];
+    const safetyItems = CHECKS.map(c => {
+      const on = !!s.checks[c.k];
+      const warn = c.k === 'lactation';
+      return {
+        text: c.text, meta: c.meta,
+        mark: on ? '✓' : '',
+        onToggle: () => this.setState({ checks: { ...s.checks, [c.k]: !on } }),
+        rowStyle: { display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '9px 0', borderBottom: '1px solid #F2F4F8', cursor: 'pointer' },
+        boxStyle: {
+          width: '17px', height: '17px', borderRadius: '4px', flexShrink: 0, marginTop: '1px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '11px', fontWeight: 700, color: '#fff',
+          background: on ? (warn ? '#E8B44A' : '#0E8A5A') : '#fff',
+          border: '1.5px solid ' + (on ? (warn ? '#E8B44A' : '#0E8A5A') : '#C9CEDA'),
+        },
+        textStyle: { fontSize: '12.5px', fontWeight: on ? 500 : 600, color: on ? '#3A3F4C' : '#1A1D24', lineHeight: 1.4 },
+      };
+    });
+    const syncedCount = ['allergy', 'interaction', 'dose'].filter(k => s.checks[k]).length;
+    let safetyBadgeLabel, sBg, sBd, sC;
+    if (allChecked) { safetyBadgeLabel = '3 synced · 1 clinician-reviewed'; sBg = '#EAF7F0'; sBd = '#BFE3CF'; sC = '#0B6B47'; }
+    else { safetyBadgeLabel = syncedCount + ' synced · ' + (s.checks.lactation ? 1 : 0) + ' clinician-reviewed'; sBg = '#FDF8EE'; sBd = '#EBD9B4'; sC = '#8A6510'; }
+
+    // ---------- clinician review ----------
+    const canReview = hasInstructions;
+    let reviewTitle, reviewBody, rBg, rBd, rIcon, rIconBg, rTitleColor;
+    if (!canReview) {
+      reviewTitle = 'Clinician review pending'; reviewBody = 'Generate the Spanish instructions before reviewing.';
+      rBg = '#fff'; rBd = '#E1E5EE'; rIcon = '–'; rIconBg = '#C9CEDA'; rTitleColor = '#5A6072';
+    } else if (reviewed) {
+      reviewTitle = 'Reviewed by clinician'; reviewBody = 'Dr. A. Okafor confirmed the Spanish instructions, medication prep and safety checks at 10:42.';
+      rBg = '#F4FBF7'; rBd = '#BFE3CF'; rIcon = '✓'; rIconBg = '#0E8A5A'; rTitleColor = '#0B6B47';
+    } else {
+      reviewTitle = 'Clinician review required'; reviewBody = 'AI output is not patient-ready until you confirm the wording, the lactation guidance and the medication prep.';
+      rBg = '#FFFCF5'; rBd = '#EBD9B4'; rIcon = '!'; rIconBg = '#E8B44A'; rTitleColor = '#8A6510';
+    }
+
+    // ---------- Photon milestones ----------
+    const syncedBase = !isIdle && !isAiError;
+    const mk = (label, status, id) => ({ label, status, id });
+    let rows;
+    if (isIdle || isAiError) {
+      rows = [mk('Auth check', 'pending', ''), mk('Patient sync', 'pending', ''), mk('Treatment lookup', 'pending', ''), mk('Allergy history', 'pending', ''), mk('Medication history', 'pending', '')];
+    } else if (isLoading) {
+      rows = [mk('Auth check', 'ok', 'token · 3600s'), mk('Patient sync', 'loading', ''), mk('Treatment lookup', 'pending', ''), mk('Allergy history', 'pending', ''), mk('Medication history', 'pending', '')];
+    } else if (isApiError) {
+      rows = [mk('Auth check', 'ok', 'token · 3600s'), mk('Patient sync', 'ok', 'pat_01HQ7K4M2Z'), mk('Treatment lookup', 'error', '503 · retry available'), mk('Allergy history', 'ok', '1 record · sulfa'), mk('Medication history', 'ok', '1 record · prenatal vitamin')];
+    } else {
+      rows = [mk('Auth check', 'ok', 'token · 3600s'), mk('Patient sync', 'ok', 'pat_01HQ7K4M2Z'), mk('Treatment lookup', 'ok', 'med_8f21c94a'), mk('Allergy history', 'ok', '1 record · sulfa'), mk('Medication history', 'ok', '1 record · prenatal vitamin')];
+    }
+    const milestones = rows.map(r => {
+      const dotBase = { width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, marginTop: '1px' };
+      let dotStyle, mark, bStyle, labelColor = '#1A1D24';
+      if (r.status === 'ok') { dotStyle = { ...dotBase, background: '#0E8A5A', color: '#fff' }; mark = '✓'; bStyle = badge('#EAF7F0', '#BFE3CF', '#0B6B47'); }
+      else if (r.status === 'loading') { dotStyle = { ...dotBase, background: '#fff', border: '2px solid #DDE3F0', borderTopColor: '#3A50E4', animation: 'spin .7s linear infinite' }; mark = ''; bStyle = badge('#F4F6FB', '#DDE3F0', '#3F4A8C'); }
+      else if (r.status === 'error') { dotStyle = { ...dotBase, background: '#C5352A', color: '#fff' }; mark = '!'; bStyle = badge('#FEF1EF', '#F0C4BF', '#A32A21'); }
+      else { dotStyle = { ...dotBase, background: '#F0F2F6', color: '#A6ABBA', border: '1px solid #E4E7EF' }; mark = ''; bStyle = badge('#F4F5F8', '#E1E5EE', '#8A90A0'); labelColor = '#8A90A0'; }
+      const statusText = { ok: 'synced', loading: 'syncing', error: 'failed', pending: 'pending' }[r.status];
+      return {
+        label: r.label, mark, dotStyle, labelColor,
+        status: statusText, badgeStyle: bStyle,
+        id: r.id,
+        idStyle: { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', color: r.status === 'error' ? '#A32A21' : '#7A8090', marginTop: '2px', display: r.id ? 'block' : 'none' },
+        rowStyle: { display: 'flex', gap: '10px', padding: '9px 14px', borderBottom: '1px solid #F4F6F9' },
+      };
+    });
+
+    // ---------- connection badge ----------
+    const connOk = !isIdle;
+    const connBadgeStyle = connOk ? badge('#EAF7F0', '#BFE3CF', '#0B6B47') : badge('#F4F5F8', '#E1E5EE', '#8A90A0');
+    const connBadgeLabel = connOk ? 'Authenticated' : 'Not connected';
+
+    // ---------- handoff ----------
+    let handoffBadgeLabel, hBg, hBd, hBadge, handoffBody, handoffTitleColor;
+    if (finalized) {
+      handoffBadgeLabel = 'Ready'; hBg = '#F4FBF7'; hBd = '#BFE3CF'; hBadge = badge('#EAF7F0', '#BFE3CF', '#0B6B47');
+      handoffBody = 'All context is synced and clinician-reviewed. Continue prescribing in Photon.';
+      handoffTitleColor = '#0B6B47';
+    } else if (isApiError) {
+      handoffBadgeLabel = 'Blocked'; hBg = '#FEF4F3'; hBd = '#F2C9C4'; hBadge = badge('#FEF1EF', '#F0C4BF', '#A32A21');
+      handoffBody = 'Treatment lookup must succeed before the handoff can be finalized.';
+      handoffTitleColor = '#A32A21';
+    } else if (hasInstructions) {
+      handoffBadgeLabel = 'Not finalized'; hBg = '#FFFCF5'; hBd = '#EBD9B4'; hBadge = badge('#FDF8EE', '#EBD9B4', '#8A6510');
+      handoffBody = 'Clinician review and safety sign-off are required before finalizing.';
+      handoffTitleColor = '#8A6510';
+    } else {
+      handoffBadgeLabel = 'Waiting'; hBg = '#fff'; hBd = '#E1E5EE'; hBadge = badge('#F4F5F8', '#E1E5EE', '#8A90A0');
+      handoffBody = 'Generate instructions and sync patient context to build the handoff.';
+      handoffTitleColor = '#5A6072';
+    }
+    const monoV = { fontFamily: "'IBM Plex Mono',monospace", fontSize: '11.5px', fontWeight: 500, color: '#1A1D24', textAlign: 'right' };
+    const plainV = { fontSize: '11.5px', fontWeight: 600, color: '#0B6B47', textAlign: 'right' };
+    const handoffRows = [
+      { k: 'Photon patient', v: 'pat_01HQ7K4M2Z', vStyle: monoV },
+      { k: 'Treatment', v: 'med_8f21c94a', vStyle: monoV },
+      { k: 'Safety data', v: 'allergy + med history synced for screening', vStyle: plainV },
+      { k: 'Spanish instructions', v: 'reviewed', vStyle: plainV },
+      { k: 'Medication prep', v: '2.5% · 30 g · 7 days · 0 refills', vStyle: plainV },
+    ];
+
+    // ---------- evidence log ----------
+    const L = (t, code, msg, err) => ({ t, code, msg, codeStyle: { fontWeight: 600, flexShrink: 0, color: err ? '#C5352A' : '#0B6B47' } });
+    let log = [];
+    if (isLoading) log = [L('10:38:02', '200', 'POST /auth/token')];
+    else if (isAiError) log = [L('10:38:02', '200', 'POST /auth/token'), L('10:39:11', '504', 'openai · instructions.generate', true)];
+    else if (isApiError) log = [
+      L('10:38:02', '200', 'POST /auth/token'), L('10:38:44', '200', 'openai · instructions.generate'),
+      L('10:39:03', '201', 'POST /patients → pat_01HQ7K4M2Z'), L('10:39:20', '503', 'GET /catalog/treatments', true),
+      L('10:39:26', '200', 'GET /allergies → 1 record'), L('10:39:31', '200', 'GET /medication_history → 1 record'),
+    ];
+    else if (!isIdle) log = [
+      L('10:38:02', '200', 'POST /auth/token'), L('10:38:44', '200', 'openai · instructions.generate'),
+      L('10:39:03', '201', 'POST /patients → pat_01HQ7K4M2Z'), L('10:39:18', '200', 'GET /catalog/treatments → med_8f21c94a'),
+      L('10:39:26', '200', 'GET /allergies → 1 record'), L('10:39:31', '200', 'GET /medication_history → 1 record'),
+    ];
+    if (finalized) log = [...log, L('10:42:07', '200', 'handoff prepared · no Rx written')];
+
+    // ---------- buttons ----------
+    const canFinalize = hasInstructions && reviewed && allChecked && !isApiError;
+    const btnPrimary = (enabled) => ({ background: '#3A50E4', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: enabled ? 1 : 0.45 });
+    const btnGhost = (enabled) => ({ background: '#fff', color: '#3F4658', border: '1px solid #D5DAE4', padding: '9px 14px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: enabled ? 1 : 0.45 });
+
+    const actionHints = {
+      idle: 'Nothing generated yet · prescribing happens in Photon, outside this MVP',
+      loading: 'Generating Spanish instructions…',
+      review: reviewed ? 'Reviewed · ready to finalize the handoff' : 'Mark the AI output reviewed to enable the handoff',
+      final: 'Handoff prepared · no prescription was created by this app',
+      aiError: 'Generation failed · nothing sent to Photon',
+      apiError: 'Treatment lookup failed · handoff blocked',
+    };
+
+    return {
+      appStyle, headerStyle, bodyStyle,
+      leftStyle: colBase, rightStyle: colBase,
+
+      overallLabel,
+      overallPillStyle: { display: 'flex', alignItems: 'center', gap: '7px', background: oBg, border: '1px solid ' + oBorder, color: oColor, borderRadius: '6px', padding: '4px 10px' },
+      overallDotStyle: { width: '6px', height: '6px', borderRadius: '50%', background: oDot },
+
+      demoStates, demoHint: demoHints[p],
+
+      note: s.note,
+      onNote: (e) => this.setState({ note: e.target.value }),
+
+      isIdle, isLoading, isAiError, isApiError, hasInstructions,
+      aiBadgeLabel, aiBadgeStyle: badge(aBg, aBorder, aColor),
+
+      genBtnLabel: isLoading ? 'Generating…' : (hasInstructions ? 'Regenerate Spanish instructions' : 'Generate Spanish instructions'),
+      genBtnStyle: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#3A50E4', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: isLoading ? 0.8 : 1 },
+      genHint: isLoading ? 'OpenAI · gpt-4o-mini' : 'Output is drafted by AI and must be clinician-reviewed',
+      generate: () => {
+        this.setPhase('loading');
+        clearTimeout(this._g);
+        this._g = setTimeout(() => this.setState({ phase: 'review', reviewed: false, finalized: false }), 1400);
+      },
+      regenerate: () => {
+        this.setPhase('loading');
+        clearTimeout(this._g);
+        this._g = setTimeout(() => this.setState({ phase: 'review', reviewed: false, finalized: false }), 1400);
+      },
+      manualEntry: () => { this.setState({ phase: 'review', reviewed: false, finalized: false }); this.toastMsg('Switched to manual entry'); },
+      retryApi: () => { this.setState({ phase: 'review', reviewed: false, finalized: false }); this.toastMsg('Treatment lookup succeeded · med_8f21c94a'); },
+
+      txIdLabel: (isIdle || isAiError || isLoading) ? 'awaiting lookup' : (isApiError ? 'lookup failed' : 'med_8f21c94a'),
+      txIdStyle: (isIdle || isAiError || isLoading)
+        ? { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', background: '#F4F5F8', color: '#8A90A0', padding: '3px 8px', borderRadius: '5px' }
+        : (isApiError
+          ? { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', background: '#FEF1EF', color: '#A32A21', padding: '3px 8px', borderRadius: '5px' }
+          : { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', background: '#EDF0FF', color: '#2A3AB0', padding: '3px 8px', borderRadius: '5px' }),
+
+      safetyItems, safetyBadgeLabel, safetyBadgeStyle: badge(sBg, sBd, sC),
+
+      canReview, reviewTitle, reviewBody, reviewIcon: rIcon, reviewTitleColor: rTitleColor,
+      reviewCardStyle: { background: rBg, border: '1px solid ' + rBd, borderRadius: '9px', padding: '13px 14px' },
+      reviewIconStyle: { width: '20px', height: '20px', borderRadius: '50%', background: rIconBg, color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' },
+      reviewBtnLabel: reviewed ? 'Reviewed ✓' : 'Mark reviewed',
+      reviewBtnStyle: reviewed
+        ? { background: '#EAF7F0', color: '#0B6B47', border: '1px solid #BFE3CF', padding: '7px 13px', borderRadius: '7px', fontSize: '12px', fontWeight: 600, flexShrink: 0 }
+        : { background: '#3A50E4', color: '#fff', border: 'none', padding: '7px 13px', borderRadius: '7px', fontSize: '12px', fontWeight: 600, flexShrink: 0 },
+      toggleReviewed: () => {
+        if (!hasInstructions) { this.toastMsg('Generate instructions first'); return; }
+        this.setState({ reviewed: !reviewed, finalized: false, phase: 'review' });
+      },
+      pageStyle,
+
+      connBadgeStyle, connBadgeLabel,
+      milestones,
+
+      handoffCardStyle: { background: hBg, border: '1px solid ' + hBd, borderRadius: '9px', padding: '13px 14px' },
+      handoffBadgeStyle: hBadge, handoffBadgeLabel, handoffBody, handoffTitleColor,
+      isFinalized: finalized, handoffRows,
+
+      log: [...log, ...s.thread.map(m => L(m.time, '200', 'openai · message.translate (' + (m.from === 'patient' ? 'es→en' : 'en→es') + ')'))],
+      noLog: log.length + s.thread.length === 0,
+      logCount: (log.length + s.thread.length) ? (log.length + s.thread.length) + ' calls' : '',
+
+      thread: s.thread.map(m => {
+        const fromPatient = m.from === 'patient';
+        return {
+          es: fromPatient ? m.es : m.es,
+          en: fromPatient ? 'EN · ' + m.en : 'EN · ' + m.en,
+          time: m.time,
+          flagged: fromPatient && m.flagged,
+          label: fromPatient ? 'Paciente' : 'Clínico',
+          labelStyle: { fontSize: '10px', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: fromPatient ? '#5A66C0' : '#4A5162' },
+          wrapStyle: { display: 'flex', justifyContent: fromPatient ? 'flex-start' : 'flex-end' },
+          bubbleStyle: {
+            maxWidth: '86%',
+            background: fromPatient ? '#F7F9FF' : '#F6F7FA',
+            border: '1px solid ' + (fromPatient ? '#DFE5F6' : '#E4E7EF'),
+            borderRadius: fromPatient ? '9px 9px 9px 2px' : '9px 9px 2px 9px',
+            padding: '9px 11px',
+          },
+          enStyle: { fontSize: '11.5px', lineHeight: 1.45, color: fromPatient ? '#5A66C0' : '#7A8090', marginTop: '4px', fontStyle: 'italic' },
+        };
+      }),
+      hasThread: s.thread.length > 0,
+      noThread: s.thread.length === 0,
+      patientDraft: s.patientDraft,
+      clinicianReply: s.clinicianReply,
+      onPatientDraft: (e) => this.setState({ patientDraft: e.target.value }),
+      onClinicianReply: (e) => this.setState({ clinicianReply: e.target.value }),
+      fillDemoEs: () => this.setState({ patientDraft: '¿Es seguro usar esta crema mientras estoy amamantando?' }),
+      sendPatient: () => {
+        const t = s.patientDraft.trim();
+        if (!t) { this.toastMsg('Escriba una pregunta primero'); return; }
+        const flagged = this.isClinical(t);
+        this.setState({
+          thread: [...s.thread, { from: 'patient', es: t, en: this.esToEn(t), time: this.stamp(), flagged }],
+          patientDraft: '',
+        });
+        if (flagged) this.toastMsg('Clinical question flagged for clinician');
+      },
+      sendClinician: () => {
+        const t = s.clinicianReply.trim();
+        if (!t) { this.toastMsg('Type a reply first'); return; }
+        this.setState({
+          thread: [...s.thread, { from: 'clinician', en: t, es: this.enToEs(t), time: this.stamp() }],
+          clinicianReply: '',
+        });
+      },
+
+      copyEs: () => {
+        try { navigator.clipboard.writeText(ES); } catch (e) {}
+        this.toastMsg('Spanish instructions copied to clipboard');
+      },
+      copyBtnStyle: btnGhost(hasInstructions),
+      finalize: () => {
+        if (!canFinalize) {
+          this.toastMsg(isApiError ? 'Resolve the treatment lookup first' : (!hasInstructions ? 'Generate the Spanish instructions first' : (!reviewed ? 'Mark the AI output reviewed first' : 'Complete the safety review first')));
+          return;
+        }
+        this.setState({ phase: 'final', finalized: true });
+        this.toastMsg('Handoff prepared — continue in Photon');
+      },
+      finalizeLabel: finalized ? 'Handoff prepared ✓' : 'Finalize handoff',
+      finalizeBtnStyle: finalized
+        ? { background: '#0E8A5A', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600 }
+        : btnPrimary(canFinalize),
+      reset: () => { clearTimeout(this._g); this.setState({ phase: 'idle', note: NOTE, reviewed: false, finalized: false, checks: { allergy: false, interaction: false, lactation: false, dose: false }, thread: [], patientDraft: '', clinicianReply: '' }); },
+
+      actionHint: actionHints[p],
+      showToast: !!s.toast, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

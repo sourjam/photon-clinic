@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{background:#F1F3F7;font-family:'Public Sans',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#1A1D24;}
+  a{color:#3A50E4;text-decoration:none;}
+  a:hover{color:#2E40C4;text-decoration:underline;}
+  input,textarea,select{font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:#A6ABBA;}
+  button{font-family:inherit;cursor:pointer;}
+  ::-webkit-scrollbar{height:8px;width:8px;}
+  ::-webkit-scrollbar-thumb{background:#C9CEDA;border-radius:6px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+</style>
+</helmet>
+
+<div style="{{ pageStyle }}">
+
+  <!-- Prototype chrome (not product UI) -->
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:7px 16px;background:#22262F;color:#fff;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#8E95A8;border:1px solid #3A3F4C;border-radius:4px;padding:2px 7px;">Prototype control · not product UI</span>
+    <div style="display:flex;gap:2px;background:#171A21;border-radius:6px;padding:2px;">
+      <sc-for list="{{ scenarios }}" as="d" hint-placeholder-count="5">
+        <button onClick="{{ d.onPick }}" style="{{ d.style }}">{{ d.label }}</button>
+      </sc-for>
+    </div>
+    <span style="font-size:11px;color:#8E95A8;">{{ scenarioHint }}</span>
+  </div>
+
+  <div style="{{ appStyle }}">
+
+    <!-- Header -->
+    <div style="{{ headerStyle }}">
+      <div style="display:flex;align-items:center;gap:11px;">
+        <div style="width:17px;height:17px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="font-size:15px;font-weight:700;letter-spacing:-0.01em;">Photon Clinic</span>
+          <span style="font-size:11.5px;color:#8A90A0;font-weight:500;">Visit assistant</span>
+        </div>
+      </div>
+
+      <div style="width:1px;height:26px;background:#E4E7EF;"></div>
+
+      <div style="display:flex;align-items:baseline;gap:7px;">
+        <span style="font-size:13.5px;font-weight:600;">{{ patientName }}</span>
+        <span style="font-size:11.5px;color:#7A8090;">{{ patientMeta }}</span>
+      </div>
+      <div style="font-size:11.5px;color:#7A8090;">{{ visitReason }}</div>
+
+      <div style="flex:1;min-width:8px;"></div>
+
+      <div style="display:flex;align-items:center;gap:6px;background:#F4F6FB;border:1px solid #DDE3F0;border-radius:6px;padding:4px 9px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#6B7CE8;"></span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:#3F4A8C;">NEUTRON · sandbox</span>
+      </div>
+      <div style="{{ overallPillStyle }}">
+        <span style="{{ overallDotStyle }}"></span>
+        <span style="font-size:11.5px;font-weight:600;">{{ overallLabel }}</span>
+      </div>
+    </div>
+
+    <!-- Readiness strip -->
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 20px;background:#EBEEF4;border-bottom:1px solid #DFE3EC;">
+      <span style="font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7A8090;">Handoff readiness</span>
+      <sc-for list="{{ readiness }}" as="r" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="{{ r.dotStyle }}"></span>
+          <span style="{{ r.labelStyle }}">{{ r.label }}</span>
+        </div>
+      </sc-for>
+      <div style="flex:1;min-width:8px;"></div>
+      <span style="font-size:11px;color:#8A90A0;">{{ readinessSummary }}</span>
+    </div>
+
+    <!-- Body -->
+    <div style="{{ bodyStyle }}">
+
+      <!-- ============ LEFT ============ -->
+      <div style="{{ leftStyle }}">
+
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;">
+          <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4A5162;">Visit workspace</h2>
+          <div style="flex:1;height:1px;background:#E1E5EE;"></div>
+          <span style="font-size:11px;color:#8A90A0;">Work in any order</span>
+        </div>
+
+        <!-- Patient panel -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Patient</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="{{ patientBadgeStyle }}">{{ patientBadgeLabel }}</span>
+              <button onClick="{{ togglePatientEdit }}" style="background:#fff;color:#3F4658;border:1px solid #D5DAE4;padding:5px 11px;border-radius:6px;font-size:11.5px;font-weight:600;">{{ patientEditLabel }}</button>
+            </div>
+          </div>
+
+          <sc-if value="{{ patientEditing }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:12px 14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px;">
+              <div><div style="{{ fieldLabelStyle }}">First name</div><input value="{{ pFirst }}" onChange="{{ onPFirst }}" style="{{ inputStyle }}" /></div>
+              <div><div style="{{ fieldLabelStyle }}">Last name</div><input value="{{ pLast }}" onChange="{{ onPLast }}" style="{{ inputStyle }}" /></div>
+              <div><div style="{{ fieldLabelStyle }}">Date of birth</div><input value="{{ pDob }}" onChange="{{ onPDob }}" placeholder="YYYY-MM-DD" style="{{ inputStyle }}" /></div>
+              <div><div style="{{ fieldLabelStyle }}">Sex</div>
+                <div style="display:flex;gap:4px;">
+                  <sc-for list="{{ sexOptions }}" as="o" hint-placeholder-count="3">
+                    <button onClick="{{ o.onPick }}" style="{{ o.style }}">{{ o.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+              <div><div style="{{ fieldLabelStyle }}">Phone</div><input value="{{ pPhone }}" onChange="{{ onPPhone }}" style="{{ inputStyle }}" /></div>
+              <div><div style="{{ fieldLabelStyle }}">External ID <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#A6ABBA;">optional</span></div><input value="{{ pExt }}" onChange="{{ onPExt }}" placeholder="EHR-00421" style="{{ inputStyle }}" /></div>
+              <div style="grid-column:1 / -1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:2px;">
+                <button onClick="{{ savePatient }}" style="background:#3A50E4;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;">Save patient</button>
+                <button onClick="{{ cancelPatient }}" style="background:#fff;color:#5A6072;border:1px solid #D5DAE4;padding:7px 12px;border-radius:7px;font-size:12px;font-weight:600;">Cancel</button>
+                <span style="font-size:11px;color:#8A90A0;">Saving stages the change · Sync Photon writes it</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ patientReadOnly }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-wrap:wrap;">
+              <sc-for list="{{ patientFields }}" as="f" hint-placeholder-count="5">
+                <div style="{{ f.cellStyle }}">
+                  <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">{{ f.k }}</div>
+                  <div style="{{ f.vStyle }}">{{ f.v }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid #F0F2F6;background:#FCFCFE;">
+              <span style="{{ patientIdStyle }}">{{ patientIdLabel }}</span>
+              <span style="font-size:11px;color:#7A8090;">{{ patientSyncNote }}</span>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- Treatment search -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Treatment search · Photon medication catalog</div>
+            <span style="font-size:11px;color:#8A90A0;">Catalog lookup only · no prescribing</span>
+          </div>
+
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:11px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:180px;display:flex;align-items:center;gap:8px;border:1px solid #DDE1EA;border-radius:7px;padding:0 11px;height:36px;background:#FCFCFE;">
+                <span style="color:#9096A6;font-size:12px;">⌕</span>
+                <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="hydrocortisone, mupirocin, ondansetron…" style="border:none;background:transparent;outline:none;font-size:12.5px;width:100%;color:#22262F;" />
+              </div>
+              <button onClick="{{ runSearch }}" style="background:#3A50E4;color:#fff;border:none;padding:0 15px;border-radius:7px;font-size:12.5px;font-weight:600;height:36px;">Search catalog</button>
+            </div>
+
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <span style="font-size:11px;color:#8A90A0;">Try:</span>
+              <sc-for list="{{ quickTerms }}" as="q" hint-placeholder-count="5">
+                <button onClick="{{ q.onPick }}" style="background:#F4F5F8;border:1px solid #E4E7EF;color:#4A5162;font-size:11px;font-weight:500;padding:4px 9px;border-radius:12px;">{{ q.label }}</button>
+              </sc-for>
+            </div>
+
+            <!-- Selected treatment -->
+            <div style="{{ selCardStyle }}">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+                <div style="min-width:0;">
+                  <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:{{ selLabelColor }};margin-bottom:3px;">{{ selHeading }}</div>
+                  <div style="font-size:13.5px;font-weight:700;line-height:1.35;">{{ selName }}</div>
+                  <div style="display:flex;gap:7px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+                    <span style="{{ selIdStyle }}">{{ selId }}</span>
+                    <span style="font-size:11px;color:#7A8090;">{{ selForm }}</span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+                  <span style="{{ selBadgeStyle }}">{{ selBadgeLabel }}</span>
+                  <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ clearSelection }}" style="background:transparent;border:none;color:#6B7280;font-size:11px;font-weight:600;text-decoration:underline;padding:0;">Change</button>
+                  </sc-if>
+                </div>
+              </div>
+            </div>
+
+            <!-- Results -->
+            <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+                  <span style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;">{{ resultCount }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#A0A6B4;">GET /catalog/treatments</span>
+                </div>
+                <div style="border:1px solid #EEF0F5;border-radius:7px;overflow:hidden;">
+                  <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+                    <div style="{{ r.rowStyle }}">
+                      <div style="min-width:0;flex:1;">
+                        <div style="font-size:12.5px;font-weight:600;line-height:1.35;">{{ r.name }}</div>
+                        <div style="display:flex;gap:8px;align-items:center;margin-top:3px;flex-wrap:wrap;">
+                          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#7A8090;">{{ r.id }}</span>
+                          <span style="font-size:10.5px;color:#8A90A0;">{{ r.form }}</span>
+                        </div>
+                      </div>
+                      <button onClick="{{ r.onSelect }}" style="{{ r.btnStyle }}">{{ r.btnLabel }}</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+              <div style="border:1px dashed #DDE1EA;border-radius:7px;padding:14px;text-align:center;font-size:12px;color:#8A90A0;">No catalog matches for “{{ query }}”. Try a generic medication name.</div>
+            </sc-if>
+          </div>
+
+          <!-- Medication prep -->
+          <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ true }}">
+            <div style="border-top:1px solid #EEF0F5;padding:12px 14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;">
+                <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#7A8090;">Medication prep</div>
+                <span style="font-size:11px;color:#8A90A0;">Prepared for Photon · not prescribed here</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;">
+                <div style="grid-column:1 / -1;"><div style="{{ fieldLabelStyle }}">Directions</div><input value="{{ directions }}" onChange="{{ onDirections }}" style="{{ inputStyle }}" /></div>
+                <div><div style="{{ fieldLabelStyle }}">Quantity</div><input value="{{ quantity }}" onChange="{{ onQuantity }}" style="{{ inputStyle }}" /></div>
+                <div><div style="{{ fieldLabelStyle }}">Duration</div><input value="{{ duration }}" onChange="{{ onDuration }}" style="{{ inputStyle }}" /></div>
+                <div><div style="{{ fieldLabelStyle }}">Refills</div><input value="{{ refills }}" onChange="{{ onRefills }}" style="{{ inputStyle }}" /></div>
+                <div style="grid-column:1 / -1;"><div style="{{ fieldLabelStyle }}">Notes to pharmacist</div><input value="{{ pharmNote }}" onChange="{{ onPharmNote }}" style="{{ inputStyle }}" /></div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- Clinician note -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Clinician note</div>
+            <span style="font-size:11px;color:#8A90A0;">English · source of truth</span>
+          </div>
+          <div style="padding:12px 14px;">
+            <textarea value="{{ note }}" onChange="{{ onNote }}" placeholder="Enter visit notes in English…" style="width:100%;border:1px solid #DDE1EA;border-radius:7px;background:#FCFCFE;padding:11px 12px;min-height:76px;font-size:13px;line-height:1.55;color:#22262F;resize:vertical;outline:none;"></textarea>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;">
+              <button onClick="{{ generate }}" style="{{ genBtnStyle }}">
+                <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></span>
+                </sc-if>
+                <span>{{ genBtnLabel }}</span>
+              </button>
+              <span style="font-size:11.5px;color:#8A90A0;">{{ genHint }}</span>
+            </div>
+            <sc-if value="{{ noteStale }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:10px;display:flex;align-items:center;gap:8px;background:#FDF8EE;border:1px solid #EBD9B4;border-radius:6px;padding:7px 10px;">
+                <span style="width:5px;height:5px;border-radius:50%;background:#E8B44A;flex-shrink:0;"></span>
+                <span style="font-size:11.5px;color:#8A6510;">{{ staleReason }}</span>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <!-- AI error -->
+        <sc-if value="{{ isAiError }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FEF4F3;border:1px solid #F2C9C4;border-radius:9px;padding:13px 14px;display:flex;gap:11px;align-items:flex-start;">
+            <div style="width:20px;height:20px;border-radius:50%;background:#C5352A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">!</div>
+            <div style="flex:1;">
+              <div style="font-size:12.5px;font-weight:700;color:#A32A21;">Instruction generation failed</div>
+              <div style="font-size:12px;color:#8C443C;margin-top:3px;line-height:1.5;">OpenAI request timed out. Nothing was written to Photon. Retry, or write the Spanish instructions manually.</div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button onClick="{{ generate }}" style="background:#C5352A;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Retry generation</button>
+                <button onClick="{{ manualEntry }}" style="background:#fff;color:#8C443C;border:1px solid #E5BDB8;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Write manually</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Spanish instructions -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Spanish patient instructions</div>
+            <span style="{{ aiBadgeStyle }}">{{ aiBadgeLabel }}</span>
+          </div>
+
+          <sc-if value="{{ isIdle }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:24px 16px;text-align:center;font-size:12.5px;color:#9096A6;">Instructions appear here once generated from the note, patient and selected treatment.</div>
+          </sc-if>
+
+          <sc-if value="{{ isLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px 14px;display:flex;flex-direction:column;gap:9px;">
+              <div style="height:11px;border-radius:4px;background:#EDEFF4;width:82%;animation:pulse 1.3s ease-in-out infinite;"></div>
+              <div style="height:11px;border-radius:4px;background:#EDEFF4;width:94%;animation:pulse 1.3s ease-in-out .15s infinite;"></div>
+              <div style="height:11px;border-radius:4px;background:#EDEFF4;width:71%;animation:pulse 1.3s ease-in-out .3s infinite;"></div>
+              <div style="font-size:11.5px;color:#8A90A0;margin-top:4px;">Generating Spanish from note + patient + treatment…</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasInstructions }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:14px;display:flex;flex-direction:column;gap:11px;">
+              <sc-if value="{{ doseMissing }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:9px;align-items:flex-start;background:#FDF8EE;border:1px solid #EBD9B4;border-radius:7px;padding:10px 11px;">
+                  <span style="width:16px;height:16px;border-radius:50%;background:#E8B44A;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">!</span>
+                  <div style="font-size:11.5px;line-height:1.5;color:#8A6510;">The note does not state a frequency or duration. Dose details were left out rather than invented — confirm and add them before review.</div>
+                </div>
+              </sc-if>
+              <div style="background:#F7F9FF;border:1px solid #DFE5F6;border-radius:8px;padding:14px 15px;">
+                <div style="font-size:13px;font-weight:700;color:#2A3AB0;margin-bottom:8px;">{{ esTitle }}</div>
+                <div style="font-size:13px;line-height:1.65;color:#22262F;display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ esParas }}" as="p" hint-placeholder-count="3">
+                    <div style="{{ p.style }}">{{ p.text }}</div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+                <span style="font-size:11px;color:#8A90A0;">Doses and durations copied verbatim from the note · plain Spanish</span>
+                <div style="flex:1;"></div>
+                <button onClick="{{ generate }}" style="background:#fff;color:#3F4658;border:1px solid #D5DAE4;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;">Regenerate</button>
+                <button onClick="{{ copyEs }}" style="background:#fff;color:#3F4658;border:1px solid #D5DAE4;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;">Copy</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- Patient follow-up thread -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Patient follow-up</div>
+            <span style="font-size:11px;color:#8A90A0;">OpenAI translation · questions routed to clinician</span>
+          </div>
+
+          <sc-if value="{{ noThread }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:18px 16px;text-align:center;font-size:12.5px;color:#9096A6;">No follow-up questions yet. Either side can start the thread below.</div>
+          </sc-if>
+
+          <sc-if value="{{ hasThread }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:12px 14px;display:flex;flex-direction:column;gap:9px;">
+              <sc-for list="{{ thread }}" as="t" hint-placeholder-count="2">
+                <div style="{{ t.wrapStyle }}">
+                  <div style="{{ t.bubbleStyle }}">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:9px;margin-bottom:4px;">
+                      <span style="{{ t.labelStyle }}">{{ t.label }}</span>
+                      <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#A0A6B4;">{{ t.time }}</span>
+                    </div>
+                    <div style="font-size:12.5px;line-height:1.55;color:#1A1D24;">{{ t.es }}</div>
+                    <div style="{{ t.enStyle }}">{{ t.en }}</div>
+                    <sc-if value="{{ t.flagged }}" hint-placeholder-val="{{ false }}">
+                      <div style="margin-top:7px;display:flex;align-items:center;gap:6px;background:#FDF8EE;border:1px solid #EBD9B4;border-radius:5px;padding:4px 8px;">
+                        <span style="width:5px;height:5px;border-radius:50%;background:#E8B44A;flex-shrink:0;"></span>
+                        <span style="font-size:10.5px;font-weight:600;color:#8A6510;">Clinical question — flagged for clinician, not answered by AI</span>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <div style="padding:12px 14px;border-top:1px solid #EEF0F5;background:#FCFCFE;display:flex;flex-direction:column;gap:11px;">
+            <div>
+              <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8088BE;margin-bottom:6px;">Paciente · escriba en español</div>
+              <textarea value="{{ patientDraft }}" onChange="{{ onPatientDraft }}" placeholder="¿Puedo usar la crema si me duele la piel?" style="width:100%;border:1px solid #CDD5EE;border-radius:7px;background:#fff;padding:10px 11px;min-height:48px;font-size:12.5px;line-height:1.5;color:#22262F;resize:vertical;outline:none;"></textarea>
+              <div style="display:flex;gap:7px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+                <button onClick="{{ fillDemoEs }}" style="background:#fff;border:1px solid #CDD5EE;color:#5A66C0;font-size:11px;font-weight:500;padding:5px 10px;border-radius:13px;">Ejemplo: lactancia</button>
+                <div style="flex:1;"></div>
+                <button onClick="{{ sendPatient }}" style="background:#3A50E4;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Translate to English →</button>
+              </div>
+            </div>
+            <div style="border-top:1px dashed #E4E7EF;padding-top:11px;">
+              <div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;margin-bottom:6px;">Clinician reply · English</div>
+              <textarea value="{{ clinicianReply }}" onChange="{{ onClinicianReply }}" placeholder="Yes — it is safe to keep using it while breastfeeding…" style="width:100%;border:1px solid #DDE1EA;border-radius:7px;background:#fff;padding:10px 11px;min-height:48px;font-size:12.5px;line-height:1.5;color:#22262F;resize:vertical;outline:none;"></textarea>
+              <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+                <button onClick="{{ sendClinician }}" style="background:#3A50E4;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;">Translate to Spanish →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============ RIGHT ============ -->
+      <div style="{{ rightStyle }}">
+
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px;">
+          <h2 style="margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4A5162;">Photon API</h2>
+          <div style="flex:1;height:1px;background:#E1E5EE;"></div>
+          <span style="font-size:11px;color:#8A90A0;">Clinical API · no Elements</span>
+        </div>
+
+        <!-- Connection -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <div>
+              <div style="font-size:12.5px;font-weight:700;">Connection</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7A8090;margin-top:3px;">api.neutron.health · oauth2</div>
+            </div>
+            <span style="{{ connBadgeStyle }}">{{ connBadgeLabel }}</span>
+          </div>
+          <div style="display:flex;gap:14px;margin-top:11px;padding-top:11px;border-top:1px solid #F0F2F6;">
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;">Scope</div><div style="font-size:11.5px;font-weight:600;">read · write:patient</div></div>
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9096A6;">Prescribe scope</div><div style="font-size:11.5px;font-weight:600;color:#8A90A0;">not requested</div></div>
+          </div>
+        </div>
+
+        <!-- Milestones -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Sync milestones</div>
+            <button onClick="{{ syncPhoton }}" style="{{ syncMiniStyle }}">{{ syncMiniLabel }}</button>
+          </div>
+          <div style="padding:4px 0;">
+            <sc-for list="{{ milestones }}" as="m" hint-placeholder-count="5">
+              <div style="{{ m.rowStyle }}">
+                <div style="{{ m.dotStyle }}">{{ m.mark }}</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                    <span style="font-size:12.5px;font-weight:600;color:{{ m.labelColor }};">{{ m.label }}</span>
+                    <span style="{{ m.badgeStyle }}">{{ m.status }}</span>
+                  </div>
+                  <div style="{{ m.idStyle }}">{{ m.id }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- API error -->
+        <sc-if value="{{ isApiError }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FEF4F3;border:1px solid #F2C9C4;border-radius:9px;padding:13px 14px;">
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+              <div style="width:20px;height:20px;border-radius:50%;background:#C5352A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">!</div>
+              <div style="flex:1;">
+                <div style="font-size:12.5px;font-weight:700;color:#A32A21;">Treatment lookup failed</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8C443C;margin-top:3px;">503 · GET /catalog/treatments</div>
+                <div style="font-size:12px;color:#8C443C;margin-top:5px;line-height:1.5;">Patient and history sync succeeded. Handoff is blocked until the treatment resolves.</div>
+                <button onClick="{{ retryApi }}" style="background:#C5352A;color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:600;margin-top:10px;">Retry lookup</button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Safety review -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">Safety review</div>
+            <span style="{{ safetyBadgeStyle }}">{{ safetyBadgeLabel }}</span>
+          </div>
+          <div style="padding:6px 14px 12px;">
+            <sc-for list="{{ safetyItems }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.onToggle }}" style="{{ c.rowStyle }}">
+                <div style="{{ c.boxStyle }}">{{ c.mark }}</div>
+                <div style="flex:1;">
+                  <div style="{{ c.textStyle }}">{{ c.text }}</div>
+                  <div style="font-size:11px;color:#8A90A0;margin-top:1px;">{{ c.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Clinician review -->
+        <div style="{{ reviewCardStyle }}">
+          <div style="display:flex;align-items:flex-start;gap:11px;">
+            <div style="{{ reviewIconStyle }}">{{ reviewIcon }}</div>
+            <div style="flex:1;">
+              <div style="font-size:12.5px;font-weight:700;color:{{ reviewTitleColor }};">{{ reviewTitle }}</div>
+              <div style="font-size:12px;line-height:1.5;color:#5A6072;margin-top:3px;">{{ reviewBody }}</div>
+            </div>
+            <sc-if value="{{ canReview }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ toggleReviewed }}" style="{{ reviewBtnStyle }}">{{ reviewBtnLabel }}</button>
+            </sc-if>
+          </div>
+        </div>
+
+        <!-- Handoff -->
+        <div style="{{ handoffCardStyle }}">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <div style="font-size:12.5px;font-weight:700;color:{{ handoffTitleColor }};">Prepared for Photon</div>
+            <span style="{{ handoffBadgeStyle }}">{{ handoffBadgeLabel }}</span>
+          </div>
+          <div style="font-size:11.5px;line-height:1.5;color:#5A6072;margin-top:5px;">{{ handoffBody }}</div>
+
+          <sc-if value="{{ isFinalized }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid #CFE6DA;display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ handoffRows }}" as="h" hint-placeholder-count="5">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;">
+                  <span style="font-size:11.5px;color:#5A6072;">{{ h.k }}</span>
+                  <span style="{{ h.vStyle }}">{{ h.v }}</span>
+                </div>
+              </sc-for>
+              <div style="font-size:11px;color:#5A8A74;line-height:1.5;margin-top:4px;padding-top:9px;border-top:1px dashed #CFE6DA;">Prescribing happens in Photon, outside this MVP. Nothing here has been sent to a pharmacy.</div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- Evidence log -->
+        <div style="background:#fff;border:1px solid #E1E5EE;border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF0F5;">
+            <div style="font-size:12.5px;font-weight:700;">API evidence log</div>
+            <span style="font-size:11px;color:#8A90A0;">{{ logCount }}</span>
+          </div>
+          <div style="padding:9px 12px;display:flex;flex-direction:column;gap:6px;max-height:230px;overflow:auto;">
+            <sc-if value="{{ noLog }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px 2px;font-size:11.5px;color:#9096A6;text-align:center;">No calls yet.</div>
+            </sc-if>
+            <sc-for list="{{ log }}" as="l" hint-placeholder-count="4">
+              <div style="display:flex;gap:9px;align-items:baseline;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.5;">
+                <span style="color:#A0A6B4;flex-shrink:0;">{{ l.t }}</span>
+                <span style="{{ l.codeStyle }}">{{ l.code }}</span>
+                <span style="color:#4A5162;flex:1;">{{ l.msg }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 20px;background:#fff;border-top:1px solid #E1E5EE;">
+      <div style="font-size:11.5px;color:#7A8090;">{{ actionHint }}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button onClick="{{ reset }}" style="background:#fff;color:#5A6072;border:1px solid #D5DAE4;padding:9px 13px;border-radius:7px;font-size:12.5px;font-weight:600;">Reset demo</button>
+        <div style="width:1px;height:22px;background:#E4E7EF;"></div>
+        <button onClick="{{ generate }}" style="{{ actGenStyle }}">Generate instructions</button>
+        <button onClick="{{ syncPhoton }}" style="{{ actSyncStyle }}">{{ actSyncLabel }}</button>
+        <button onClick="{{ translateAction }}" style="{{ actTranslateStyle }}">Translate</button>
+        <button onClick="{{ finalize }}" style="{{ finalizeBtnStyle }}">{{ finalizeLabel }}</button>
+      </div>
+    </div>
+
+  </div>
+
+  <sc-if value="{{ showToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1A1D24;color:#fff;font-size:12.5px;font-weight:500;padding:9px 17px;border-radius:9px;box-shadow:0 12px 30px -8px rgba(0,0,0,.4);z-index:50;">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:940}}">
+const CATALOG = [
+  { id: 'med_8f21c94a', name: 'Hydrocortisone cream 2.5%', form: 'Topical cream · 30 g', term: 'hydrocortisone' },
+  { id: 'med_3b77e210', name: 'Hydrocortisone cream 1%', form: 'Topical cream · 28 g', term: 'hydrocortisone' },
+  { id: 'med_9c14aa08', name: 'Hydrocortisone ointment 2.5%', form: 'Topical ointment · 30 g', term: 'hydrocortisone' },
+  { id: 'med_5d20f7b3', name: 'Triamcinolone acetonide cream 0.1%', form: 'Topical cream · 15 g', term: 'triamcinolone' },
+  { id: 'med_7e91c422', name: 'Triamcinolone acetonide cream 0.025%', form: 'Topical cream · 15 g', term: 'triamcinolone' },
+  { id: 'med_2a58d901', name: 'Mupirocin ointment 2%', form: 'Topical ointment · 22 g', term: 'mupirocin' },
+  { id: 'med_6f33b7c5', name: 'Lisinopril tablet 10 mg', form: 'Oral tablet · 30 ct', term: 'lisinopril' },
+  { id: 'med_1e84f339', name: 'Lisinopril tablet 20 mg', form: 'Oral tablet · 30 ct', term: 'lisinopril' },
+  { id: 'med_8b02e514', name: 'Ondansetron ODT 4 mg', form: 'Oral disintegrating · 20 ct', term: 'ondansetron' },
+];
+
+const NOTE = 'Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid — apply thin layer twice daily for 7 days. Patient asks if treatment is safe while breastfeeding.';
+
+const DEFAULT_PATIENT = { first: 'Maria', last: 'Gonzalez', dob: '1988-04-12', sex: 'Female', phone: '(718) 555-0142', ext: '' };
+
+class Component extends DCLogic {
+  state = {
+    patient: { ...DEFAULT_PATIENT },
+    draftPatient: { ...DEFAULT_PATIENT },
+    patientEditing: false,
+    patientSync: 'synced',            // none | synced | updated | pending
+    patientId: 'pat_01HQ7K4M2Z',
+    patientDirty: false,
+
+    query: 'hydrocortisone',
+    results: CATALOG.filter(c => c.term === 'hydrocortisone'),
+    searched: true,
+    selectedId: 'med_8f21c94a',
+
+    directions: 'Apply thin layer to affected areas twice daily',
+    quantity: '30 g tube',
+    duration: '7 days',
+    refills: '0',
+    pharmNote: 'Patient is breastfeeding; clinician reviewed counseling.',
+
+    note: NOTE,
+    ai: 'ready',                      // idle | loading | ready | error
+    aiForId: 'med_8f21c94a',
+    reviewed: false,
+
+    historySync: 'ok',                // none | ok
+    txLookup: 'ok',                   // none | ok | error
+    checks: { allergy: true, interaction: true, dose: true, lactation: false },
+
+    thread: [],
+    patientDraft: '',
+    clinicianReply: '',
+
+    log: [
+      { t: '10:38:02', code: '200', msg: 'POST /auth/token' },
+      { t: '10:38:20', code: '200', msg: 'GET /catalog/treatments → 3 results' },
+      { t: '10:38:24', code: '200', msg: 'Selected treatment → med_8f21c94a' },
+      { t: '10:38:41', code: '201', msg: 'POST /patients → pat_01HQ7K4M2Z' },
+      { t: '10:38:48', code: '200', msg: 'GET /allergies → 1 record' },
+      { t: '10:38:52', code: '200', msg: 'GET /medication_history → 1 record' },
+      { t: '10:39:10', code: '200', msg: 'POST /instructions → generated' },
+    ],
+    clock: 10 * 60 + 39,
+    finalized: false,
+    vw: 1360,
+    toast: '',
+  };
+
+  componentDidMount() {
+    this._r = () => this.setState({ vw: window.innerWidth });
+    window.addEventListener('resize', this._r);
+    this._r();
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this._r); clearTimeout(this._t); clearTimeout(this._g); }
+
+  tick() {
+    const c = this.state.clock + 1;
+    this.setState({ clock: c });
+    const h = Math.floor(c / 60), m = c % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  }
+  addLog(code, msg) {
+    this.setState(s => ({ log: [...s.log, { t: this.tick(), code, msg }] }));
+  }
+  toastMsg(m) {
+    this.setState({ toast: m });
+    clearTimeout(this._t);
+    this._t = setTimeout(() => this.setState({ toast: '' }), 2300);
+  }
+
+  sel() { return CATALOG.find(c => c.id === this.state.selectedId) || null; }
+
+  hasDose() { return /twice|once|daily|hours|week|day/i.test(this.state.note); }
+
+  esToEn(t) {
+    const l = t.toLowerCase();
+    if (/amamant|lactan|pecho|seno/.test(l)) return "Is it safe to use this cream while I'm breastfeeding?";
+    if (/duele|dolor|arde|quema/.test(l)) return 'Can I use the cream if my skin hurts or stings?';
+    if (/cuánto|cuanto|tiempo|días|dias/.test(l)) return 'How long do I need to use the cream?';
+    return '"' + t + '" — translated for clinician review.';
+  }
+  enToEs(t) {
+    const l = t.toLowerCase();
+    if (/safe|breastfeed/.test(l)) return 'Sí, puede seguir usando la crema mientras amamanta. No la aplique en el pecho y avíseme si algo cambia.';
+    if (/stop|days|week/.test(l)) return 'Úsela durante 7 días y luego deténgase. Si no mejora, llame a la clínica.';
+    return '«' + t + '» — traducción para la paciente.';
+  }
+  isClinical(t) { return /amamant|lactan|pecho|seno|duele|dolor|arde|quema|embarazo|alergia|efecto|seguro|segura/i.test(t); }
+
+  renderVals() {
+    const s = this.state;
+    const wide = s.vw >= 880;
+    const sel = this.sel();
+    const hasSelection = !!sel && s.txLookup !== 'error';
+    const isIdle = s.ai === 'idle';
+    const isLoading = s.ai === 'loading';
+    const isAiError = s.ai === 'error';
+    const isApiError = s.txLookup === 'error';
+    const hasInstructions = s.ai === 'ready';
+    const patientSynced = s.patientSync === 'synced' || s.patientSync === 'updated';
+    const doseMissing = !this.hasDose();
+
+    const badge = (bg, bd, c) => ({ fontSize: '10.5px', fontWeight: 700, letterSpacing: '.02em', padding: '3px 9px', borderRadius: '12px', background: bg, border: '1px solid ' + bd, color: c, whiteSpace: 'nowrap' });
+    const OK = ['#EAF7F0', '#BFE3CF', '#0B6B47'], WARN = ['#FDF8EE', '#EBD9B4', '#8A6510'], ERR = ['#FEF1EF', '#F0C4BF', '#A32A21'], NEU = ['#F4F5F8', '#E1E5EE', '#8A90A0'], INFO = ['#F4F6FB', '#DDE3F0', '#3F4A8C'];
+    const fieldLabelStyle = { fontSize: '10px', fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: '#9096A6', marginBottom: '4px' };
+    const inputStyle = { width: '100%', border: '1px solid #DDE1EA', borderRadius: '6px', background: '#FCFCFE', padding: '7px 9px', fontSize: '12.5px', color: '#22262F', outline: 'none' };
+
+    // ---------- layout ----------
+    const pageStyle = { display: 'flex', flexDirection: 'column', height: '100vh', background: '#F1F3F7' };
+    const appStyle = { display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: wide ? 'hidden' : 'auto' };
+    const headerStyle = { display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', padding: wide ? '11px 20px' : '12px 16px', background: '#fff', borderBottom: '1px solid #E1E5EE' };
+    const bodyStyle = {
+      display: wide ? 'grid' : 'flex', flexDirection: wide ? null : 'column',
+      gridTemplateColumns: wide ? 'minmax(0,62fr) minmax(330px,38fr)' : null,
+      gap: '16px', padding: wide ? '16px 20px 20px' : '14px 14px 18px',
+      alignItems: 'stretch', flex: 1, minHeight: 0, overflow: wide ? 'hidden' : 'visible',
+    };
+    const colBase = wide
+      ? { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', paddingRight: '4px' }
+      : { display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 };
+
+    // ---------- readiness ----------
+    const readyItems = [
+      { label: 'Patient synced', ok: patientSynced },
+      { label: 'Treatment selected', ok: hasSelection },
+      { label: 'Instructions generated', ok: hasInstructions },
+      { label: 'Clinician reviewed', ok: s.reviewed },
+    ];
+    const readiness = readyItems.map(r => ({
+      label: r.label,
+      dotStyle: { width: '7px', height: '7px', borderRadius: '50%', background: r.ok ? '#0E8A5A' : '#C9CEDA', flexShrink: 0 },
+      labelStyle: { fontSize: '11.5px', fontWeight: r.ok ? 600 : 500, color: r.ok ? '#3A3F4C' : '#8A90A0' },
+    }));
+    const readyCount = readyItems.filter(r => r.ok).length;
+
+    // ---------- overall ----------
+    let overallLabel, o;
+    if (s.finalized) { overallLabel = 'Prepared for Photon'; o = OK; }
+    else if (isAiError || isApiError) { overallLabel = 'Action needed'; o = ERR; }
+    else { overallLabel = 'Visit in progress'; o = WARN; }
+
+    // ---------- scenarios ----------
+    const scenarioDefs = {
+      default: 'Populated visit · default patient and treatment.',
+      fresh: 'Nothing selected or generated yet.',
+      aiError: 'Generation failed; Photon untouched.',
+      apiError: 'Treatment lookup failed; handoff blocked.',
+      prepared: 'Reviewed and handed off.',
+    };
+    const applyScenario = (k) => {
+      const base = {
+        thread: [], patientDraft: '', clinicianReply: '', toast: '',
+        directions: 'Apply thin layer to affected areas twice daily', quantity: '30 g tube', duration: '7 days', refills: '0',
+        pharmNote: 'Patient is breastfeeding; clinician reviewed counseling.', patientEditing: false, note: NOTE,
+        patient: { ...DEFAULT_PATIENT }, draftPatient: { ...DEFAULT_PATIENT }, patientDirty: false, clock: 10 * 60 + 39,
+      };
+      const L = (t, code, msg) => ({ t, code, msg });
+      if (k === 'fresh') return this.setState({ ...base,
+        patientSync: 'none', patientId: '', query: '', results: [], searched: false, selectedId: null,
+        ai: 'idle', aiForId: null, reviewed: false, historySync: 'none', txLookup: 'none',
+        checks: { allergy: false, interaction: false, dose: false, lactation: false }, finalized: false,
+        log: [L('10:38:02', '200', 'POST /auth/token')], clock: 10 * 60 + 38 });
+      if (k === 'aiError') return this.setState({ ...base,
+        patientSync: 'synced', patientId: 'pat_01HQ7K4M2Z', query: 'hydrocortisone', results: CATALOG.filter(c => c.term === 'hydrocortisone'), searched: true, selectedId: 'med_8f21c94a',
+        ai: 'error', aiForId: null, reviewed: false, historySync: 'ok', txLookup: 'ok',
+        checks: { allergy: true, interaction: true, dose: true, lactation: false }, finalized: false,
+        log: [L('10:38:02', '200', 'POST /auth/token'), L('10:38:41', '201', 'POST /patients → pat_01HQ7K4M2Z'), L('10:39:11', '504', 'POST /instructions → timeout')] });
+      if (k === 'apiError') return this.setState({ ...base,
+        patientSync: 'synced', patientId: 'pat_01HQ7K4M2Z', query: 'hydrocortisone', results: [], searched: true, selectedId: 'med_8f21c94a',
+        ai: 'ready', aiForId: 'med_8f21c94a', reviewed: false, historySync: 'ok', txLookup: 'error',
+        checks: { allergy: true, interaction: true, dose: false, lactation: false }, finalized: false,
+        log: [L('10:38:02', '200', 'POST /auth/token'), L('10:38:41', '201', 'POST /patients → pat_01HQ7K4M2Z'), L('10:39:20', '503', 'GET /catalog/treatments → failed')] });
+      if (k === 'prepared') return this.setState({ ...base,
+        patientSync: 'synced', patientId: 'pat_01HQ7K4M2Z', query: 'hydrocortisone', results: CATALOG.filter(c => c.term === 'hydrocortisone'), searched: true, selectedId: 'med_8f21c94a',
+        ai: 'ready', aiForId: 'med_8f21c94a', reviewed: true, historySync: 'ok', txLookup: 'ok',
+        checks: { allergy: true, interaction: true, dose: true, lactation: true }, finalized: true,
+        log: [...this.state.log, L('10:42:07', '200', 'Handoff prepared · no Rx written')] });
+      return this.setState({ ...base,
+        patientSync: 'synced', patientId: 'pat_01HQ7K4M2Z', query: 'hydrocortisone', results: CATALOG.filter(c => c.term === 'hydrocortisone'), searched: true, selectedId: 'med_8f21c94a',
+        ai: 'ready', aiForId: 'med_8f21c94a', reviewed: false, historySync: 'ok', txLookup: 'ok',
+        checks: { allergy: true, interaction: true, dose: true, lactation: false }, finalized: false,
+        log: this.state.log.slice(0, 7) });
+    };
+    const activeScenario = s.finalized ? 'prepared' : (isAiError ? 'aiError' : (isApiError ? 'apiError' : (isIdle && !s.selectedId ? 'fresh' : 'default')));
+    const scenarios = [['default', 'Populated'], ['fresh', 'Fresh visit'], ['aiError', 'AI error'], ['apiError', 'Lookup error'], ['prepared', 'Prepared']].map(([k, label]) => ({
+      label, onPick: () => applyScenario(k),
+      style: { border: 'none', borderRadius: '5px', padding: '5px 10px', fontSize: '11.5px', fontWeight: 600, background: activeScenario === k ? '#3A50E4' : 'transparent', color: activeScenario === k ? '#fff' : '#9AA1B4' },
+    }));
+
+    // ---------- patient ----------
+    const p = s.patient, dp = s.draftPatient;
+    let pB, patientBadgeLabel;
+    if (s.patientSync === 'updated') { pB = OK; patientBadgeLabel = 'Updated in Photon'; }
+    else if (s.patientSync === 'synced') { pB = OK; patientBadgeLabel = s.patientDirty ? 'Synced · changes pending' : 'Synced to Photon'; }
+    else if (s.patientSync === 'pending') { pB = INFO; patientBadgeLabel = 'Syncing…'; }
+    else { pB = NEU; patientBadgeLabel = 'Not synced'; }
+    if (s.patientDirty && patientSynced) pB = WARN;
+
+    const patientFields = [
+      { k: 'Name', v: (p.first + ' ' + p.last).trim() || '—' },
+      { k: 'Date of birth', v: p.dob || '—' },
+      { k: 'Sex', v: p.sex || '—' },
+      { k: 'Phone', v: p.phone || '—' },
+      { k: 'External ID', v: p.ext || 'none' },
+    ].map((f, i, arr) => ({
+      ...f,
+      cellStyle: { flex: '1 1 140px', padding: '10px 14px', borderRight: i === arr.length - 1 ? 'none' : '1px solid #F0F2F6' },
+      vStyle: { fontSize: '12.5px', fontWeight: 600, color: f.v === '—' || f.v === 'none' ? '#A6ABBA' : '#1A1D24' },
+    }));
+
+    // ---------- catalog search ----------
+    const results = s.results.map(r => {
+      const isSel = r.id === s.selectedId;
+      return {
+        name: r.name, id: r.id, form: r.form,
+        onSelect: () => {
+          this.setState({ selectedId: r.id, txLookup: 'ok', checks: { ...s.checks, dose: true }, finalized: false });
+          this.addLog('200', 'Selected treatment → ' + r.id);
+          this.toastMsg('Treatment selected · ' + r.name);
+        },
+        rowStyle: { display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 11px', borderBottom: '1px solid #F4F6F9', background: isSel ? '#F7F9FF' : '#fff' },
+        btnLabel: isSel ? 'Selected' : 'Select',
+        btnStyle: isSel
+          ? { flexShrink: 0, background: '#EDF0FF', color: '#2A3AB0', border: '1px solid #C9D2F5', padding: '5px 11px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700 }
+          : { flexShrink: 0, background: '#fff', color: '#3F4658', border: '1px solid #D5DAE4', padding: '5px 11px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600 },
+      };
+    });
+
+    let selHeading, selName, selId, selForm, selBadge, selBadgeLabel, selCardBg, selCardBd, selLabelColor, selIdBg;
+    if (isApiError) {
+      selHeading = 'Active treatment'; selName = sel ? sel.name : 'Lookup failed'; selId = 'lookup failed'; selForm = 'Retry the catalog call';
+      selBadge = ERR; selBadgeLabel = 'Failed'; selCardBg = '#FEF4F3'; selCardBd = '#F2C9C4'; selLabelColor = '#A32A21'; selIdBg = ERR;
+    } else if (sel) {
+      selHeading = 'Active treatment'; selName = sel.name; selId = sel.id; selForm = sel.form;
+      selBadge = OK; selBadgeLabel = 'Treatment selected'; selCardBg = '#F7FBF9'; selCardBd = '#CFE6DA'; selLabelColor = '#0B6B47'; selIdBg = ['#EDF0FF', '#C9D2F5', '#2A3AB0'];
+    } else {
+      selHeading = 'No treatment selected'; selName = 'Search the catalog to pick one'; selId = 'awaiting selection'; selForm = '';
+      selBadge = NEU; selBadgeLabel = 'None'; selCardBg = '#FCFCFE'; selCardBd = '#E4E7EF'; selLabelColor = '#8A90A0'; selIdBg = NEU;
+    }
+
+    // ---------- instructions ----------
+    const strength = sel ? (sel.name.match(/[\d.]+\s?(%|mg)/) || [''])[0] : '';
+    const esTitle = sel ? sel.name.replace(/^Hydrocortisone/, 'Crema de hidrocortisona').replace(/^Triamcinolone acetonide cream/, 'Crema de triamcinolona').replace(/^Mupirocin ointment/, 'Ungüento de mupirocina').replace(/^Lisinopril tablet/, 'Lisinopril tableta').replace(/^Ondansetron ODT/, 'Ondansetrón ODT') + ' — cómo usarla' : 'Instrucciones';
+    const paraPlain = { };
+    const paraNote = { background: '#FDF8EE', borderLeft: '3px solid #E8B44A', padding: '9px 11px', borderRadius: '0 6px 6px 0', color: '#6A5420' };
+    const esParas = [
+      { text: 'Lo que vemos parece un brote de eczema en los antebrazos. La piel está irritada, pero se controla bien con cuidado diario.', style: paraPlain },
+      { text: doseMissing
+          ? 'Aplique la crema en las zonas afectadas según le indique su médico. La frecuencia y la duración se confirmarán antes de empezar.'
+          : 'Aplique una capa fina de la crema ' + (strength ? '(' + strength + ') ' : '') + 'en las zonas afectadas dos veces al día, por 7 días. Luego deténgase. No la use en la cara ni cerca de los ojos.',
+        style: paraPlain },
+      { text: 'Use jabón y crema humectante sin fragancia todos los días, incluso cuando la piel esté mejor.', style: paraPlain },
+      { text: 'Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia, pero su médico debe confirmarlo con usted antes de empezar. No la aplique en el pecho.', style: paraNote },
+      { text: 'Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.', style: paraPlain },
+    ];
+
+    let aB, aiBadgeLabel;
+    if (isLoading) { aB = INFO; aiBadgeLabel = 'Generating…'; }
+    else if (isAiError) { aB = ERR; aiBadgeLabel = 'Failed'; }
+    else if (hasInstructions && s.reviewed) { aB = OK; aiBadgeLabel = 'AI generated · reviewed'; }
+    else if (hasInstructions) { aB = WARN; aiBadgeLabel = 'AI generated · needs review'; }
+    else { aB = NEU; aiBadgeLabel = 'Not generated'; }
+
+    const staleForTx = hasInstructions && sel && s.aiForId && s.aiForId !== sel.id;
+    const staleReason = staleForTx ? 'Treatment changed since these instructions were generated. Regenerate before review.' : '';
+
+    // ---------- milestones ----------
+    const M = [];
+    M.push({ label: 'Auth check', st: 'ok', id: 'token · 3600s' });
+    M.push({ label: 'Patient sync', st: s.patientSync === 'none' ? 'pending' : (s.patientSync === 'pending' ? 'loading' : 'ok'),
+             id: s.patientId ? s.patientId + (s.patientSync === 'updated' ? ' · updated' : ' · synced') : '' });
+    M.push({ label: 'Treatment lookup', st: s.txLookup === 'error' ? 'error' : (s.txLookup === 'ok' && sel ? 'ok' : 'pending'),
+             id: s.txLookup === 'error' ? '503 · retry available' : (sel && s.txLookup === 'ok' ? sel.id : '') });
+    M.push({ label: 'Allergy history', st: s.historySync === 'ok' ? 'ok' : 'pending', id: s.historySync === 'ok' ? '1 record · sulfa' : '' });
+    M.push({ label: 'Medication history', st: s.historySync === 'ok' ? 'ok' : 'pending', id: s.historySync === 'ok' ? '1 record · prenatal vitamin' : '' });
+
+    const milestones = M.map(r => {
+      const dotBase = { width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, marginTop: '1px' };
+      let dotStyle, mark, bs, labelColor = '#1A1D24', statusText;
+      if (r.st === 'ok') { dotStyle = { ...dotBase, background: '#0E8A5A', color: '#fff' }; mark = '✓'; bs = badge(...OK); statusText = r.id.includes('updated') ? 'updated' : 'synced'; }
+      else if (r.st === 'loading') { dotStyle = { ...dotBase, background: '#fff', border: '2px solid #DDE3F0', borderTopColor: '#3A50E4', animation: 'spin .7s linear infinite' }; mark = ''; bs = badge(...INFO); statusText = 'syncing'; }
+      else if (r.st === 'error') { dotStyle = { ...dotBase, background: '#C5352A', color: '#fff' }; mark = '!'; bs = badge(...ERR); statusText = 'failed'; }
+      else { dotStyle = { ...dotBase, background: '#F0F2F6', color: '#A6ABBA', border: '1px solid #E4E7EF' }; mark = ''; bs = badge(...NEU); labelColor = '#8A90A0'; statusText = 'pending'; }
+      return { label: r.label, mark, dotStyle, labelColor, status: statusText, badgeStyle: bs, id: r.id,
+        idStyle: { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', color: r.st === 'error' ? '#A32A21' : '#7A8090', marginTop: '2px', display: r.id ? 'block' : 'none' },
+        rowStyle: { display: 'flex', gap: '10px', padding: '9px 14px', borderBottom: '1px solid #F4F6F9' } };
+    });
+
+    // ---------- safety ----------
+    const CHECKS = [
+      { k: 'allergy', text: 'Allergy record synced for Photon screening', meta: 'GET /allergies · 1 record (sulfa) · no screening performed here' },
+      { k: 'interaction', text: 'Medication history synced for Photon screening', meta: 'GET /medication_history · 1 record (prenatal vitamin)' },
+      { k: 'dose', text: 'Strength, quantity and duration verified', meta: (sel ? [strength, s.quantity, s.duration, s.refills + ' refills'].filter(Boolean).join(' · ') : 'Select a treatment first') },
+      { k: 'lactation', text: 'Lactation guidance confirmed with patient', meta: 'Clinician-confirmed — not an AI or API determination' },
+    ];
+    const safetyItems = CHECKS.map(c => {
+      const on = !!s.checks[c.k];
+      const warn = c.k === 'lactation';
+      return { text: c.text, meta: c.meta, mark: on ? '✓' : '',
+        onToggle: () => this.setState({ checks: { ...s.checks, [c.k]: !on }, finalized: false }),
+        rowStyle: { display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '9px 0', borderBottom: '1px solid #F2F4F8', cursor: 'pointer' },
+        boxStyle: { width: '17px', height: '17px', borderRadius: '4px', flexShrink: 0, marginTop: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: '#fff',
+          background: on ? (warn ? '#E8B44A' : '#0E8A5A') : '#fff', border: '1.5px solid ' + (on ? (warn ? '#E8B44A' : '#0E8A5A') : '#C9CEDA') },
+        textStyle: { fontSize: '12.5px', fontWeight: on ? 500 : 600, color: on ? '#3A3F4C' : '#1A1D24', lineHeight: 1.4 } };
+    });
+    const syncedCount = ['allergy', 'interaction', 'dose'].filter(k => s.checks[k]).length;
+    const allChecked = syncedCount === 3 && s.checks.lactation;
+    const safety = allChecked ? OK : WARN;
+    const safetyBadgeLabel = allChecked ? '3 synced · 1 clinician-reviewed' : syncedCount + ' synced · ' + (s.checks.lactation ? 1 : 0) + ' clinician-reviewed';
+
+    // ---------- review ----------
+    const canReview = hasInstructions;
+    let reviewTitle, reviewBody, rBg, rBd, rIcon, rIconBg, rTitleColor;
+    if (!canReview) { reviewTitle = 'Clinician review pending'; reviewBody = 'Generate the Spanish instructions before reviewing.'; rBg = '#fff'; rBd = '#E1E5EE'; rIcon = '–'; rIconBg = '#C9CEDA'; rTitleColor = '#5A6072'; }
+    else if (s.reviewed) { reviewTitle = 'Reviewed by clinician'; reviewBody = 'Dr. A. Okafor confirmed the Spanish instructions, medication prep and safety review.'; rBg = '#F4FBF7'; rBd = '#BFE3CF'; rIcon = '✓'; rIconBg = '#0E8A5A'; rTitleColor = '#0B6B47'; }
+    else { reviewTitle = 'Clinician review required'; reviewBody = 'AI output is not patient-ready until you confirm the wording, the lactation guidance and the medication prep.'; rBg = '#FFFCF5'; rBd = '#EBD9B4'; rIcon = '!'; rIconBg = '#E8B44A'; rTitleColor = '#8A6510'; }
+
+    // ---------- handoff ----------
+    const canFinalize = hasInstructions && s.reviewed && allChecked && patientSynced && hasSelection && !staleForTx;
+    let hBg, hBd, hBadge, handoffBadgeLabel, handoffBody, handoffTitleColor;
+    if (s.finalized) { hBg = '#F4FBF7'; hBd = '#BFE3CF'; hBadge = badge(...OK); handoffBadgeLabel = 'Ready'; handoffBody = 'All context is synced and clinician-reviewed. Continue prescribing in Photon.'; handoffTitleColor = '#0B6B47'; }
+    else if (isApiError) { hBg = '#FEF4F3'; hBd = '#F2C9C4'; hBadge = badge(...ERR); handoffBadgeLabel = 'Blocked'; handoffBody = 'Treatment lookup must succeed before the handoff can be finalized.'; handoffTitleColor = '#A32A21'; }
+    else { hBg = '#FFFCF5'; hBd = '#EBD9B4'; hBadge = badge(...WARN); handoffBadgeLabel = 'Not finalized'; handoffBody = readyCount + ' of 4 readiness items complete. Finalize once the safety review and clinician sign-off are done.'; handoffTitleColor = '#8A6510'; }
+
+    const monoV = { fontFamily: "'IBM Plex Mono',monospace", fontSize: '11.5px', fontWeight: 500, color: '#1A1D24', textAlign: 'right' };
+    const plainV = { fontSize: '11.5px', fontWeight: 600, color: '#0B6B47', textAlign: 'right' };
+    const handoffRows = [
+      { k: 'Photon patient', v: s.patientId || '—', vStyle: monoV },
+      { k: 'Treatment', v: sel ? sel.id : '—', vStyle: monoV },
+      { k: 'Safety data', v: 'allergy + med history synced for screening', vStyle: plainV },
+      { k: 'Spanish instructions', v: 'reviewed', vStyle: plainV },
+      { k: 'Medication prep', v: [strength, s.quantity, s.duration, s.refills + ' refills'].filter(Boolean).join(' · '), vStyle: plainV },
+    ];
+
+    // ---------- log ----------
+    const log = s.log.map(l => ({ ...l, codeStyle: { fontWeight: 600, flexShrink: 0, color: /^[45]/.test(l.code) ? '#C5352A' : '#0B6B47' } }));
+
+    // ---------- buttons ----------
+    const btn = (bg, color, bd, enabled) => ({ background: bg, color, border: bd ? '1px solid ' + bd : 'none', padding: '9px 14px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: enabled ? 1 : 0.45 });
+
+    const actionHint = s.finalized
+      ? 'Handoff prepared · no prescription was created by this app'
+      : (isApiError ? 'Treatment lookup failed · resolve to continue'
+        : (isAiError ? 'Generation failed · nothing sent to Photon'
+          : readyCount + ' of 4 readiness items complete · work in any order'));
+
+    return {
+      pageStyle, appStyle, headerStyle, bodyStyle, leftStyle: colBase, rightStyle: colBase,
+      fieldLabelStyle, inputStyle,
+
+      patientName: (p.first + ' ' + p.last).trim() || 'No patient',
+      patientMeta: (p.dob ? 'DOB ' + p.dob + ' · ' : '') + 'Spanish',
+      visitReason: 'Dermatology · suspected eczema flare',
+
+      overallLabel,
+      overallPillStyle: { display: 'flex', alignItems: 'center', gap: '7px', background: o[0], border: '1px solid ' + o[1], color: o[2], borderRadius: '6px', padding: '4px 10px' },
+      overallDotStyle: { width: '6px', height: '6px', borderRadius: '50%', background: o[2] },
+
+      scenarios, scenarioHint: scenarioDefs[activeScenario],
+      readiness, readinessSummary: readyCount + ' of 4 complete',
+
+      // patient
+      patientEditing: s.patientEditing, patientReadOnly: !s.patientEditing,
+      patientBadgeStyle: badge(...pB), patientBadgeLabel,
+      patientEditLabel: s.patientEditing ? 'Close' : 'Edit patient',
+      togglePatientEdit: () => this.setState({ patientEditing: !s.patientEditing, draftPatient: { ...s.patient } }),
+      pFirst: dp.first, pLast: dp.last, pDob: dp.dob, pPhone: dp.phone, pExt: dp.ext,
+      onPFirst: (e) => this.setState({ draftPatient: { ...dp, first: e.target.value } }),
+      onPLast: (e) => this.setState({ draftPatient: { ...dp, last: e.target.value } }),
+      onPDob: (e) => this.setState({ draftPatient: { ...dp, dob: e.target.value } }),
+      onPPhone: (e) => this.setState({ draftPatient: { ...dp, phone: e.target.value } }),
+      onPExt: (e) => this.setState({ draftPatient: { ...dp, ext: e.target.value } }),
+      sexOptions: ['Female', 'Male', 'Other'].map(x => ({
+        label: x, onPick: () => this.setState({ draftPatient: { ...dp, sex: x } }),
+        style: { flex: 1, border: '1px solid ' + (dp.sex === x ? '#3A50E4' : '#DDE1EA'), background: dp.sex === x ? '#EDF0FF' : '#FCFCFE', color: dp.sex === x ? '#2A3AB0' : '#5A6072', borderRadius: '6px', padding: '7px 4px', fontSize: '11.5px', fontWeight: 600 },
+      })),
+      savePatient: () => {
+        const changed = JSON.stringify(dp) !== JSON.stringify(s.patient);
+        this.setState({ patient: { ...dp }, patientEditing: false, patientDirty: changed || s.patientDirty, finalized: false });
+        this.toastMsg(changed ? 'Patient saved · run Sync Photon to write it' : 'No changes to save');
+      },
+      cancelPatient: () => this.setState({ patientEditing: false, draftPatient: { ...s.patient } }),
+      patientFields,
+      patientIdLabel: s.patientId || 'no Photon ID yet',
+      patientIdStyle: s.patientId
+        ? { fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', background: '#EDF0FF', color: '#2A3AB0', padding: '3px 8px', borderRadius: '5px' }
+        : { fontFamily: "'IBM Plex Mono',monospace", fontSize: '11px', background: '#F4F5F8', color: '#8A90A0', padding: '3px 8px', borderRadius: '5px' },
+      patientSyncNote: s.patientSync === 'none' ? 'Not yet created in Photon' : (s.patientDirty ? 'Local edits not yet written to Photon' : (s.patientSync === 'updated' ? 'Existing Photon patient was updated' : 'Patient record created in Photon')),
+
+      // catalog
+      query: s.query,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      quickTerms: ['hydrocortisone', 'triamcinolone', 'mupirocin', 'lisinopril', 'ondansetron'].map(t => ({
+        label: t, onPick: () => {
+          const r = CATALOG.filter(c => c.term === t);
+          this.setState({ query: t, results: r, searched: true, txLookup: r.length ? 'ok' : s.txLookup });
+          this.addLog('200', 'GET /catalog/treatments → ' + r.length + ' results');
+        },
+      })),
+      runSearch: () => {
+        const q = s.query.trim().toLowerCase();
+        if (!q) { this.toastMsg('Enter a medication name'); return; }
+        const r = CATALOG.filter(c => c.term.includes(q) || c.name.toLowerCase().includes(q));
+        this.setState({ results: r, searched: true, txLookup: r.length ? (s.txLookup === 'error' ? 'ok' : s.txLookup) : s.txLookup });
+        this.addLog(r.length ? '200' : '200', 'GET /catalog/treatments → ' + r.length + ' results');
+        if (!r.length) this.toastMsg('No catalog matches');
+      },
+      results, hasResults: s.searched && s.results.length > 0, noResults: s.searched && s.results.length === 0,
+      resultCount: s.results.length + (s.results.length === 1 ? ' catalog match' : ' catalog matches'),
+      hasSelection: !!sel,
+      selHeading, selName, selId, selForm, selLabelColor,
+      selCardStyle: { background: selCardBg, border: '1px solid ' + selCardBd, borderRadius: '8px', padding: '12px 13px' },
+      selIdStyle: { fontFamily: "'IBM Plex Mono',monospace", fontSize: '10.5px', background: selIdBg[0], border: '1px solid ' + selIdBg[1], color: selIdBg[2], padding: '3px 8px', borderRadius: '5px' },
+      selBadgeStyle: badge(...selBadge), selBadgeLabel,
+      clearSelection: () => { this.setState({ selectedId: null, finalized: false, checks: { ...s.checks, dose: false } }); this.toastMsg('Treatment cleared'); },
+
+      // med prep
+      directions: s.directions, quantity: s.quantity, duration: s.duration, refills: s.refills, pharmNote: s.pharmNote,
+      onDirections: (e) => this.setState({ directions: e.target.value, finalized: false }),
+      onQuantity: (e) => this.setState({ quantity: e.target.value, finalized: false }),
+      onDuration: (e) => this.setState({ duration: e.target.value, finalized: false }),
+      onRefills: (e) => this.setState({ refills: e.target.value, finalized: false }),
+      onPharmNote: (e) => this.setState({ pharmNote: e.target.value }),
+
+      // note + AI
+      note: s.note,
+      onNote: (e) => this.setState({ note: e.target.value }),
+      isIdle, isLoading, isAiError, isApiError, hasInstructions, doseMissing,
+      aiBadgeStyle: badge(...aB), aiBadgeLabel,
+      noteStale: staleForTx, staleReason,
+      esTitle, esParas,
+      genBtnLabel: isLoading ? 'Generating…' : (hasInstructions ? 'Regenerate instructions' : 'Generate instructions'),
+      genBtnStyle: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#3A50E4', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: isLoading ? 0.8 : 1 },
+      genHint: isLoading ? 'OpenAI · uses note + patient + treatment' : 'Doses are copied from the note, never invented',
+      generate: () => {
+        if (!sel) { this.toastMsg('Select a treatment first'); return; }
+        if (!s.note.trim()) { this.toastMsg('Write a clinician note first'); return; }
+        this.setState({ ai: 'loading', reviewed: false, finalized: false });
+        clearTimeout(this._g);
+        this._g = setTimeout(() => {
+          this.setState({ ai: 'ready', aiForId: sel.id });
+          this.addLog('200', 'POST /instructions → generated');
+          if (!this.hasDose()) this.toastMsg('No frequency in note — dose omitted, confirm before review');
+        }, 1300);
+      },
+      manualEntry: () => { this.setState({ ai: 'ready', aiForId: sel ? sel.id : null, reviewed: false }); this.toastMsg('Switched to manual entry'); },
+
+      // sync
+      syncPhoton: () => {
+        this.setState({ patientSync: 'pending' });
+        clearTimeout(this._s);
+        this._s = setTimeout(() => {
+          const existed = !!s.patientId;
+          const id = s.patientId || 'pat_01HQ7K4M2Z';
+          this.setState({ patientSync: existed ? 'updated' : 'synced', patientId: id, patientDirty: false, historySync: 'ok',
+            txLookup: sel ? 'ok' : s.txLookup, checks: { ...s.checks, allergy: true, interaction: true, dose: sel ? true : s.checks.dose } });
+          this.addLog(existed ? '200' : '201', existed ? 'POST /patients → updated existing patient' : 'POST /patients → ' + id);
+          this.addLog('200', 'GET /allergies → 1 record');
+          this.addLog('200', 'GET /medication_history → 1 record');
+          if (sel) this.addLog('200', 'GET /catalog/treatments → ' + sel.id);
+          this.toastMsg(existed ? 'Patient updated in Photon' : 'Patient synced to Photon');
+        }, 900);
+      },
+      syncMiniLabel: s.patientSync === 'pending' ? 'Syncing…' : 'Sync Photon',
+      syncMiniStyle: { background: '#fff', color: '#3F4658', border: '1px solid #D5DAE4', padding: '5px 11px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 600 },
+      retryApi: () => {
+        const r = CATALOG.filter(c => c.term === 'hydrocortisone');
+        this.setState({ txLookup: 'ok', results: r, searched: true, checks: { ...s.checks, dose: true } });
+        this.addLog('200', 'GET /catalog/treatments → ' + (sel ? sel.id : r.length + ' results'));
+        this.toastMsg('Treatment lookup succeeded');
+      },
+
+      connBadgeStyle: badge(...OK), connBadgeLabel: 'Authenticated',
+      milestones,
+
+      safetyItems, safetyBadgeStyle: badge(...safety), safetyBadgeLabel,
+
+      canReview, reviewTitle, reviewBody, reviewIcon: rIcon, reviewTitleColor: rTitleColor,
+      reviewCardStyle: { background: rBg, border: '1px solid ' + rBd, borderRadius: '9px', padding: '13px 14px' },
+      reviewIconStyle: { width: '20px', height: '20px', borderRadius: '50%', background: rIconBg, color: '#fff', fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' },
+      reviewBtnLabel: s.reviewed ? 'Reviewed ✓' : 'Mark reviewed',
+      reviewBtnStyle: s.reviewed
+        ? { background: '#EAF7F0', color: '#0B6B47', border: '1px solid #BFE3CF', padding: '7px 13px', borderRadius: '7px', fontSize: '12px', fontWeight: 600, flexShrink: 0 }
+        : { background: '#3A50E4', color: '#fff', border: 'none', padding: '7px 13px', borderRadius: '7px', fontSize: '12px', fontWeight: 600, flexShrink: 0 },
+      toggleReviewed: () => {
+        if (!hasInstructions) { this.toastMsg('Generate instructions first'); return; }
+        this.setState({ reviewed: !s.reviewed, finalized: false });
+      },
+
+      handoffCardStyle: { background: hBg, border: '1px solid ' + hBd, borderRadius: '9px', padding: '13px 14px' },
+      handoffBadgeStyle: hBadge, handoffBadgeLabel, handoffBody, handoffTitleColor,
+      isFinalized: s.finalized, handoffRows,
+
+      log, noLog: log.length === 0, logCount: log.length + ' calls',
+
+      // thread
+      thread: s.thread.map(m => {
+        const fromPatient = m.from === 'patient';
+        return {
+          es: m.es, en: 'EN · ' + m.en, time: m.time, flagged: fromPatient && m.flagged,
+          label: fromPatient ? 'Paciente' : 'Clínico',
+          labelStyle: { fontSize: '10px', fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: fromPatient ? '#5A66C0' : '#4A5162' },
+          wrapStyle: { display: 'flex', justifyContent: fromPatient ? 'flex-start' : 'flex-end' },
+          bubbleStyle: { maxWidth: '86%', background: fromPatient ? '#F7F9FF' : '#F6F7FA', border: '1px solid ' + (fromPatient ? '#DFE5F6' : '#E4E7EF'), borderRadius: fromPatient ? '9px 9px 9px 2px' : '9px 9px 2px 9px', padding: '9px 11px' },
+          enStyle: { fontSize: '11.5px', lineHeight: 1.45, color: fromPatient ? '#5A66C0' : '#7A8090', marginTop: '4px', fontStyle: 'italic' },
+        };
+      }),
+      hasThread: s.thread.length > 0, noThread: s.thread.length === 0,
+      patientDraft: s.patientDraft, clinicianReply: s.clinicianReply,
+      onPatientDraft: (e) => this.setState({ patientDraft: e.target.value }),
+      onClinicianReply: (e) => this.setState({ clinicianReply: e.target.value }),
+      fillDemoEs: () => this.setState({ patientDraft: '¿Es seguro usar esta crema mientras estoy amamantando?' }),
+      sendPatient: () => {
+        const t = s.patientDraft.trim();
+        if (!t) { this.toastMsg('Escriba una pregunta primero'); return; }
+        const flagged = this.isClinical(t);
+        this.setState({ thread: [...s.thread, { from: 'patient', es: t, en: this.esToEn(t), time: this.tick(), flagged }], patientDraft: '' });
+        this.addLog('200', 'POST /translate → ' + (flagged ? 'clinical question flagged' : 'es→en'));
+        if (flagged) this.toastMsg('Clinical question flagged for clinician');
+      },
+      sendClinician: () => {
+        const t = s.clinicianReply.trim();
+        if (!t) { this.toastMsg('Type a reply first'); return; }
+        this.setState({ thread: [...s.thread, { from: 'clinician', en: t, es: this.enToEs(t), time: this.tick() }], clinicianReply: '' });
+        this.addLog('200', 'POST /translate → en→es');
+      },
+      translateAction: () => {
+        if (s.patientDraft.trim()) {
+          const t = s.patientDraft.trim(), flagged = this.isClinical(t);
+          this.setState({ thread: [...s.thread, { from: 'patient', es: t, en: this.esToEn(t), time: this.tick(), flagged }], patientDraft: '' });
+          this.addLog('200', 'POST /translate → ' + (flagged ? 'clinical question flagged' : 'es→en'));
+          if (flagged) this.toastMsg('Clinical question flagged for clinician');
+        } else if (s.clinicianReply.trim()) {
+          const t = s.clinicianReply.trim();
+          this.setState({ thread: [...s.thread, { from: 'clinician', en: t, es: this.enToEs(t), time: this.tick() }], clinicianReply: '' });
+          this.addLog('200', 'POST /translate → en→es');
+        } else {
+          this.toastMsg('Type a follow-up in the thread first');
+        }
+      },
+
+      copyEs: () => {
+        const txt = esTitle + '\n\n' + esParas.map(x => x.text).join('\n\n');
+        try { navigator.clipboard.writeText(txt); } catch (e) {}
+        this.toastMsg('Spanish instructions copied');
+      },
+
+      actGenStyle: btn('#fff', '#3F4658', '#D5DAE4', !!sel),
+      actSyncStyle: btn('#fff', '#3F4658', '#D5DAE4', true),
+      actSyncLabel: s.patientSync === 'pending' ? 'Syncing…' : 'Sync Photon',
+      actTranslateStyle: btn('#fff', '#3F4658', '#D5DAE4', true),
+      finalize: () => {
+        if (!canFinalize) {
+          const why = isApiError ? 'Resolve the treatment lookup first'
+            : !hasSelection ? 'Select a treatment first'
+            : !patientSynced ? 'Sync the patient to Photon first'
+            : !hasInstructions ? 'Generate the Spanish instructions first'
+            : staleForTx ? 'Regenerate instructions for the new treatment'
+            : !s.reviewed ? 'Mark the AI output reviewed first'
+            : 'Complete the safety review first';
+          this.toastMsg(why); return;
+        }
+        this.setState({ finalized: true });
+        this.addLog('200', 'Handoff prepared · no Rx written');
+        this.toastMsg('Handoff prepared — continue in Photon');
+      },
+      finalizeLabel: s.finalized ? 'Handoff prepared ✓' : 'Finalize handoff',
+      finalizeBtnStyle: s.finalized
+        ? { background: '#0E8A5A', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600 }
+        : { background: '#3A50E4', color: '#fff', border: 'none', padding: '9px 16px', borderRadius: '7px', fontSize: '12.5px', fontWeight: 600, opacity: canFinalize ? 1 : 0.45 },
+      reset: () => applyScenario('default'),
+
+      actionHint,
+      showToast: !!s.toast, toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>
