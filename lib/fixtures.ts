@@ -1,5 +1,34 @@
 import type { InstructionBlock } from "../app/visit/types";
-import type { InstructionsResponse, PhotonSyncResponse, TranslateDirection, TranslateResponse } from "./types";
+import type {
+  SelectedTreatmentInput,
+  InstructionsResponse,
+  PhotonSyncResponse,
+  PhotonTreatmentSearchResponse,
+  TranslateDirection,
+  TranslateResponse,
+} from "./types";
+
+export const fixtureTreatmentCatalog: PhotonTreatmentSearchResponse["results"] = [
+  { id: "med_8f21c94a", name: "Hydrocortisone cream 2.5%", form: "Topical cream · 30 g" },
+  { id: "med_3b77e210", name: "Hydrocortisone cream 1%", form: "Topical cream · 28 g" },
+  { id: "med_9c14aa08", name: "Hydrocortisone ointment 2.5%", form: "Topical ointment · 30 g" },
+  { id: "med_5d20f7b3", name: "Triamcinolone acetonide cream 0.1%", form: "Topical cream · 15 g" },
+  { id: "med_7e91c422", name: "Triamcinolone acetonide cream 0.025%", form: "Topical cream · 15 g" },
+  { id: "med_2a58d901", name: "Mupirocin ointment 2%", form: "Topical ointment · 22 g" },
+  { id: "med_6f33b7c5", name: "Lisinopril tablet 10 mg", form: "Oral tablet · 30 ct" },
+  { id: "med_1e84f339", name: "Lisinopril tablet 20 mg", form: "Oral tablet · 30 ct" },
+  { id: "med_8b02e514", name: "Ondansetron ODT 4 mg", form: "Oral disintegrating · 20 ct" },
+];
+
+export function fixtureTreatmentSearchResponse(term: string): PhotonTreatmentSearchResponse {
+  const normalized = term.trim().toLowerCase();
+  return {
+    mode: "fixture",
+    results: fixtureTreatmentCatalog
+      .filter((treatment) => treatment.name.toLowerCase().includes(normalized))
+      .slice(0, 8),
+  };
+}
 
 export const fixtureInstructions: {
   headingEs: string;
@@ -42,7 +71,41 @@ Sobre la lactancia: este tipo de crema se usa habitualmente durante la lactancia
 Llame a la clínica si la piel empeora, aparece pus o fiebre, o si no mejora en 2 semanas.`,
 };
 
-export function fixtureInstructionsResponse(): InstructionsResponse {
+function composePlainText(heading: string, blocks: InstructionBlock[]): string {
+  return [heading, ...blocks.map((block) => block.es)].join("\n\n");
+}
+
+export function fixtureInstructionsResponse(treatment?: SelectedTreatmentInput): InstructionsResponse {
+  if (treatment && treatment.id !== "med_8f21c94a") {
+    const headingEs = `${treatment.name} — instrucciones para la paciente`;
+    const blocks: InstructionBlock[] = [
+      {
+        kind: "text",
+        es: `Estas instrucciones son para ${treatment.name}. Revise la dosis, la frecuencia y la duración con su médico antes de empezar.`,
+      },
+      {
+        kind: "text",
+        es: "Use el medicamento solamente como fue indicado en la visita. No cambie la cantidad ni la frecuencia sin hablar con la clínica.",
+      },
+      {
+        kind: "callout",
+        es: "Si tiene preguntas sobre embarazo, lactancia, alergias o efectos secundarios, espere la confirmación del médico antes de usarlo.",
+      },
+      {
+        kind: "text",
+        es: "Llame a la clínica si los síntomas empeoran, si aparece una reacción alérgica, o si no mejora como se esperaba.",
+      },
+    ];
+
+    return {
+      mode: "fixture",
+      headingEs,
+      blocks,
+      plainText: composePlainText(headingEs, blocks),
+      logEntry: { t: "10:38:44", code: "200", msg: "openai · instructions.generate" },
+    };
+  }
+
   return {
     mode: "fixture",
     ...fixtureInstructions,
@@ -50,23 +113,24 @@ export function fixtureInstructionsResponse(): InstructionsResponse {
   };
 }
 
-export function fixturePhotonSyncResponse(): PhotonSyncResponse {
+export function fixturePhotonSyncResponse(treatment?: SelectedTreatmentInput): PhotonSyncResponse {
+  const treatmentId = treatment?.id ?? "med_8f21c94a";
   return {
     mode: "fixture",
     ok: true,
     patientId: "pat_01HQ7K4M2Z",
-    treatmentId: "med_8f21c94a",
+    treatmentId,
     milestones: [
       { label: "Auth check", status: "ok", id: "token · 3600s" },
       { label: "Patient sync", status: "ok", id: "pat_01HQ7K4M2Z" },
-      { label: "Treatment lookup", status: "ok", id: "med_8f21c94a" },
+      { label: "Treatment lookup", status: "ok", id: treatmentId },
       { label: "Allergy history", status: "ok", id: "1 record · sulfa" },
       { label: "Medication history", status: "ok", id: "1 record · prenatal vitamin" },
     ],
     logEntries: [
       { t: "10:38:02", code: "200", msg: "POST /auth/token" },
       { t: "10:39:03", code: "201", msg: "POST /patients → pat_01HQ7K4M2Z" },
-      { t: "10:39:18", code: "200", msg: "GET /catalog/treatments → med_8f21c94a" },
+      { t: "10:39:18", code: "200", msg: `GET /catalog/treatments → ${treatmentId}` },
       { t: "10:39:26", code: "200", msg: "GET /allergies → 1 record" },
       { t: "10:39:31", code: "200", msg: "GET /medication_history → 1 record" },
     ],

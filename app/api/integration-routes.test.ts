@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { POST as postInstructions } from "./instructions/route";
 import { POST as postPhotonSync } from "./photon/sync/route";
+import { GET as getPhotonTreatments } from "./photon/treatments/route";
 import { POST as postTranslate } from "./translate/route";
 
 const secretKeys = [
@@ -21,6 +22,10 @@ function jsonRequest(path: string, body: Record<string, unknown>) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+function getRequest(path: string) {
+  return new Request(`http://localhost${path}`);
 }
 
 beforeEach(() => {
@@ -97,6 +102,84 @@ describe("integration route seams", () => {
       treatmentId: "med_8f21c94a",
     });
     expect(json.milestones).toHaveLength(5);
+  });
+
+  it("uses selected treatment context for fixture Photon sync when provided", async () => {
+    const response = await postPhotonSync(
+      jsonRequest("/api/photon/sync", {
+        treatment: { id: "med_6f33b7c5", name: "Lisinopril tablet 10 mg" },
+      }),
+    );
+    const json = (await response.json()) as {
+      mode: string;
+      ok: boolean;
+      treatmentId: string;
+      milestones: Array<{ label: string; id: string }>;
+    };
+
+    expect(response.status).toBe(200);
+    expect(json).toMatchObject({ mode: "fixture", ok: true, treatmentId: "med_6f33b7c5" });
+    expect(json.milestones).toContainEqual(
+      expect.objectContaining({ label: "Treatment lookup", id: "med_6f33b7c5" }),
+    );
+  });
+
+  it("rejects invalid Photon treatment searches at the route boundary", async () => {
+    const response = await getPhotonTreatments(getRequest("/api/photon/treatments?term=h"));
+    const json = (await response.json()) as unknown;
+
+    expect(response.status).toBe(400);
+    expect(json).toEqual({ error: "Invalid treatment search request" });
+  });
+
+  it("returns fixture Photon treatment search results when catalog credentials are not configured", async () => {
+    const response = await getPhotonTreatments(getRequest("/api/photon/treatments?term=hydrocortisone"));
+    const json = (await response.json()) as { mode: string; results: Array<{ id: string; name: string }> };
+
+    expect(response.status).toBe(200);
+    expect(json.mode).toBe("fixture");
+    expect(json.results).toEqual([
+      { id: "med_8f21c94a", name: "Hydrocortisone cream 2.5%", form: "Topical cream · 30 g" },
+      { id: "med_3b77e210", name: "Hydrocortisone cream 1%", form: "Topical cream · 28 g" },
+      { id: "med_9c14aa08", name: "Hydrocortisone ointment 2.5%", form: "Topical ointment · 30 g" },
+    ]);
+  });
+
+  it("returns live Photon treatment search results from the clinical catalog", async () => {
+    process.env.PHOTON_CATALOG_API_URL = "https://catalog.example.test/graphql";
+    process.env.PHOTON_AUTH_TOKEN = "catalog-token";
+
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        data: {
+          treatments: [
+            { id: "med_live_1", name: "Lisinopril tablet 10 mg" },
+            { id: "med_live_2", name: "Lisinopril tablet 20 mg" },
+          ],
+        },
+      }),
+    );
+
+    const response = await getPhotonTreatments(getRequest("/api/photon/treatments?term=lisinopril"));
+    const json = (await response.json()) as { mode: string; results: Array<{ id: string; name: string }> };
+
+    expect(response.status).toBe(200);
+    expect(json).toEqual({
+      mode: "live",
+      results: [
+        { id: "med_live_1", name: "Lisinopril tablet 10 mg" },
+        { id: "med_live_2", name: "Lisinopril tablet 20 mg" },
+      ],
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://catalog.example.test/graphql",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          "x-photon-auth-token": "catalog-token",
+          "x-photon-auth-token-type": "auth0",
+        }),
+      }),
+    );
   });
 
   it("returns live Photon sync success when existing clinical history records are already attached", async () => {

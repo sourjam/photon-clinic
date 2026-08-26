@@ -8,6 +8,20 @@ export type InstructionsResponse = {
   logEntry: LogEntry;
 };
 
+export type SelectedTreatmentInput = {
+  id: string;
+  name: string;
+};
+
+export type InstructionsRequest = {
+  note: string;
+  treatment?: SelectedTreatmentInput;
+};
+
+export type PhotonSyncRequest = {
+  treatment?: SelectedTreatmentInput;
+};
+
 export type PhotonSyncResponse = {
   mode: IntegrationMode;
   ok: boolean;
@@ -16,6 +30,15 @@ export type PhotonSyncResponse = {
   milestones: Milestone[];
   logEntries: LogEntry[];
   errorStage?: "auth" | "patient" | "treatment" | "safety";
+};
+
+export type PhotonTreatmentSearchResponse = {
+  mode: IntegrationMode;
+  results: Array<{
+    id: string;
+    name: string;
+    form?: string;
+  }>;
 };
 
 export type TranslateDirection = "es→en" | "en→es";

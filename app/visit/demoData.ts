@@ -1,5 +1,5 @@
 import type { HandoffRow, LogEntry, Milestone, MilestoneStatus, Phase, SafetyCheckKey, VisitState } from "./types";
-import { fixtureInstructions, fixturePhotonSyncResponse } from "../../lib/fixtures";
+import { fixtureInstructions, fixturePhotonSyncResponse, fixtureTreatmentCatalog } from "../../lib/fixtures";
 
 export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
@@ -31,6 +31,8 @@ export const MEDICATION = {
   pharmacistNotes: "Patient is breastfeeding; clinician reviewed counseling.",
   summary: "2.5% · 30 g · 7 days · 0 refills",
 } as const;
+
+export const DEFAULT_TREATMENT = fixtureTreatmentCatalog[0];
 
 export const REVIEWER = { name: "Dr. A. Okafor", time: "10:42" } as const;
 
@@ -73,6 +75,10 @@ export const INITIAL_STATE: VisitState = {
   instructionsPlainText: fixtureInstructions.plainText,
   patientId: fixturePhotonSyncResponse().patientId,
   treatmentId: fixturePhotonSyncResponse().treatmentId,
+  selectedTreatment: DEFAULT_TREATMENT,
+  treatmentQuery: "hydrocortisone",
+  treatmentResults: [],
+  treatmentSearchStatus: "idle",
   milestones: buildMilestones("idle"),
   logEntries: buildLog("idle", false),
   thread: [],

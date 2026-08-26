@@ -49,6 +49,14 @@ export type InstructionBlock =
   | { kind: "text"; es: string }
   | { kind: "callout"; es: string };
 
+export type VisitTreatment = {
+  id: string;
+  name: string;
+  form?: string;
+};
+
+export type TreatmentSearchStatus = "idle" | "loading" | "ready" | "error";
+
 export type VisitState = {
   phase: Phase;
   note: string;
@@ -61,6 +69,10 @@ export type VisitState = {
   instructionsPlainText: string;
   patientId: string;
   treatmentId: string;
+  selectedTreatment: VisitTreatment;
+  treatmentQuery: string;
+  treatmentResults: VisitTreatment[];
+  treatmentSearchStatus: TreatmentSearchStatus;
   milestones: Milestone[];
   logEntries: LogEntry[];
   thread: ThreadMessage[];

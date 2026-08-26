@@ -1,5 +1,5 @@
 import { fixturePhotonSyncResponse } from "./fixtures";
-import type { PhotonSyncResponse } from "./types";
+import type { PhotonSyncRequest, PhotonSyncResponse } from "./types";
 
 type GraphQlResponse<T> = {
   data?: T;
@@ -61,15 +61,21 @@ async function graphqlRequest<T>(
   return json.data;
 }
 
-async function searchTreatment(token: string, terms: string | string[]): Promise<string> {
-  const query = `query Treatments($filter: TreatmentFilter!) {
-      treatments(filter: $filter) {
-        id
-        name
-      }
-    }`;
+type TreatmentCatalogAttempt = {
+  label: string;
+  url: string;
+  headers: Record<string, string>;
+};
 
-  const attempts: { label: string; url: string; headers: Record<string, string> }[] = [];
+const TREATMENT_SEARCH_QUERY = `query Treatments($filter: TreatmentFilter!) {
+    treatments(filter: $filter) {
+      id
+      name
+    }
+  }`;
+
+function buildTreatmentCatalogAttempts(token?: string): TreatmentCatalogAttempt[] {
+  const attempts: TreatmentCatalogAttempt[] = [];
   if (process.env.PHOTON_AUTH_TOKEN && process.env.PHOTON_CATALOG_API_URL) {
     attempts.push({
       label: "catalog auth token",
@@ -77,7 +83,7 @@ async function searchTreatment(token: string, terms: string | string[]): Promise
       headers: { "x-photon-auth-token": process.env.PHOTON_AUTH_TOKEN, "x-photon-auth-token-type": "auth0" },
     });
   }
-  if (process.env.PHOTON_CATALOG_API_URL) {
+  if (token && process.env.PHOTON_CATALOG_API_URL) {
     attempts.push({
       label: "catalog authorization token",
       url: process.env.PHOTON_CATALOG_API_URL,
@@ -89,29 +95,50 @@ async function searchTreatment(token: string, terms: string | string[]): Promise
       headers: { authorization: `Bearer ${token}` },
     });
   }
+  return attempts;
+}
 
-  const searchTerms = Array.isArray(terms) ? terms : [terms];
+export async function searchPhotonTreatments(
+  term: string,
+  options: { token?: string; limit?: number } = {},
+): Promise<{ id: string; name: string }[]> {
+  const attempts = buildTreatmentCatalogAttempts(options.token);
   const errors: string[] = [];
-  for (const term of searchTerms) {
-    for (const attempt of attempts) {
-      try {
-        const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
-          attempt.url,
-          query,
-          { filter: { term } },
-          attempt.headers,
-        );
+  for (const attempt of attempts) {
+    try {
+      const data = await graphqlRequest<{ treatments: { id: string; name?: string }[] }>(
+        attempt.url,
+        TREATMENT_SEARCH_QUERY,
+        { filter: { term } },
+        attempt.headers,
+      );
 
-        const treatment = data.treatments[0];
-        if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
-        return treatment.id;
-      } catch (error) {
-        errors.push(`${attempt.label} (${term}): ${error instanceof Error ? error.message : String(error)}`);
-      }
+      return data.treatments
+        .filter((treatment): treatment is { id: string; name: string } => Boolean(treatment.id && treatment.name))
+        .slice(0, options.limit ?? 8);
+    } catch (error) {
+      errors.push(`${attempt.label} (${term}): ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   throw new Error(errors.join(" | ") || "No Photon catalog API URL configured");
+}
+
+async function searchTreatment(token: string, terms: string | string[]): Promise<string> {
+  const searchTerms = Array.isArray(terms) ? terms : [terms];
+  const errors: string[] = [];
+
+  for (const term of searchTerms) {
+    try {
+      const [treatment] = await searchPhotonTreatments(term, { token, limit: 1 });
+      if (!treatment?.id) throw new Error(`No Photon treatment found for ${term}`);
+      return treatment.id;
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  throw new Error(errors.join(" | ") || "No Photon treatment found");
 }
 
 async function searchAllergen(token: string): Promise<string> {
@@ -245,16 +272,17 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
   return created.createPatient.id;
 }
 
-export async function syncPhotonClinicalData(): Promise<PhotonSyncResponse> {
-  if (!hasPhotonCredentials()) return fixturePhotonSyncResponse();
+export async function syncPhotonClinicalData(request: PhotonSyncRequest = {}): Promise<PhotonSyncResponse> {
+  if (!hasPhotonCredentials()) return fixturePhotonSyncResponse(request.treatment);
 
   const now = () => new Date().toTimeString().slice(0, 8);
   const token = await withStage("auth exchange", () => exchangeToken());
   const logEntries = [{ t: now(), code: "200", msg: "POST /auth/token" }];
 
-  const treatmentId = await withStage("treatment lookup", () =>
-    searchTreatment(token.access_token, ["hydrocortisone cream 2.5%", "hydrocortisone cream", "hydrocortisone"]),
-  );
+  const treatmentId = request.treatment?.id ??
+    (await withStage("treatment lookup", () =>
+      searchTreatment(token.access_token, ["hydrocortisone cream 2.5%", "hydrocortisone cream", "hydrocortisone"]),
+    ));
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${treatmentId}` });
 
   const allergyId = await withStage("allergen lookup", () => searchAllergen(token.access_token));
