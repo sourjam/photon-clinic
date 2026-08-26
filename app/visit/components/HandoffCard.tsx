@@ -21,7 +21,7 @@ const stateByStatus: Record<HandoffStatus, HandoffState> = {
   waiting: {
     badgeLabel: "Waiting",
     badgeTone: "neutral",
-    body: "Generate instructions and sync patient context to build the handoff.",
+    body: "Generate Spanish instructions and sync the patient before finalizing.",
     cardTone: "plain",
     titleColor: "text-ink-6",
   },

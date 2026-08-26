@@ -124,6 +124,96 @@ describe("integration route seams", () => {
     );
   });
 
+  it("rejects invalid Photon patient sync input at the route boundary", async () => {
+    const response = await postPhotonSync(
+      jsonRequest("/api/photon/sync", {
+        patient: {
+          firstName: "",
+          lastName: "Rivera",
+          dateOfBirth: "not-a-date",
+          sex: "FEMALE",
+        },
+      }),
+    );
+    const json = (await response.json()) as unknown;
+
+    expect(response.status).toBe(400);
+    expect(json).toEqual({ error: "Invalid Photon sync request" });
+  });
+
+  it("returns normalized patient context for fixture Photon sync when provided", async () => {
+    const response = await postPhotonSync(
+      jsonRequest("/api/photon/sync", {
+        patient: {
+          firstName: "Ana",
+          lastName: "Rivera",
+          dateOfBirth: "1991-09-03",
+          sex: "FEMALE",
+          phone: "(718) 555-0199",
+        },
+      }),
+    );
+    const json = (await response.json()) as {
+      mode: string;
+      ok: boolean;
+      patient?: { externalId: string; firstName: string; lastName: string; phone?: string };
+    };
+
+    expect(response.status).toBe(200);
+    expect(json.mode).toBe("fixture");
+    expect(json.ok).toBe(true);
+    expect(json.patient).toMatchObject({
+      externalId: "phoclinic2-demo-ana-rivera-1991-09-03",
+      firstName: "Ana",
+      lastName: "Rivera",
+      phone: "+17185550199",
+    });
+  });
+
+  it("uses dynamic patient input when creating a live Photon patient", async () => {
+    process.env.PHOTON_CLIENT_ID = "client-id";
+    process.env.PHOTON_CLIENT_SECRET = "client-secret";
+    process.env.PHOTON_TOKEN_URL = "https://auth.example.test/oauth/token";
+    process.env.PHOTON_API_URL = "https://api.example.test/graphql";
+    process.env.PHOTON_CATALOG_API_URL = "https://catalog.example.test/graphql";
+    process.env.PHOTON_AUTH_TOKEN = "catalog-token";
+
+    const responses = [
+      { access_token: "live-token", expires_in: 86400 },
+      { data: { allergens: [{ id: "alg_sulfa", name: "Sulfa" }] } },
+      { data: { treatments: [{ id: "med_prenatal", name: "Prenatal vitamin" }] } },
+      { data: { patients: [] } },
+      { data: { createPatient: { id: "pat_dynamic" } } },
+    ];
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async () => Response.json(responses.shift()));
+
+    const response = await postPhotonSync(
+      jsonRequest("/api/photon/sync", {
+        patient: {
+          firstName: "Ana",
+          lastName: "Rivera",
+          dateOfBirth: "1991-09-03",
+          sex: "FEMALE",
+          phone: "(718) 555-0199",
+        },
+        treatment: { id: "med_2a58d901", name: "Mupirocin ointment 2%" },
+      }),
+    );
+    const json = (await response.json()) as { mode: string; ok: boolean; patientId: string };
+    const createCall = fetchMock.mock.calls[4];
+    const createBody = JSON.parse(String(createCall[1]?.body)) as { variables: Record<string, unknown> };
+
+    expect(response.status).toBe(200);
+    expect(json).toMatchObject({ mode: "live", ok: true, patientId: "pat_dynamic" });
+    expect(createBody.variables).toMatchObject({
+      externalId: "phoclinic2-demo-ana-rivera-1991-09-03",
+      name: { first: "Ana", last: "Rivera" },
+      dateOfBirth: "1991-09-03",
+      sex: "FEMALE",
+      phone: "+17185550199",
+    });
+  });
+
   it("rejects invalid Photon treatment searches at the route boundary", async () => {
     const response = await getPhotonTreatments(getRequest("/api/photon/treatments?term=h"));
     const json = (await response.json()) as unknown;

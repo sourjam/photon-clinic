@@ -3,6 +3,16 @@ import { syncPhotonClinicalData } from "../../../../lib/photon";
 
 const requestSchema = z
   .object({
+    patient: z
+      .object({
+        externalId: z.string().trim().min(1).optional(),
+        firstName: z.string().trim().min(1),
+        lastName: z.string().trim().min(1),
+        dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        sex: z.enum(["FEMALE", "MALE", "UNKNOWN"]),
+        phone: z.string().trim().min(1).optional(),
+      })
+      .optional(),
     treatment: z
       .object({
         id: z.string().min(1),
@@ -16,7 +26,11 @@ async function parseRequest(request?: Request) {
   if (!request) return {};
   const text = await request.text();
   if (!text) return {};
-  return JSON.parse(text) as unknown;
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return null;
+  }
 }
 
 export async function POST(request?: Request) {

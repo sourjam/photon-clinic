@@ -13,12 +13,23 @@ export type SelectedTreatmentInput = {
   name: string;
 };
 
+export type PhotonPatientInput = {
+  externalId?: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  sex: "FEMALE" | "MALE" | "UNKNOWN";
+  phone?: string;
+};
+
 export type InstructionsRequest = {
   note: string;
   treatment?: SelectedTreatmentInput;
+  patient?: PhotonPatientInput;
 };
 
 export type PhotonSyncRequest = {
+  patient?: PhotonPatientInput;
   treatment?: SelectedTreatmentInput;
 };
 
@@ -27,6 +38,7 @@ export type PhotonSyncResponse = {
   ok: boolean;
   patientId: string;
   treatmentId: string;
+  patient?: PhotonPatientInput & { externalId: string };
   milestones: Milestone[];
   logEntries: LogEntry[];
   errorStage?: "auth" | "patient" | "treatment" | "safety";

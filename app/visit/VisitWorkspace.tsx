@@ -99,20 +99,33 @@ export function VisitWorkspace() {
       <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
         <AppHeader
           environment={workflow.state.integrationMode === "fixture" ? "Fixture mode · no live credentials" : PHOTON.env}
-          patientMeta={PATIENT.meta}
-          patientName={PATIENT.name}
+          patientMeta={`DOB ${workflow.state.patient.dateOfBirth} · Spanish`}
+          patientName={`${workflow.state.patient.firstName} ${workflow.state.patient.lastName}`.trim() || "No patient"}
           status={status}
           visitSummary={PATIENT.visit}
         />
+        <div className="px-[14px] pt-[14px] wide:px-5 wide:pt-4">
+          <PatientContextCard
+            allergies={PATIENT.allergies}
+            currentMeds={PATIENT.currentMeds}
+            dirty={workflow.state.patientDirty}
+            draftPatient={workflow.state.draftPatient}
+            editing={workflow.state.patientEditing}
+            onCancel={workflow.actions.cancelPatientEdit}
+            onDraftChange={workflow.actions.setDraftPatientField}
+            onSave={workflow.actions.savePatient}
+            onSync={workflow.actions.syncPatient}
+            onToggleEdit={workflow.actions.togglePatientEdit}
+            patient={workflow.state.patient}
+            photonPatientId={workflow.state.patientId}
+            raisedInVisit={PATIENT.raisedInVisit}
+            syncStatus={workflow.state.patientSyncStatus}
+            visitReason={PATIENT.visitReason}
+          />
+        </div>
         <div className={bodyClasses}>
           <section aria-label="AI Prep" className={columnClasses} data-region="left">
             <SectionHeader meta="OpenAI · clinician-reviewed" title="AI Prep" />
-            <PatientContextCard
-              allergies={PATIENT.allergies}
-              currentMeds={PATIENT.currentMeds}
-              raisedInVisit={PATIENT.raisedInVisit}
-              visitReason={PATIENT.visitReason}
-            />
             <ClinicianNoteCard
               hasInstructions={derived.hasInstructions}
               isLoading={derived.isLoading}

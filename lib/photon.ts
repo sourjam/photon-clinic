@@ -1,4 +1,5 @@
 import { fixturePhotonSyncResponse } from "./fixtures";
+import { normalizePhotonPatientInput, type NormalizedPhotonPatient } from "./patient";
 import type { PhotonSyncRequest, PhotonSyncResponse } from "./types";
 
 type GraphQlResponse<T> = {
@@ -165,10 +166,9 @@ function isAlreadyAttachedClinicalRecordError(error: unknown): boolean {
   return /already exists on patient/i.test(message);
 }
 
-async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string> {
+async function upsertPatient(token: string, ids: PatientSyncIds, patient: NormalizedPhotonPatient): Promise<string> {
   const headers = { Authorization: `Bearer ${token}` };
   const apiUrl = process.env.PHOTON_API_URL as string;
-  const externalId = "phoclinic2-maria-gonzalez";
 
   const patients = await graphqlRequest<{ patients: { id: string; externalId?: string | null }[] }>(
     apiUrl,
@@ -182,13 +182,13 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
     headers,
   );
 
-  const existing = patients.patients.find((patient) => patient.externalId === externalId);
+  const existing = patients.patients.find((candidate) => candidate.externalId === patient.externalId);
   const baseVariables = {
-    externalId,
-    name: { first: "Maria", last: "Gonzalez" },
-    dateOfBirth: "1988-04-12",
-    sex: "FEMALE",
-    phone: "+12025550102",
+    externalId: patient.externalId,
+    name: { first: patient.firstName, last: patient.lastName },
+    dateOfBirth: patient.dateOfBirth,
+    sex: patient.sex,
+    phone: patient.phone,
   };
   const clinicalHistoryVariables = {
     allergies: [{ allergenId: ids.allergyId }],
@@ -273,7 +273,9 @@ async function upsertPatient(token: string, ids: PatientSyncIds): Promise<string
 }
 
 export async function syncPhotonClinicalData(request: PhotonSyncRequest = {}): Promise<PhotonSyncResponse> {
-  if (!hasPhotonCredentials()) return fixturePhotonSyncResponse(request.treatment);
+  const patient = normalizePhotonPatientInput(request.patient);
+
+  if (!hasPhotonCredentials()) return fixturePhotonSyncResponse(request.treatment, request.patient);
 
   const now = () => new Date().toTimeString().slice(0, 8);
   const token = await withStage("auth exchange", () => exchangeToken());
@@ -294,7 +296,7 @@ export async function syncPhotonClinicalData(request: PhotonSyncRequest = {}): P
   logEntries.push({ t: now(), code: "200", msg: `GET /catalog/treatments → ${medicationHistoryId}` });
 
   const patientId = await withStage("patient sync", () =>
-    upsertPatient(token.access_token, { allergyId, medicationHistoryId }),
+    upsertPatient(token.access_token, { allergyId, medicationHistoryId }, patient),
   );
   logEntries.push({ t: now(), code: "200", msg: `POST /patients → ${patientId}` });
 
@@ -303,6 +305,7 @@ export async function syncPhotonClinicalData(request: PhotonSyncRequest = {}): P
     ok: true,
     patientId,
     treatmentId,
+    patient,
     milestones: [
       { label: "Auth check", status: "ok", id: `token · ${token.expires_in ?? 3600}s` },
       { label: "Patient sync", status: "ok", id: patientId },

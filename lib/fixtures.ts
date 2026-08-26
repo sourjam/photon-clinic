@@ -1,12 +1,14 @@
 import type { InstructionBlock } from "../app/visit/types";
 import type {
   SelectedTreatmentInput,
+  PhotonPatientInput,
   InstructionsResponse,
   PhotonSyncResponse,
   PhotonTreatmentSearchResponse,
   TranslateDirection,
   TranslateResponse,
 } from "./types";
+import { normalizePhotonPatientInput } from "./patient";
 
 export const fixtureTreatmentCatalog: PhotonTreatmentSearchResponse["results"] = [
   { id: "med_8f21c94a", name: "Hydrocortisone cream 2.5%", form: "Topical cream · 30 g" },
@@ -113,13 +115,18 @@ export function fixtureInstructionsResponse(treatment?: SelectedTreatmentInput):
   };
 }
 
-export function fixturePhotonSyncResponse(treatment?: SelectedTreatmentInput): PhotonSyncResponse {
+export function fixturePhotonSyncResponse(
+  treatment?: SelectedTreatmentInput,
+  patientInput?: PhotonPatientInput,
+): PhotonSyncResponse {
   const treatmentId = treatment?.id ?? "med_8f21c94a";
+  const patient = normalizePhotonPatientInput(patientInput);
   return {
     mode: "fixture",
     ok: true,
     patientId: "pat_01HQ7K4M2Z",
     treatmentId,
+    patient,
     milestones: [
       { label: "Auth check", status: "ok", id: "token · 3600s" },
       { label: "Patient sync", status: "ok", id: "pat_01HQ7K4M2Z" },
