@@ -219,8 +219,11 @@ export function VisitWorkspace() {
           hint={getActionHint(workflow.state.phase, workflow.state.reviewed)}
           onCopy={workflow.actions.copySpanishInstructions}
           onFinalize={workflow.actions.finalize}
+          onGenerate={workflow.actions.generate}
           onNewVisit={workflow.actions.startBlankVisit}
           onReset={workflow.actions.reset}
+          onSyncPhoton={workflow.actions.syncPatient}
+          onTranslate={workflow.actions.translateMessage}
         />
       </div>
       <Toast message={workflow.state.toast} />

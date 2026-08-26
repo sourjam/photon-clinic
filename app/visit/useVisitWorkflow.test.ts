@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankVisitState } from "./useVisitWorkflow";
+import { appendInstructionLogEntries, createBlankVisitState, getFinalizeBlocker } from "./useVisitWorkflow";
 import { INITIAL_STATE } from "./demoData";
 
 describe("createBlankVisitState", () => {
@@ -39,5 +39,28 @@ describe("createBlankVisitState", () => {
     expect(state.checks).toEqual({ allergy: false, interaction: false, dose: false, lactation: false });
     expect(state.thread).toEqual([]);
     expect(state.logEntries.at(-1)?.msg).toBe("Blank visit started");
+  });
+});
+
+describe("appendInstructionLogEntries", () => {
+  it("records when instructions are regenerated after a treatment change", () => {
+    const entries = appendInstructionLogEntries(
+      [],
+      { t: "10:51:00", code: "200", msg: "openai · instructions.generate" },
+      true,
+    );
+
+    expect(entries.map((entry) => entry.msg)).toEqual([
+      "openai · instructions.generate",
+      "Instructions regenerated for selected treatment",
+    ]);
+  });
+});
+
+describe("getFinalizeBlocker", () => {
+  it("prioritizes missing treatment before missing instructions", () => {
+    const state = createBlankVisitState(INITIAL_STATE);
+
+    expect(getFinalizeBlocker(state)).toBe("Select a treatment first");
   });
 });
