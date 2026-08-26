@@ -6,19 +6,16 @@ import { AiErrorCard } from "./components/AiErrorCard";
 import { ClinicianNoteCard } from "./components/ClinicianNoteCard";
 import { ClinicianReviewCard } from "./components/ClinicianReviewCard";
 import { EvidenceLogCard } from "./components/EvidenceLogCard";
-import { HandoffCard, type HandoffStatus } from "./components/HandoffCard";
 import { MedicationPrepCard, type TreatmentIdState } from "./components/MedicationPrepCard";
 import { PatientContextCard } from "./components/PatientContextCard";
 import { PatientFollowUpCard } from "./components/PatientFollowUpCard";
-import { PhotonConnectionCard } from "./components/PhotonConnectionCard";
 import { PhotonErrorCard } from "./components/PhotonErrorCard";
 import { PrototypeSwitcher } from "./components/PrototypeSwitcher";
 import { SafetyReviewCard } from "./components/SafetyReviewCard";
 import { SpanishInstructionsCard } from "./components/SpanishInstructionsCard";
-import { SyncMilestonesCard } from "./components/SyncMilestonesCard";
 import { Toast } from "./components/Toast";
 import { SectionHeader } from "./components/ui/SectionHeader";
-import { HANDOFF_ROWS, MEDICATION, PHOTON, REVIEWER } from "./demoData";
+import { MEDICATION, PHOTON, REVIEWER } from "./demoData";
 import type { Phase } from "./types";
 import { useVisitWorkflow } from "./useVisitWorkflow";
 
@@ -77,13 +74,6 @@ export function VisitWorkspace() {
       : derived.isApiError
         ? "failed"
         : "resolved";
-  const handoffStatus: HandoffStatus = derived.finalized
-    ? "ready"
-    : derived.isApiError
-      ? "blocked"
-      : derived.hasInstructions
-        ? "notFinalized"
-        : "waiting";
   const evidenceEntries = [
     ...workflow.state.logEntries,
     ...workflow.state.thread.map((message) => ({
@@ -99,7 +89,7 @@ export function VisitWorkspace() {
       {showPrototypeSwitcher ? (
         <PrototypeSwitcher onPick={workflow.actions.setPhase} phase={workflow.state.phase} />
       ) : null}
-      <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page wide:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-auto bg-page pb-[168px] wide:overflow-hidden wide:pb-[72px]">
         <AppHeader
           environment={workflow.state.integrationMode === "fixture" ? "Fixture mode · no live credentials" : PHOTON.env}
           patientMeta={[
@@ -131,7 +121,7 @@ export function VisitWorkspace() {
         </div>
         <div className={bodyClasses}>
           <section aria-label="AI Prep" className={columnClasses} data-region="left">
-            <SectionHeader meta="OpenAI · clinician-reviewed" title="AI Prep" />
+            <SectionHeader title="AI Prep" />
             <ClinicianNoteCard
               hasInstructions={derived.hasInstructions}
               isLoading={derived.isLoading}
@@ -192,38 +182,15 @@ export function VisitWorkspace() {
             />
           </section>
           <aside aria-label="Photon API" className={columnClasses} data-region="right">
-            <SectionHeader meta="Clinical API · no Elements" title="Photon API" />
-            <PhotonConnectionCard
-              connected={derived.connOk}
-              host={PHOTON.host}
-              prescribeScope={PHOTON.prescribeScope}
-              scope={PHOTON.scope}
-            />
-            <SyncMilestonesCard milestones={workflow.state.milestones} />
+            <SectionHeader meta="Clinical API" title="Photon API" />
             {derived.isApiError ? <PhotonErrorCard onRetry={workflow.actions.retryApi} /> : null}
-            <HandoffCard
-              rows={HANDOFF_ROWS.map((row) => {
-                if (row.k === "Photon patient") return { ...row, v: workflow.state.patientId };
-                if (row.k === "Treatment") return { ...row, v: workflow.state.selectedTreatment.id };
-                return row;
-              })}
-              status={handoffStatus}
-            />
             <EvidenceLogCard entries={evidenceEntries} />
           </aside>
         </div>
         <ActionBar
-          canCopy={derived.hasInstructions}
-          canFinalize={derived.canFinalize}
-          finalized={derived.finalized}
           hint={getActionHint(workflow.state.phase, workflow.state.reviewed)}
-          onCopy={workflow.actions.copySpanishInstructions}
-          onFinalize={workflow.actions.finalize}
-          onGenerate={workflow.actions.generate}
           onNewVisit={workflow.actions.startBlankVisit}
           onReset={workflow.actions.reset}
-          onSyncPhoton={workflow.actions.syncPatient}
-          onTranslate={workflow.actions.translateMessage}
         />
       </div>
       <Toast message={workflow.state.toast} />

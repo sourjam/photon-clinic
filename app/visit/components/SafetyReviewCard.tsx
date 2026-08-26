@@ -39,20 +39,22 @@ export function SafetyReviewCard({ checks, onToggle, allChecked, syncedCount }: 
               className="flex cursor-pointer items-start gap-[10px] border-b border-line-row py-[9px]"
               key={check.key}
             >
-              <input
-                checked={checked}
-                className="peer sr-only"
-                onChange={() => onToggle(check.key)}
-                type="checkbox"
-              />
-              <span
-                aria-hidden="true"
-                className={[
-                  "mt-px flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-[4px] border-[1.5px] text-[11px] font-bold text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand/30",
-                  getBoxClasses(check.key, checked),
-                ].join(" ")}
-              >
-                {checked ? "✓" : ""}
+              <span className="relative mt-px h-[17px] w-[17px] shrink-0">
+                <input
+                  checked={checked}
+                  className={[
+                    "h-[17px] w-[17px] appearance-none rounded-[4px] border-[1.5px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30",
+                    getBoxClasses(check.key, checked),
+                  ].join(" ")}
+                  onChange={() => onToggle(check.key)}
+                  type="checkbox"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-bold leading-none text-white"
+                >
+                  {checked ? "✓" : ""}
+                </span>
               </span>
               <span className="flex-1">
                 <span

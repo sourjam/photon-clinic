@@ -23,7 +23,7 @@ export function EvidenceLogCard({ entries }: EvidenceLogCardProps) {
 
   return (
     <Card>
-      <CardHeader title="API evidence log">
+      <CardHeader title="API log">
         {countLabel ? <span className="text-[11px] text-muted-2">{countLabel}</span> : null}
       </CardHeader>
       <div className="flex max-h-[200px] flex-col gap-[6px] overflow-auto px-3 py-[9px]" role="log">

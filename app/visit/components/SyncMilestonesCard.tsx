@@ -83,7 +83,7 @@ export function SyncMilestonesCard({ milestones }: SyncMilestonesCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardHeader title="Sync milestones" />
-      <div className="py-1">
+      <div className="max-h-[252px] overflow-y-auto overscroll-contain py-1">
         {milestones.map((milestone) => {
           const presentation = presentationByStatus[milestone.status];
 
