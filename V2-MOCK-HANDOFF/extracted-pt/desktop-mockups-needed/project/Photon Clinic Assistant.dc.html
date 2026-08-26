@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:#D9DDE6;font-family:'Public Sans',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;color:#171A21;}
+  a{color:#3A50E4;text-decoration:none;}
+  a:hover{color:#2E40C4;text-decoration:underline;}
+</style>
+</helmet>
+
+<section style="padding:40px 44px 80px;">
+  <div style="max-width:1360px;margin:0 auto 26px;">
+    <div style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6B7180;">Turn 1 · Desktop mockups</div>
+    <h1 style="font-size:26px;font-weight:700;margin:6px 0 6px;letter-spacing:-0.01em;">Photon Clinic Assistant — dashboard states</h1>
+    <p style="margin:0;max-width:760px;font-size:14px;line-height:1.55;color:#5A6072;">One bilingual visit dashboard shown across its four workflow states. Clinician workspace on the left, patient Spanish communication in the middle, persistent Photon workflow rail on the right. Reference a frame in chat by its badge: <a href="#1a">1a</a> Intake · <a href="#1b">1b</a> Treatment Search · <a href="#1c">1c</a> Prescription Setup · <a href="#1d">1d</a> Prescription Created.</p>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start;justify-content:flex-start;">
+
+    <!-- ================= FRAME 1a — INTAKE ================= -->
+    <div id="1a" style="position:relative;flex:0 0 1340px;width:1340px;min-width:1340px;background:#EEF0F4;border:1px solid #C9CEDA;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(20,28,50,.35);display:flex;flex-direction:column;">
+      <div style="position:absolute;top:14px;left:14px;z-index:5;background:#171A21;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;padding:4px 9px;border-radius:6px;">1a · INTAKE</div>
+
+      <!-- App chrome header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 22px 0 120px;background:#10131C;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:18px;height:18px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+          <span style="font-weight:700;font-size:15px;letter-spacing:.01em;">Photon</span>
+          <span style="font-size:13px;color:#9AA0B4;">Clinic Assistant</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;">
+          <div style="display:flex;flex-direction:column;line-height:1.2;text-align:right;"><span style="font-size:14px;font-weight:600;">Maria Gonzalez</span><span style="font-size:11px;color:#9AA0B4;">Dermatology · New visit</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:#1B1F2C;border:1px solid #2A2F3E;border-radius:8px;padding:6px 11px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">EN</span><span style="color:#6E7488;">⇄</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">ES</span></div>
+          <div style="display:flex;align-items:center;gap:7px;background:#1B1F2C;border:1px solid #2A2F3E;border-radius:20px;padding:6px 12px;"><span style="width:7px;height:7px;border-radius:50%;background:#F0B429;box-shadow:0 0 0 3px rgba(240,180,41,.16);"></span><span style="font-size:12px;color:#C9CEDA;">Photon: not synced</span></div>
+        </div>
+      </div>
+
+      <!-- Patient context band -->
+      <div style="display:flex;align-items:stretch;gap:0;background:#fff;border-bottom:1px solid #E2E5EC;">
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Patient · DOB</div><div style="font-size:13px;font-weight:600;">Maria Gonzalez · 03/14/1991</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Phone · Language</div><div style="font-size:13px;font-weight:600;">(718) 555-0142 · Spanish</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;background:#FDF7EC;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Allergies</div><div style="font-size:13px;font-weight:600;color:#7A5400;">Sulfa drugs</div></div>
+        <div style="flex:1.1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Current medications</div><div style="font-size:13px;font-weight:600;">Prenatal vitamin</div></div>
+        <div style="flex:1.2;padding:11px 18px;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Preferred pharmacy</div><div style="font-size:13px;font-weight:600;">Not set</div></div>
+      </div>
+
+      <!-- Body grid -->
+      <div style="display:grid;grid-template-columns:1fr 372px 262px;gap:14px;padding:16px 18px;flex:1;">
+
+        <!-- Clinician pane -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #EDEFF3;"><div style="font-size:14px;font-weight:700;">Clinician Workspace</div><div style="font-size:12px;color:#7A8090;">Type in English · the assistant translates and structures the visit</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:7px;">English message to patient</div>
+              <div style="border:1px solid #D7DBE4;border-radius:8px;background:#FBFBFD;padding:13px 14px;min-height:96px;font-size:13.5px;color:#A6ABBA;line-height:1.5;">Explain the diagnosis and medication plan in plain English…</div>
+              <div style="display:flex;justify-content:flex-end;margin-top:10px;"><button style="background:#3A50E4;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Translate to Spanish</button></div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:7px;">AI-extracted clinical notes</div>
+              <div style="border:1px dashed #D7DBE4;border-radius:8px;padding:22px 14px;text-align:center;font-size:12.5px;color:#9096A6;">Notes appear here as you translate the visit.</div>
+            </div>
+            <div style="border:1px solid #EEDFBE;background:#FDF7EC;border-radius:8px;padding:13px 14px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#F0B429;"></span><span style="font-size:12px;font-weight:700;color:#7A5400;letter-spacing:.02em;">SAFETY FLAGS</span></div>
+              <div style="font-size:12.5px;color:#8A6A20;">No flags yet. Allergies, pregnancy, current meds, and severe symptoms surface here automatically.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient pane -->
+        <div style="background:#F6F8FF;border:1px solid #DDE3F5;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #E2E7F6;background:#EEF2FF;"><div style="font-size:14px;font-weight:700;color:#2A3AB0;">Comunicación con paciente</div><div style="font-size:12px;color:#6C77B8;">Patient Spanish side · español</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:16px;flex:1;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;color:#8891C4;"><div style="width:34px;height:34px;border-radius:50%;border:1.5px solid #C4CCEC;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div><div style="font-size:12.5px;max-width:210px;line-height:1.5;">Las traducciones al español aparecerán aquí para el paciente.</div></div>
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8088BE;margin-bottom:7px;">Pregunta del paciente (español)</div>
+              <div style="border:1px solid #CDD5EE;border-radius:8px;background:#fff;padding:12px 13px;min-height:64px;font-size:13px;color:#9AA1CC;">Escriba una pregunta en español…</div>
+              <div style="display:flex;justify-content:flex-end;margin-top:10px;"><button style="background:#fff;color:#2A3AB0;border:1px solid #C4CCEC;padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;">Translate to English</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflow rail -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 15px;border-bottom:1px solid #EDEFF3;"><div style="font-size:13px;font-weight:700;">Photon Workflow</div><div style="font-size:11.5px;color:#7A8090;">Clinician reviews every step</div></div>
+          <div style="padding:14px 15px;display:flex;flex-direction:column;gap:2px;">
+            <!-- step: in progress -->
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#3A50E4;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">1</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Intake</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#3A50E4;background:#EAEDFF;padding:2px 7px;border-radius:5px;">In progress</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Treatment Search</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">3</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Prescription Setup</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Open Photon</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Prescription Created</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+          </div>
+          <div style="margin-top:auto;padding:13px 15px;border-top:1px solid #EDEFF3;background:#FAFBFC;"><div style="font-size:11px;color:#7A8090;line-height:1.5;">Photon completes prescribing and pharmacy routing. The assistant never prescribes on its own.</div></div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:#fff;border-top:1px solid #E2E5EC;">
+        <div style="font-size:12px;color:#7A8090;">Step 1 of 5 · Confirm intake before treatment search</div>
+        <div style="display:flex;gap:10px;">
+          <button style="background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Sync Patient to Photon</button>
+          <button style="background:#3A50E4;color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Continue to Treatment Search →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FRAME 1b — TREATMENT SEARCH ================= -->
+    <div id="1b" style="position:relative;flex:0 0 1340px;width:1340px;min-width:1340px;background:#EEF0F4;border:1px solid #C9CEDA;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(20,28,50,.35);display:flex;flex-direction:column;">
+      <div style="position:absolute;top:14px;left:14px;z-index:5;background:#171A21;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;padding:4px 9px;border-radius:6px;">1b · TREATMENT SEARCH</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 22px 0 200px;background:#10131C;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:18px;height:18px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+          <span style="font-weight:700;font-size:15px;">Photon</span>
+          <span style="font-size:13px;color:#9AA0B4;">Clinic Assistant</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;">
+          <div style="display:flex;flex-direction:column;line-height:1.2;text-align:right;"><span style="font-size:14px;font-weight:600;">Maria Gonzalez</span><span style="font-size:11px;color:#9AA0B4;">Dermatology · New visit</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:#1B1F2C;border:1px solid #2A2F3E;border-radius:8px;padding:6px 11px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">EN</span><span style="color:#6E7488;">⇄</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">ES</span></div>
+          <div style="display:flex;align-items:center;gap:7px;background:#122A20;border:1px solid #1E4433;border-radius:20px;padding:6px 12px;"><span style="width:7px;height:7px;border-radius:50%;background:#22C58B;box-shadow:0 0 0 3px rgba(34,197,139,.16);"></span><span style="font-size:12px;color:#BFE9D5;">Photon: patient synced</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;background:#fff;border-bottom:1px solid #E2E5EC;">
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Patient · DOB</div><div style="font-size:13px;font-weight:600;">Maria Gonzalez · 03/14/1991</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Phone · Language</div><div style="font-size:13px;font-weight:600;">(718) 555-0142 · Spanish</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;background:#FDF7EC;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Allergies</div><div style="font-size:13px;font-weight:600;color:#7A5400;">Sulfa drugs</div></div>
+        <div style="flex:1.1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Current medications</div><div style="font-size:13px;font-weight:600;">Prenatal vitamin</div></div>
+        <div style="flex:1.2;padding:11px 18px;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Preferred pharmacy</div><div style="font-size:13px;font-weight:600;">Sunrise Rx · Brooklyn</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 372px 262px;gap:14px;padding:16px 18px;flex:1;">
+
+        <!-- Clinician pane: treatment search -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #EDEFF3;"><div style="font-size:14px;font-weight:700;">Treatment Search</div><div style="font-size:12px;color:#7A8090;">Map the intended medication to a Photon catalog treatment</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;display:flex;align-items:center;gap:8px;border:1px solid #D7DBE4;border-radius:8px;padding:0 12px;height:40px;background:#FBFBFD;"><span style="color:#9096A6;">🔍</span><span style="font-size:13.5px;color:#3A3F4C;">hydrocortisone cream</span></div>
+              <button style="background:#3A50E4;color:#fff;border:none;padding:0 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Search Treatment</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;"><span style="font-size:11.5px;color:#7A8090;">Visit context:</span><span style="font-size:11.5px;font-weight:600;background:#F2F4F8;border:1px solid #E4E7EF;padding:3px 9px;border-radius:14px;">Condition: suspected eczema</span><span style="font-size:11.5px;font-weight:600;background:#FDF7EC;border:1px solid #EEDFBE;color:#7A5400;padding:3px 9px;border-radius:14px;">Concern: breastfeeding safety</span></div>
+
+            <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;">2 catalog matches</div>
+
+            <!-- result 1 selected -->
+            <div style="border:1.5px solid #3A50E4;border-radius:10px;padding:14px;background:#F7F8FF;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                <div>
+                  <div style="font-size:14.5px;font-weight:700;">Hydrocortisone 2.5% Topical Cream</div>
+                  <div style="font-size:12px;color:#7A8090;margin-top:2px;">Rx · Topical · 30 g tube</div>
+                  <div style="display:flex;gap:8px;margin-top:9px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#EAEDFF;color:#2A3AB0;padding:3px 8px;border-radius:5px;">tx_5f3a9c21</span><span style="font-size:11px;font-weight:600;background:#E7F5EF;color:#0E8A5A;padding:3px 8px;border-radius:5px;">PHOTON CATALOG</span></div>
+                </div>
+                <span style="flex-shrink:0;font-size:12px;font-weight:700;color:#3A50E4;background:#fff;border:1px solid #C4CCEC;border-radius:16px;padding:5px 12px;">Selected ✓</span>
+              </div>
+            </div>
+            <!-- result 2 -->
+            <div style="border:1px solid #E2E5EC;border-radius:10px;padding:14px;background:#fff;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                <div>
+                  <div style="font-size:14.5px;font-weight:700;">Hydrocortisone 1% Cream</div>
+                  <div style="font-size:12px;color:#7A8090;margin-top:2px;">OTC · Topical · 28 g tube</div>
+                  <div style="display:flex;gap:8px;margin-top:9px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F2F4F8;color:#5A6072;padding:3px 8px;border-radius:5px;">tx_9b17d044</span><span style="font-size:11px;font-weight:600;background:#E7F5EF;color:#0E8A5A;padding:3px 8px;border-radius:5px;">PHOTON CATALOG</span></div>
+                </div>
+                <button style="flex-shrink:0;background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:6px 14px;border-radius:8px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;">Select</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient pane empty -->
+        <div style="background:#F6F8FF;border:1px solid #DDE3F5;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #E2E7F6;background:#EEF2FF;"><div style="font-size:14px;font-weight:700;color:#2A3AB0;">Comunicación con paciente</div><div style="font-size:12px;color:#6C77B8;">Patient Spanish side · español</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:16px;flex:1;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;color:#8891C4;"><div style="width:34px;height:34px;border-radius:50%;border:1.5px solid #C4CCEC;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div><div style="font-size:12.5px;max-width:210px;line-height:1.5;">Patient instructions in Spanish generate after the prescription is created in Photon.</div></div>
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8088BE;margin-bottom:7px;">Pregunta del paciente (español)</div>
+              <div style="border:1px solid #CDD5EE;border-radius:8px;background:#fff;padding:12px 13px;min-height:64px;font-size:13px;color:#9AA1CC;">Escriba una pregunta en español…</div>
+              <div style="display:flex;justify-content:flex-end;margin-top:10px;"><button style="background:#fff;color:#2A3AB0;border:1px solid #C4CCEC;padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;">Translate to English</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rail: intake complete, search in progress -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 15px;border-bottom:1px solid #EDEFF3;"><div style="font-size:13px;font-weight:700;">Photon Workflow</div><div style="font-size:11.5px;color:#7A8090;">Clinician reviews every step</div></div>
+          <div style="padding:14px 15px;display:flex;flex-direction:column;gap:2px;">
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Intake</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#3A50E4;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">2</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Treatment Search</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#3A50E4;background:#EAEDFF;padding:2px 7px;border-radius:5px;">In progress</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">3</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Prescription Setup</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Open Photon</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Prescription Created</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+          </div>
+          <div style="margin-top:auto;padding:13px 15px;border-top:1px solid #EDEFF3;background:#FAFBFC;"><div style="font-size:11px;color:#7A8090;line-height:1.5;">Results come from the Photon treatment catalog. IDs shown are sandbox values.</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:#fff;border-top:1px solid #E2E5EC;">
+        <div style="font-size:12px;color:#7A8090;">Step 2 of 5 · 1 treatment selected</div>
+        <div style="display:flex;gap:10px;">
+          <button style="background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Change Treatment</button>
+          <button style="background:#3A50E4;color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Continue to Prescription Setup →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FRAME 1c — PRESCRIPTION SETUP ================= -->
+    <div id="1c" style="position:relative;flex:0 0 1340px;width:1340px;min-width:1340px;background:#EEF0F4;border:1px solid #C9CEDA;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(20,28,50,.35);display:flex;flex-direction:column;">
+      <div style="position:absolute;top:14px;left:14px;z-index:5;background:#171A21;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;padding:4px 9px;border-radius:6px;">1c · PRESCRIPTION SETUP</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 22px 0 210px;background:#10131C;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:18px;height:18px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+          <span style="font-weight:700;font-size:15px;">Photon</span>
+          <span style="font-size:13px;color:#9AA0B4;">Clinic Assistant</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;">
+          <div style="display:flex;flex-direction:column;line-height:1.2;text-align:right;"><span style="font-size:14px;font-weight:600;">Maria Gonzalez</span><span style="font-size:11px;color:#9AA0B4;">Dermatology · New visit</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:#1B1F2C;border:1px solid #2A2F3E;border-radius:8px;padding:6px 11px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">EN</span><span style="color:#6E7488;">⇄</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">ES</span></div>
+          <div style="display:flex;align-items:center;gap:7px;background:#122A20;border:1px solid #1E4433;border-radius:20px;padding:6px 12px;"><span style="width:7px;height:7px;border-radius:50%;background:#22C58B;box-shadow:0 0 0 3px rgba(34,197,139,.16);"></span><span style="font-size:12px;color:#BFE9D5;">Photon: patient synced</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;background:#fff;border-bottom:1px solid #E2E5EC;">
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Patient · DOB</div><div style="font-size:13px;font-weight:600;">Maria Gonzalez · 03/14/1991</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Phone · Language</div><div style="font-size:13px;font-weight:600;">(718) 555-0142 · Spanish</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;background:#FDF7EC;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Allergies</div><div style="font-size:13px;font-weight:600;color:#7A5400;">Sulfa drugs</div></div>
+        <div style="flex:1.1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Current medications</div><div style="font-size:13px;font-weight:600;">Prenatal vitamin</div></div>
+        <div style="flex:1.2;padding:11px 18px;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Preferred pharmacy</div><div style="font-size:13px;font-weight:600;">Sunrise Rx · Brooklyn</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 372px 262px;gap:14px;padding:16px 18px;flex:1;">
+
+        <!-- Clinician pane: rx setup -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #EDEFF3;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:14px;font-weight:700;">Prescription Setup</div><div style="font-size:12px;color:#7A8090;">Review structured context before prescribing in Photon</div></div><span style="font-size:11px;font-weight:700;color:#9A6A00;background:#FDF7EC;border:1px solid #EEDFBE;padding:5px 10px;border-radius:16px;">Needs clinician review</span></div>
+          <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:13px 16px;">
+            <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Selected Photon treatment</div><div style="display:flex;align-items:center;gap:9px;"><span style="font-size:14px;font-weight:700;">Hydrocortisone 2.5% Topical Cream</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#EAEDFF;color:#2A3AB0;padding:3px 8px;border-radius:5px;">tx_5f3a9c21</span></div></div>
+            <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Draft patient instructions</div><div style="border:1px solid #E2E5EC;border-radius:8px;padding:11px 12px;font-size:13px;line-height:1.5;background:#FBFBFD;">Apply a thin layer to the affected area twice daily for 7 days, then stop. Avoid the face and eyes.</div></div>
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Condition discussed</div><div style="font-size:13px;font-weight:600;">Suspected eczema (dermatitis)</div></div>
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Days supply · Refills</div><div style="font-size:13px;font-weight:600;">7 days · 0 refills</div></div>
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Allergies mentioned</div><div style="font-size:13px;font-weight:600;color:#7A5400;">Sulfa drugs</div></div>
+            <div><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Current medications</div><div style="font-size:13px;font-weight:600;">Prenatal vitamin</div></div>
+            <div style="grid-column:1 / -1;"><div style="font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:4px;">Notes to pharmacist</div><div style="font-size:13px;color:#3A3F4C;">Patient is breastfeeding — clinician confirmed topical steroid plan.</div></div>
+            <div style="grid-column:1 / -1;border:1px solid #EEDFBE;background:#FDF7EC;border-radius:8px;padding:12px 13px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="width:8px;height:8px;border-radius:2px;background:#F0B429;"></span><span style="font-size:11px;font-weight:700;color:#7A5400;letter-spacing:.03em;">SAFETY CHECKLIST</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#5A4A20;">
+                <div style="display:flex;gap:8px;"><span style="color:#0E8A5A;font-weight:700;">✓</span><span>No sulfa in selected treatment</span></div>
+                <div style="display:flex;gap:8px;"><span style="color:#0E8A5A;font-weight:700;">✓</span><span>No interaction with current medications</span></div>
+                <div style="display:flex;gap:8px;"><span style="color:#B7791F;font-weight:700;">!</span><span style="font-weight:600;">Breastfeeding — patient question flagged for clinician review</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient pane: shows the flagged question translated -->
+        <div style="background:#F6F8FF;border:1px solid #DDE3F5;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #E2E7F6;background:#EEF2FF;"><div style="font-size:14px;font-weight:700;color:#2A3AB0;">Comunicación con paciente</div><div style="font-size:12px;color:#6C77B8;">Patient Spanish side · español</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;">
+            <div style="align-self:flex-start;max-width:88%;background:#fff;border:1px solid #DDE3F5;border-radius:12px 12px 12px 3px;padding:10px 12px;"><div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#8088BE;margin-bottom:3px;">Paciente · español</div><div style="font-size:13px;line-height:1.5;color:#2A2F3A;">¿Es seguro usar esta crema mientras estoy amamantando?</div></div>
+            <div style="align-self:flex-end;max-width:88%;background:#EAEDFF;border:1px solid #C9D0F2;border-radius:12px 12px 3px 12px;padding:10px 12px;"><div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#5A66C0;margin-bottom:3px;">Translated for clinician</div><div style="font-size:13px;line-height:1.5;color:#2A2F3A;">"Is it safe to use this cream while I'm breastfeeding?"</div></div>
+            <div style="margin-top:auto;font-size:11.5px;color:#7A82B8;line-height:1.5;background:#EEF2FF;border-radius:8px;padding:9px 11px;">Medical questions are translated and summarized for the clinician — the assistant does not answer them independently.</div>
+          </div>
+        </div>
+
+        <!-- Rail: 2 complete, setup needs review -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 15px;border-bottom:1px solid #EDEFF3;"><div style="font-size:13px;font-weight:700;">Photon Workflow</div><div style="font-size:11.5px;color:#7A8090;">Clinician reviews every step</div></div>
+          <div style="padding:14px 15px;display:flex;flex-direction:column;gap:2px;">
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Intake</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Treatment Search</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#F0B429;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">!</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Prescription Setup</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9A6A00;background:#FDF7EC;padding:2px 7px;border-radius:5px;">Needs review</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">4</div><div style="width:2px;flex:1;background:#E4E7EF;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Open Photon</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#EDEFF3;color:#A6ABBA;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;">5</div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;color:#9096A6;">Prescription Created</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#9096A6;">Not started</span></div></div>
+          </div>
+          <div style="margin-top:auto;padding:13px 15px;border-top:1px solid #EDEFF3;background:#FAFBFC;"><div style="font-size:11px;color:#7A8090;line-height:1.5;">The clinician signs and completes the prescription inside Photon.</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:#fff;border-top:1px solid #E2E5EC;">
+        <div style="font-size:12px;color:#7A8090;">Step 3 of 5 · Review required before Photon handoff</div>
+        <div style="display:flex;gap:10px;">
+          <button style="background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Edit Setup</button>
+          <button style="background:#3A50E4;color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Open Photon Prescribing ↗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FRAME 1d — PRESCRIPTION CREATED ================= -->
+    <div id="1d" style="position:relative;flex:0 0 1340px;width:1340px;min-width:1340px;background:#EEF0F4;border:1px solid #C9CEDA;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px -24px rgba(20,28,50,.35);display:flex;flex-direction:column;">
+      <div style="position:absolute;top:14px;left:14px;z-index:5;background:#171A21;color:#fff;font-size:11px;font-weight:600;letter-spacing:.06em;padding:4px 9px;border-radius:6px;">1d · PRESCRIPTION CREATED</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 22px 0 220px;background:#10131C;color:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:18px;height:18px;background:#3A50E4;border-radius:5px;transform:rotate(45deg);"></div>
+          <span style="font-weight:700;font-size:15px;">Photon</span>
+          <span style="font-size:13px;color:#9AA0B4;">Clinic Assistant</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:22px;">
+          <div style="display:flex;flex-direction:column;line-height:1.2;text-align:right;"><span style="font-size:14px;font-weight:600;">Maria Gonzalez</span><span style="font-size:11px;color:#9AA0B4;">Dermatology · New visit</span></div>
+          <div style="display:flex;align-items:center;gap:8px;background:#1B1F2C;border:1px solid #2A2F3E;border-radius:8px;padding:6px 11px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">EN</span><span style="color:#6E7488;">⇄</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;">ES</span></div>
+          <div style="display:flex;align-items:center;gap:7px;background:#122A20;border:1px solid #1E4433;border-radius:20px;padding:6px 12px;"><span style="width:7px;height:7px;border-radius:50%;background:#22C58B;box-shadow:0 0 0 3px rgba(34,197,139,.16);"></span><span style="font-size:12px;color:#BFE9D5;">Photon: Rx active</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:stretch;gap:0;background:#fff;border-bottom:1px solid #E2E5EC;">
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Patient · DOB</div><div style="font-size:13px;font-weight:600;">Maria Gonzalez · 03/14/1991</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Phone · Language</div><div style="font-size:13px;font-weight:600;">(718) 555-0142 · Spanish</div></div>
+        <div style="flex:1;padding:11px 18px;border-right:1px solid #EDEFF3;background:#FDF7EC;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9A6A00;margin-bottom:3px;">Allergies</div><div style="font-size:13px;font-weight:600;color:#7A5400;">Sulfa drugs</div></div>
+        <div style="flex:1.1;padding:11px 18px;border-right:1px solid #EDEFF3;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Current medications</div><div style="font-size:13px;font-weight:600;">Prenatal vitamin</div></div>
+        <div style="flex:1.2;padding:11px 18px;"><div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#9096A6;margin-bottom:3px;">Preferred pharmacy</div><div style="font-size:13px;font-weight:600;">Sunrise Rx · Brooklyn</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 372px 262px;gap:14px;padding:16px 18px;flex:1;">
+
+        <!-- Clinician pane: created summary -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #EDEFF3;"><div style="font-size:14px;font-weight:700;">Prescription Created</div><div style="font-size:12px;color:#7A8090;">Confirmed by Photon · final clinician summary</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+            <div style="border:1px solid #BFE6D2;background:#EEF9F3;border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;">
+              <div style="width:26px;height:26px;border-radius:50%;background:#0E8A5A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">✓</div>
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;color:#0B6B47;">Prescription created in Photon</div>
+                <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;">
+                  <div><div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#5A8A74;">Prescription ID</div><div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:#0B6B47;">rx_8842c1</div></div>
+                  <div><div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#5A8A74;">Rx state</div><div style="font-size:12.5px;font-weight:700;color:#0B6B47;">ACTIVE</div></div>
+                  <div><div style="font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#5A8A74;">Order status</div><div style="font-size:12.5px;font-weight:700;color:#0B6B47;">ROUTING → Sunrise Rx</div></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:6px;">Medication</div>
+              <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:14px;font-weight:700;">Hydrocortisone 2.5% Topical Cream</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#EAEDFF;color:#2A3AB0;padding:3px 8px;border-radius:5px;">tx_5f3a9c21</span></div>
+              <div style="font-size:12.5px;color:#7A8090;margin-top:3px;">30 g tube · 7 days supply · 0 refills</div>
+            </div>
+            <div>
+              <div style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#8A90A0;margin-bottom:6px;">Final English summary (clinician review)</div>
+              <div style="border:1px solid #E2E5EC;border-radius:8px;padding:12px 13px;font-size:13px;line-height:1.55;background:#FBFBFD;color:#2A2F3A;">Dermatitis of the forearm. Prescribed hydrocortisone 2.5% cream, applied thinly to the affected area twice daily for 7 days. Patient is breastfeeding; topical low-potency steroid discussed and considered appropriate. No sulfa exposure. Follow up if no improvement in 2 weeks.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient pane: final Spanish instructions -->
+        <div style="background:#F6F8FF;border:1px solid #DDE3F5;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 16px;border-bottom:1px solid #E2E7F6;background:#EEF2FF;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:14px;font-weight:700;color:#2A3AB0;">Instrucciones para el paciente</div><div style="font-size:12px;color:#6C77B8;">Final Spanish medication instructions</div></div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;">
+            <div style="background:#fff;border:1px solid #DDE3F5;border-radius:10px;padding:14px;">
+              <div style="font-size:13.5px;font-weight:700;color:#2A3AB0;margin-bottom:8px;">Crema de hidrocortisona 2.5%</div>
+              <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.6;color:#2A2F3A;">
+                <li>Aplique una capa fina en la zona afectada <strong>dos veces al día</strong>.</li>
+                <li>Úsela durante <strong>7 días</strong> y luego deténgase.</li>
+                <li>No la use en la cara ni cerca de los ojos.</li>
+                <li>Si no mejora en 2 semanas, llame a la clínica.</li>
+              </ul>
+              <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #DDE3F5;font-size:12px;color:#6C77B8;">Recoger en: Sunrise Rx · Brooklyn</div>
+            </div>
+            <div style="margin-top:auto;display:flex;gap:9px;">
+              <button style="flex:1;background:#3A50E4;color:#fff;border:none;padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;">Copy Spanish Instructions</button>
+              <button style="background:#fff;color:#2A3AB0;border:1px solid #C4CCEC;padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer;">Send by SMS</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rail: all complete -->
+        <div style="background:#fff;border:1px solid #E2E5EC;border-radius:10px;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:13px 15px;border-bottom:1px solid #EDEFF3;"><div style="font-size:13px;font-weight:700;">Photon Workflow</div><div style="font-size:11.5px;color:#7A8090;">Visit complete</div></div>
+          <div style="padding:14px 15px;display:flex;flex-direction:column;gap:2px;">
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Intake</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Treatment Search</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Prescription Setup</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div><div style="width:2px;flex:1;background:#0E8A5A;margin-top:4px;"></div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Open Photon</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+            <div style="display:flex;gap:11px;padding:9px 0;"><div style="display:flex;flex-direction:column;align-items:center;"><div style="width:22px;height:22px;border-radius:50%;background:#0E8A5A;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✓</div></div><div style="padding-top:1px;"><div style="font-size:13px;font-weight:600;">Prescription Created</div><span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:600;color:#0E8A5A;background:#E7F5EF;padding:2px 7px;border-radius:5px;">Complete</span></div></div>
+          </div>
+          <div style="margin-top:auto;padding:13px 15px;border-top:1px solid #EDEFF3;background:#FAFBFC;"><div style="font-size:11px;color:#7A8090;line-height:1.5;">Order is routing to the patient's preferred pharmacy via Photon.</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;background:#fff;border-top:1px solid #E2E5EC;">
+        <div style="font-size:12px;color:#7A8090;">Visit complete · after-visit instructions ready</div>
+        <div style="display:flex;gap:10px;">
+          <button style="background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Copy Spanish Instructions</button>
+          <button style="background:#fff;color:#2A2F3A;border:1px solid #C9CEDA;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Send by SMS</button>
+          <button style="background:#3A50E4;color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;">Save to Visit Notes</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+</body>
+</html>
