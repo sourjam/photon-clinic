@@ -136,6 +136,15 @@ export function VisitWorkspace() {
             />
             <MedicationPrepCard
               medication={MEDICATION}
+              onQuickTerm={workflow.actions.searchTreatmentTerm}
+              onSearch={workflow.actions.searchTreatments}
+              onSearchQueryChange={workflow.actions.setTreatmentQuery}
+              onSelectTreatment={workflow.actions.selectTreatment}
+              searchQuery={workflow.state.treatmentQuery}
+              searchResults={workflow.state.treatmentResults}
+              searchStatus={workflow.state.treatmentSearchStatus}
+              selectedTreatment={workflow.state.selectedTreatment}
+              treatmentStale={derived.treatmentStale}
               treatmentId={workflow.state.treatmentId}
               treatmentIdState={treatmentIdState}
             />
@@ -176,7 +185,7 @@ export function VisitWorkspace() {
             <HandoffCard
               rows={HANDOFF_ROWS.map((row) => {
                 if (row.k === "Photon patient") return { ...row, v: workflow.state.patientId };
-                if (row.k === "Treatment") return { ...row, v: workflow.state.treatmentId };
+                if (row.k === "Treatment") return { ...row, v: workflow.state.selectedTreatment.id };
                 return row;
               })}
               status={handoffStatus}

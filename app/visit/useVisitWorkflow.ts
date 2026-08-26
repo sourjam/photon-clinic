@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { buildLog, buildMilestones, INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE } from "./demoData";
 import type { Phase, SafetyCheckKey, VisitState } from "./types";
-import type { InstructionsResponse, PhotonSyncResponse, TranslateDirection, TranslateResponse } from "../../lib/types";
+import type {
+  InstructionsResponse,
+  PhotonSyncResponse,
+  PhotonTreatmentSearchResponse,
+  TranslateDirection,
+  TranslateResponse,
+} from "../../lib/types";
 
 const TOAST_DELAY_MS = 2200;
 const SYNCED_KEYS = ["allergy", "interaction", "dose"] as const satisfies readonly SafetyCheckKey[];
@@ -21,6 +27,7 @@ type DerivedVisitState = {
   canReview: boolean;
   canFinalize: boolean;
   connOk: boolean;
+  treatmentStale: boolean;
 };
 
 type VisitActions = {
@@ -33,6 +40,10 @@ type VisitActions = {
   finalize: () => void;
   reset: () => void;
   setNote: (value: string) => void;
+  setTreatmentQuery: (value: string) => void;
+  searchTreatments: () => void;
+  searchTreatmentTerm: (term: string) => void;
+  selectTreatment: (id: string) => void;
   setPatientDraft: (value: string) => void;
   setClinicianReply: (value: string) => void;
   copySpanishInstructions: () => void;
@@ -94,8 +105,9 @@ function getDerived(state: VisitState): DerivedVisitState {
   const allChecked = checksDone === 4;
   const syncedCount = SYNCED_KEYS.filter((key) => checks[key]).length;
   const canReview = hasInstructions;
-  const canFinalize = hasInstructions && reviewed && allChecked && !isApiError;
   const connOk = !isIdle;
+  const treatmentStale = hasInstructions && state.selectedTreatment.id !== state.treatmentId;
+  const canFinalize = hasInstructions && reviewed && allChecked && !isApiError && !treatmentStale;
 
   return {
     isIdle,
@@ -110,6 +122,7 @@ function getDerived(state: VisitState): DerivedVisitState {
     canReview,
     canFinalize,
     connOk,
+    treatmentStale,
   };
 }
 
@@ -147,6 +160,13 @@ async function postJson<TResponse>(url: string, body?: Record<string, unknown>):
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
   });
+
+  if (!response.ok) throw new Error(`${url} failed with ${response.status}`);
+  return response.json() as Promise<TResponse>;
+}
+
+async function getJson<TResponse>(url: string): Promise<TResponse> {
+  const response = await fetch(url);
 
   if (!response.ok) throw new Error(`${url} failed with ${response.status}`);
   return response.json() as Promise<TResponse>;
@@ -196,8 +216,11 @@ export function useVisitWorkflow(): VisitWorkflow {
     }));
 
     const [instructionsResult, photonResult] = await Promise.allSettled([
-      postJson<InstructionsResponse>("/api/instructions", { note: state.note }),
-      postJson<PhotonSyncResponse>("/api/photon/sync"),
+      postJson<InstructionsResponse>("/api/instructions", {
+        note: state.note,
+        treatment: state.selectedTreatment,
+      }),
+      postJson<PhotonSyncResponse>("/api/photon/sync", { treatment: state.selectedTreatment }),
     ]);
 
     if (instructionsResult.status === "rejected") {
@@ -258,6 +281,38 @@ export function useVisitWorkflow(): VisitWorkflow {
     }));
   };
 
+  const runTreatmentSearch = async (rawTerm: string) => {
+    const term = rawTerm.trim();
+    if (term.length < 2) {
+      showToast("Type at least 2 characters to search");
+      return;
+    }
+
+    setState((current) => ({ ...current, treatmentQuery: term, treatmentSearchStatus: "loading" }));
+    try {
+      const response = await getJson<PhotonTreatmentSearchResponse>(
+        `/api/photon/treatments?term=${encodeURIComponent(term)}`,
+      );
+      setState((current) => ({
+        ...current,
+        integrationMode: current.integrationMode === "live" || response.mode === "live" ? "live" : "fixture",
+        treatmentResults: response.results,
+        treatmentSearchStatus: "ready",
+        logEntries: [
+          ...current.logEntries,
+          {
+            t: new Date().toTimeString().slice(0, 8),
+            code: "200",
+            msg: `GET /catalog/treatments → ${response.results.length} result${response.results.length === 1 ? "" : "s"}`,
+          },
+        ],
+      }));
+    } catch {
+      setState((current) => ({ ...current, treatmentSearchStatus: "error" }));
+      showToast("Treatment search failed");
+    }
+  };
+
   useEffect(() => {
     return () => {
       clearToastTimer();
@@ -297,6 +352,10 @@ export function useVisitWorkflow(): VisitWorkflow {
         showToast("Resolve the treatment lookup first");
         return;
       }
+      if (derived.treatmentStale) {
+        showToast("Regenerate instructions for the selected treatment");
+        return;
+      }
       if (!derived.hasInstructions) {
         showToast("Generate the Spanish instructions first");
         return;
@@ -325,6 +384,31 @@ export function useVisitWorkflow(): VisitWorkflow {
       setState(INITIAL_STATE);
     },
     setNote: (value) => setState((current) => ({ ...current, note: value })),
+    setTreatmentQuery: (value) => setState((current) => ({ ...current, treatmentQuery: value })),
+    searchTreatments: () => void runTreatmentSearch(state.treatmentQuery),
+    searchTreatmentTerm: (term) => void runTreatmentSearch(term),
+    selectTreatment: (id) => {
+      const treatment = state.treatmentResults.find((result) => result.id === id);
+      if (!treatment) return;
+
+      setState((current) => ({
+        ...current,
+        selectedTreatment: treatment,
+        finalized: false,
+        logEntries: [
+          ...current.logEntries,
+          {
+            t: new Date().toTimeString().slice(0, 8),
+            code: "200",
+            msg: `Selected treatment → ${treatment.id}`,
+          },
+        ],
+      }));
+
+      if (derived.hasInstructions && treatment.id !== state.treatmentId) {
+        showToast("Treatment changed · regenerate instructions before handoff");
+      }
+    },
     setPatientDraft: (value) => setState((current) => ({ ...current, patientDraft: value })),
     setClinicianReply: (value) => setState((current) => ({ ...current, clinicianReply: value })),
     copySpanishInstructions: () => {

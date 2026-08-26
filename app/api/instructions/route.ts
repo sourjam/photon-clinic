@@ -3,6 +3,12 @@ import { generatePatientInstructions } from "../../../lib/ai";
 
 const requestSchema = z.object({
   note: z.string().min(1),
+  treatment: z
+    .object({
+      id: z.string().min(1),
+      name: z.string().min(1),
+    })
+    .optional(),
 });
 
 export async function POST(request: Request) {
@@ -12,7 +18,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json(await generatePatientInstructions(parsed.data.note));
+    return Response.json(await generatePatientInstructions(parsed.data.note, parsed.data.treatment));
   } catch (error) {
     console.error("Instruction generation failed", error instanceof Error ? error.message : error);
     return Response.json({ error: "Instruction generation failed" }, { status: 502 });
