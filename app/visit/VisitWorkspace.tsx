@@ -104,25 +104,27 @@ export function VisitWorkspace() {
           status={status}
           visitSummary={PATIENT.visit}
         />
+        <div className="px-[14px] pt-[14px] wide:px-5 wide:pt-4">
+          <PatientContextCard
+            allergies={PATIENT.allergies}
+            currentMeds={PATIENT.currentMeds}
+            dirty={workflow.state.patientDirty}
+            draftPatient={workflow.state.draftPatient}
+            editing={workflow.state.patientEditing}
+            onCancel={workflow.actions.cancelPatientEdit}
+            onDraftChange={workflow.actions.setDraftPatientField}
+            onSave={workflow.actions.savePatient}
+            onToggleEdit={workflow.actions.togglePatientEdit}
+            patient={workflow.state.patient}
+            photonPatientId={workflow.state.patientId}
+            raisedInVisit={PATIENT.raisedInVisit}
+            syncStatus={workflow.state.patientSyncStatus}
+            visitReason={PATIENT.visitReason}
+          />
+        </div>
         <div className={bodyClasses}>
           <section aria-label="AI Prep" className={columnClasses} data-region="left">
             <SectionHeader meta="OpenAI · clinician-reviewed" title="AI Prep" />
-            <PatientContextCard
-              allergies={PATIENT.allergies}
-              currentMeds={PATIENT.currentMeds}
-              dirty={workflow.state.patientDirty}
-              draftPatient={workflow.state.draftPatient}
-              editing={workflow.state.patientEditing}
-              onCancel={workflow.actions.cancelPatientEdit}
-              onDraftChange={workflow.actions.setDraftPatientField}
-              onSave={workflow.actions.savePatient}
-              onToggleEdit={workflow.actions.togglePatientEdit}
-              patient={workflow.state.patient}
-              photonPatientId={workflow.state.patientId}
-              raisedInVisit={PATIENT.raisedInVisit}
-              syncStatus={workflow.state.patientSyncStatus}
-              visitReason={PATIENT.visitReason}
-            />
             <ClinicianNoteCard
               hasInstructions={derived.hasInstructions}
               isLoading={derived.isLoading}
