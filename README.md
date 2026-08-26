@@ -8,6 +8,7 @@ This project was created with create-vinext-app.
 - `pnpm run build` builds the Cloudflare Worker output.
 - `pnpm run start` starts the built Worker locally with Wrangler.
 - `pnpm run deploy` deploys the Cloudflare Worker.
+- `npm run test:smoke` runs deployed API smoke tests.
 
 ## Prototype Controls
 
@@ -51,3 +52,18 @@ For local Worker testing after `npm run build`, copy `.dev.vars.example` to `.de
 secret values before running `npm run start`.
 
 The MVP syncs patient and treatment context only. It does not create prescriptions or request prescribing scope.
+
+## Deployed smoke tests
+
+Run API and browser UI smoke tests against a deployed Worker:
+
+```sh
+SMOKE_BASE_URL=https://photon-clinic.jimyyang-cf.workers.dev npm run test:smoke
+```
+
+The live patient sync and browser UI smoke create Photon sandbox patient records and are skipped by
+default. Run them explicitly:
+
+```sh
+SMOKE_BASE_URL=https://photon-clinic.jimyyang-cf.workers.dev LIVE_SMOKE=1 npm run test:smoke
+```
