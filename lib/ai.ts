@@ -7,6 +7,7 @@ import type {
   TranslateDirection,
   TranslateResponse,
 } from "./types";
+import type { VisitContext } from "../app/visit/types";
 
 const instructionResponseSchema = z.object({
   headingEs: z.string().min(1),
@@ -91,6 +92,7 @@ export async function generatePatientInstructions(
   note: string,
   treatment?: SelectedTreatmentInput,
   patient?: PhotonPatientInput,
+  visitContext?: VisitContext,
 ): Promise<InstructionsResponse> {
   if (!hasOpenAiCredentials()) return fixtureInstructionsResponse(treatment);
 
@@ -99,6 +101,14 @@ export async function generatePatientInstructions(
       "Generate patient-friendly Spanish dermatology instructions from this clinician note.",
       "Use respectful plain Spanish. Preserve medication names, dose numbers, frequencies, and durations exactly.",
       patient ? `Patient: ${patient.firstName} ${patient.lastName}, DOB ${patient.dateOfBirth}, sex ${patient.sex}.` : "",
+      visitContext
+        ? [
+            `Visit context: ${visitContext.specialty || "unspecified specialty"} · ${visitContext.visitReason || "unspecified reason"}.`,
+            `Known allergies: ${visitContext.allergies || "none documented"}.`,
+            `Current medications: ${visitContext.currentMeds || "none documented"}.`,
+            visitContext.raisedInVisit ? `Raised in visit: ${visitContext.raisedInVisit}.` : "",
+          ].join("\n")
+        : "",
       treatment ? `Selected Photon treatment: ${treatment.name} (${treatment.id}).` : "",
       "Do not answer the breastfeeding question as medical advice; put that uncertainty in a callout that requires clinician confirmation.",
       "Return only the requested JSON shape.",

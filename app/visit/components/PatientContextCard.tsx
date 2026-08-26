@@ -1,4 +1,4 @@
-import type { PatientSex, PatientSyncStatus, VisitPatient } from "../types";
+import type { PatientSex, PatientSyncStatus, VisitContext, VisitPatient } from "../types";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
 import { Card } from "./ui/Card";
@@ -12,13 +12,11 @@ type PatientContextCardProps = {
   dirty: boolean;
   syncStatus: PatientSyncStatus;
   photonPatientId: string;
-  visitReason: string;
-  allergies: string;
-  currentMeds: string;
-  raisedInVisit: string;
+  visitContext: VisitContext;
   onToggleEdit: () => void;
   onSync: () => void;
   onDraftChange: (field: keyof VisitPatient, value: string) => void;
+  onVisitContextChange: (field: keyof Omit<VisitContext, "language">, value: string) => void;
   onSave: () => void;
   onCancel: () => void;
 };
@@ -167,6 +165,42 @@ export function PatientContextCard(props: PatientContextCardProps) {
               value={props.draftPatient.externalId}
             />
           </div>
+          <div>
+            <FieldLabel>Visit reason</FieldLabel>
+            <input
+              aria-label="Visit reason"
+              className="w-full rounded-[6px] border border-line-input bg-surface-sunken px-[9px] py-[7px] text-[12.5px] text-ink-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              onChange={(event) => props.onVisitContextChange("visitReason", event.target.value)}
+              value={props.visitContext.visitReason}
+            />
+          </div>
+          <div>
+            <FieldLabel>Allergies</FieldLabel>
+            <input
+              aria-label="Allergies"
+              className="w-full rounded-[6px] border border-line-input bg-surface-sunken px-[9px] py-[7px] text-[12.5px] text-ink-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              onChange={(event) => props.onVisitContextChange("allergies", event.target.value)}
+              value={props.visitContext.allergies}
+            />
+          </div>
+          <div>
+            <FieldLabel>Current meds</FieldLabel>
+            <input
+              aria-label="Current medications"
+              className="w-full rounded-[6px] border border-line-input bg-surface-sunken px-[9px] py-[7px] text-[12.5px] text-ink-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              onChange={(event) => props.onVisitContextChange("currentMeds", event.target.value)}
+              value={props.visitContext.currentMeds}
+            />
+          </div>
+          <div>
+            <FieldLabel>Raised in visit</FieldLabel>
+            <input
+              aria-label="Raised in visit"
+              className="w-full rounded-[6px] border border-line-input bg-surface-sunken px-[9px] py-[7px] text-[12.5px] text-ink-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/15"
+              onChange={(event) => props.onVisitContextChange("raisedInVisit", event.target.value)}
+              value={props.visitContext.raisedInVisit}
+            />
+          </div>
           <div className="flex flex-wrap items-center gap-[10px] wide:col-span-3">
             <Button onClick={props.onSave} size="sm">
               Save patient
@@ -224,7 +258,7 @@ export function PatientContextCard(props: PatientContextCardProps) {
               <FieldLabel tone={cell.labelTone}>{cell.label}</FieldLabel>
             </dt>
             <dd className={["text-[12.5px] font-semibold", cell.valueClassName].join(" ")}>
-              {props[cell.key]}
+              {props.visitContext[cell.key]}
             </dd>
           </div>
         ))}

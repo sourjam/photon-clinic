@@ -56,6 +56,7 @@ export function MedicationPrepCard({
     treatmentIdState === "resolved" ? treatmentId : unresolvedTreatmentIdLabels[treatmentIdState];
   const hasResults = searchStatus === "ready" && searchResults.length > 0;
   const hasNoResults = searchStatus === "ready" && searchResults.length === 0;
+  const hasSelectedTreatment = Boolean(selectedTreatment.id);
 
   return (
     <Card>
@@ -102,21 +103,35 @@ export function MedicationPrepCard({
           ))}
         </div>
 
-        <div className="mt-[10px] rounded-[8px] border border-ok-line-2 bg-ok-bg-2 px-[13px] py-3">
+        <div
+          className={[
+            "mt-[10px] rounded-[8px] border px-[13px] py-3",
+            hasSelectedTreatment ? "border-ok-line-2 bg-ok-bg-2" : "border-line-2 bg-surface-sunken",
+          ].join(" ")}
+        >
           <div className="flex items-start justify-between gap-[10px]">
             <div className="min-w-0">
-              <div className="mb-[3px] text-[10px] font-semibold uppercase tracking-[.06em] text-ok-ink">
+              <div
+                className={[
+                  "mb-[3px] text-[10px] font-semibold uppercase tracking-[.06em]",
+                  hasSelectedTreatment ? "text-ok-ink" : "text-muted-3",
+                ].join(" ")}
+              >
                 Active treatment
               </div>
-              <div className="text-[13.5px] font-bold leading-[1.35] text-ink">{selectedTreatment.name}</div>
-              <div className="mt-[6px] flex flex-wrap items-center gap-[7px]">
-                <span className="rounded-[5px] bg-brand-bg-3 px-2 py-[3px] font-mono text-[10.5px] text-brand-ink">
-                  {selectedTreatment.id}
-                </span>
-                {selectedTreatment.form ? <span className="text-[11px] text-muted">{selectedTreatment.form}</span> : null}
+              <div className="text-[13.5px] font-bold leading-[1.35] text-ink">
+                {hasSelectedTreatment ? selectedTreatment.name : "No treatment selected"}
               </div>
+              {hasSelectedTreatment ? (
+                <div className="mt-[6px] flex flex-wrap items-center gap-[7px]">
+                  <span className="rounded-[5px] bg-brand-bg-3 px-2 py-[3px] font-mono text-[10.5px] text-brand-ink">
+                    {selectedTreatment.id}
+                  </span>
+                  {selectedTreatment.form ? <span className="text-[11px] text-muted">{selectedTreatment.form}</span> : null}
+                </div>
+              ) : null}
             </div>
-            <Badge tone="success">Treatment selected</Badge>
+            {hasSelectedTreatment ? <Badge tone="success">Treatment selected</Badge> : <Badge tone="neutral">Select treatment</Badge>}
           </div>
           {treatmentStale ? (
             <div className="mt-[9px] rounded-[6px] border border-warn-line bg-warn-bg px-[10px] py-[7px] text-[11.5px] font-medium text-warn-ink">
@@ -183,7 +198,9 @@ export function MedicationPrepCard({
         <div className="col-span-2">
           <FieldLabel>Medication</FieldLabel>
           <div className="flex flex-wrap items-center gap-[9px]">
-            <span className="text-[13.5px] font-bold text-ink">{selectedTreatment.name}</span>
+            <span className="text-[13.5px] font-bold text-ink">
+              {hasSelectedTreatment ? selectedTreatment.name : "No treatment selected"}
+            </span>
             <span
               className={[
                 "rounded-[5px] px-2 py-[3px] font-mono text-[10.5px]",
