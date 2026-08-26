@@ -4,8 +4,11 @@ import { Button } from "./ui/Button";
 
 type ActionBarProps = {
   hint: string;
+  onGenerate: () => void;
   onNewVisit: () => void;
   onReset: () => void;
+  onSyncPhoton: () => void;
+  onTranslate: () => void;
   onCopy: () => void;
   onFinalize: () => void;
   canCopy: boolean;
@@ -35,8 +38,11 @@ function FinalizeButton({
 
 export function ActionBar({
   hint,
+  onGenerate,
   onNewVisit,
   onReset,
+  onSyncPhoton,
+  onTranslate,
   onCopy,
   onFinalize,
   canCopy,
@@ -47,6 +53,15 @@ export function ActionBar({
     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-surface px-5 py-[11px]">
       {hint ? <div className="text-[11.5px] text-muted">{hint}</div> : <div className="min-w-0 flex-1" />}
       <div className="flex flex-wrap gap-2">
+        <Button onClick={onGenerate} size="md" variant="ghost">
+          Generate instructions
+        </Button>
+        <Button onClick={onSyncPhoton} size="md" variant="ghost">
+          Sync Photon
+        </Button>
+        <Button onClick={onTranslate} size="md" variant="ghost">
+          Translate
+        </Button>
         <Button onClick={onNewVisit} size="md" variant="ghost">
           New visit
         </Button>

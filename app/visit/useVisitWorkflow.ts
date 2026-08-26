@@ -109,6 +109,7 @@ type VisitActions = {
   setPatientDraft: (value: string) => void;
   setClinicianReply: (value: string) => void;
   copySpanishInstructions: () => void;
+  translateMessage: () => void;
   sendPatientMessage: () => void;
   sendClinicianReply: () => void;
   fillPatientExample: () => void;
@@ -202,6 +203,38 @@ function getDerived(state: VisitState): DerivedVisitState {
     patientSynced,
     patientDirty: state.patientDirty,
   };
+}
+
+export function getFinalizeBlocker(state: VisitState): string | null {
+  const derived = getDerived(state);
+
+  if (derived.isApiError) return "Resolve the treatment lookup first";
+  if (!state.selectedTreatment.id) return "Select a treatment first";
+  if (derived.treatmentStale) return "Regenerate instructions for the selected treatment";
+  if (!derived.hasInstructions) return "Generate the Spanish instructions first";
+  if (derived.patientDirty) return "Use Sync patient before finalizing";
+  if (!derived.patientSynced) return "Sync the patient to Photon first";
+  if (!state.reviewed) return "Mark the AI output reviewed first";
+  if (!derived.allChecked) return "Complete the safety review first";
+  return null;
+}
+
+export function appendInstructionLogEntries(
+  currentEntries: VisitState["logEntries"],
+  instructionEntry: VisitState["logEntries"][number],
+  regeneratedForTreatment: boolean,
+): VisitState["logEntries"] {
+  if (!regeneratedForTreatment) return [...currentEntries, instructionEntry];
+
+  return [
+    ...currentEntries,
+    instructionEntry,
+    {
+      t: instructionEntry.t,
+      code: "200",
+      msg: "Instructions regenerated for selected treatment",
+    },
+  ];
 }
 
 function stamp(threadLength: number): string {
@@ -314,6 +347,7 @@ export function useVisitWorkflow(): VisitWorkflow {
       showToast("Enter a clinician note first");
       return;
     }
+    const regeneratedForTreatment = derived.treatmentStale;
 
     setState((current) => ({
       ...current,
@@ -338,7 +372,7 @@ export function useVisitWorkflow(): VisitWorkflow {
         instructionsHeading: instructions.headingEs,
         instructions: instructions.blocks,
         instructionsPlainText: instructions.plainText,
-        logEntries: [...current.logEntries, instructions.logEntry],
+        logEntries: appendInstructionLogEntries(current.logEntries, instructions.logEntry, regeneratedForTreatment),
       }));
     } catch {
       setState((current) => ({
@@ -473,36 +507,9 @@ export function useVisitWorkflow(): VisitWorkflow {
       }));
     },
     finalize: () => {
-      if (derived.isApiError) {
-        showToast("Resolve the treatment lookup first");
-        return;
-      }
-      if (derived.treatmentStale) {
-        showToast("Regenerate instructions for the selected treatment");
-        return;
-      }
-      if (!derived.hasInstructions) {
-        showToast("Generate the Spanish instructions first");
-        return;
-      }
-      if (!state.selectedTreatment.id) {
-        showToast("Select a treatment first");
-        return;
-      }
-      if (derived.patientDirty) {
-        showToast("Use Sync patient before finalizing");
-        return;
-      }
-      if (!derived.patientSynced) {
-        showToast("Sync the patient to Photon first");
-        return;
-      }
-      if (!state.reviewed) {
-        showToast("Mark the AI output reviewed first");
-        return;
-      }
-      if (!derived.allChecked) {
-        showToast("Complete the safety review first");
+      const blocker = getFinalizeBlocker(state);
+      if (blocker) {
+        showToast(blocker);
         return;
       }
       setState((current) => ({
@@ -603,6 +610,17 @@ export function useVisitWorkflow(): VisitWorkflow {
         void navigator.clipboard.writeText(state.instructionsPlainText);
       } catch {}
       showToast("Spanish instructions copied to clipboard");
+    },
+    translateMessage: () => {
+      if (state.patientDraft.trim()) {
+        void actions.sendPatientMessage();
+        return;
+      }
+      if (state.clinicianReply.trim()) {
+        void actions.sendClinicianReply();
+        return;
+      }
+      showToast("Enter a message to translate");
     },
     sendPatientMessage: async () => {
       const text = state.patientDraft.trim();
