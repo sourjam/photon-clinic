@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { fixtureInstructionsResponse, fixtureTranslateResponse } from "./fixtures";
-import type { InstructionsResponse, SelectedTreatmentInput, TranslateDirection, TranslateResponse } from "./types";
+import type {
+  InstructionsResponse,
+  PhotonPatientInput,
+  SelectedTreatmentInput,
+  TranslateDirection,
+  TranslateResponse,
+} from "./types";
 
 const instructionResponseSchema = z.object({
   headingEs: z.string().min(1),
@@ -84,6 +90,7 @@ async function callOpenAiJson(input: string, schemaName: string, schema: Record<
 export async function generatePatientInstructions(
   note: string,
   treatment?: SelectedTreatmentInput,
+  patient?: PhotonPatientInput,
 ): Promise<InstructionsResponse> {
   if (!hasOpenAiCredentials()) return fixtureInstructionsResponse(treatment);
 
@@ -91,6 +98,7 @@ export async function generatePatientInstructions(
     [
       "Generate patient-friendly Spanish dermatology instructions from this clinician note.",
       "Use respectful plain Spanish. Preserve medication names, dose numbers, frequencies, and durations exactly.",
+      patient ? `Patient: ${patient.firstName} ${patient.lastName}, DOB ${patient.dateOfBirth}, sex ${patient.sex}.` : "",
       treatment ? `Selected Photon treatment: ${treatment.name} (${treatment.id}).` : "",
       "Do not answer the breastfeeding question as medical advice; put that uncertainty in a callout that requires clinician confirmation.",
       "Return only the requested JSON shape.",

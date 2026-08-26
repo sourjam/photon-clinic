@@ -5,6 +5,12 @@ export const CLINICIAN_NOTE =
   "Suspected eczema flare on forearms. Discussed moisturizing, avoiding fragrance, and short course topical steroid. Patient asks if treatment is safe while breastfeeding.";
 
 export const PATIENT = {
+  firstName: "Maria",
+  lastName: "Gonzalez",
+  dateOfBirth: "1988-04-12",
+  sex: "Female",
+  phone: "(718) 555-0142",
+  externalId: "",
   name: "Maria Gonzalez",
   meta: "DOB 1988-04-12 · Spanish",
   visit: "Dermatology · suspected eczema flare",
@@ -12,6 +18,15 @@ export const PATIENT = {
   allergies: "Sulfa",
   currentMeds: "Prenatal vitamin",
   raisedInVisit: "Breastfeeding question",
+} as const;
+
+export const DEFAULT_PATIENT = {
+  firstName: PATIENT.firstName,
+  lastName: PATIENT.lastName,
+  dateOfBirth: PATIENT.dateOfBirth,
+  sex: PATIENT.sex,
+  phone: PATIENT.phone,
+  externalId: PATIENT.externalId,
 } as const;
 
 export const PHOTON = {
@@ -73,7 +88,12 @@ export const INITIAL_STATE: VisitState = {
   instructionsHeading: fixtureInstructions.headingEs,
   instructions: fixtureInstructions.blocks,
   instructionsPlainText: fixtureInstructions.plainText,
-  patientId: fixturePhotonSyncResponse().patientId,
+  patient: DEFAULT_PATIENT,
+  draftPatient: DEFAULT_PATIENT,
+  patientEditing: false,
+  patientDirty: false,
+  patientSyncStatus: "none",
+  patientId: "",
   treatmentId: fixturePhotonSyncResponse().treatmentId,
   selectedTreatment: DEFAULT_TREATMENT,
   treatmentQuery: "hydrocortisone",

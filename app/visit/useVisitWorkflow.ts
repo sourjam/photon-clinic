@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { buildLog, buildMilestones, INITIAL_STATE, PATIENT_FOLLOWUP_EXAMPLE } from "./demoData";
-import type { Phase, SafetyCheckKey, VisitState } from "./types";
+import type { PatientSex, Phase, SafetyCheckKey, VisitPatient, VisitState } from "./types";
 import type {
   InstructionsResponse,
+  PhotonPatientInput,
   PhotonSyncResponse,
   PhotonTreatmentSearchResponse,
   TranslateDirection,
@@ -28,6 +29,8 @@ type DerivedVisitState = {
   canFinalize: boolean;
   connOk: boolean;
   treatmentStale: boolean;
+  patientSynced: boolean;
+  patientDirty: boolean;
 };
 
 type VisitActions = {
@@ -44,6 +47,10 @@ type VisitActions = {
   searchTreatments: () => void;
   searchTreatmentTerm: (term: string) => void;
   selectTreatment: (id: string) => void;
+  togglePatientEdit: () => void;
+  setDraftPatientField: (field: keyof VisitPatient, value: string) => void;
+  savePatient: () => void;
+  cancelPatientEdit: () => void;
   setPatientDraft: (value: string) => void;
   setClinicianReply: (value: string) => void;
   copySpanishInstructions: () => void;
@@ -71,6 +78,11 @@ function getPhasePreset(
   | "instructionsHeading"
   | "instructions"
   | "instructionsPlainText"
+  | "patient"
+  | "draftPatient"
+  | "patientEditing"
+  | "patientDirty"
+  | "patientSyncStatus"
   | "patientId"
   | "treatmentId"
   | "milestones"
@@ -86,7 +98,12 @@ function getPhasePreset(
     instructionsHeading: INITIAL_STATE.instructionsHeading,
     instructions: INITIAL_STATE.instructions,
     instructionsPlainText: INITIAL_STATE.instructionsPlainText,
-    patientId: INITIAL_STATE.patientId,
+    patient: INITIAL_STATE.patient,
+    draftPatient: INITIAL_STATE.draftPatient,
+    patientEditing: false,
+    patientDirty: false,
+    patientSyncStatus: phase === "idle" ? "none" : "synced",
+    patientId: phase === "idle" ? "" : "pat_01HQ7K4M2Z",
     treatmentId: INITIAL_STATE.treatmentId,
     milestones: buildMilestones(phase),
     logEntries: buildLog(phase, finalized),
@@ -107,7 +124,9 @@ function getDerived(state: VisitState): DerivedVisitState {
   const canReview = hasInstructions;
   const connOk = !isIdle;
   const treatmentStale = hasInstructions && state.selectedTreatment.id !== state.treatmentId;
-  const canFinalize = hasInstructions && reviewed && allChecked && !isApiError && !treatmentStale;
+  const patientSynced = state.patientSyncStatus === "synced" || state.patientSyncStatus === "updated";
+  const canFinalize =
+    hasInstructions && reviewed && allChecked && !isApiError && !treatmentStale && patientSynced && !state.patientDirty;
 
   return {
     isIdle,
@@ -123,6 +142,8 @@ function getDerived(state: VisitState): DerivedVisitState {
     canFinalize,
     connOk,
     treatmentStale,
+    patientSynced,
+    patientDirty: state.patientDirty,
   };
 }
 
@@ -185,6 +206,28 @@ async function requestTranslation(text: string, direction: TranslateDirection): 
   return postJson<TranslateResponse>("/api/translate", { text, direction });
 }
 
+function toPhotonPatientInput(patient: VisitPatient): PhotonPatientInput {
+  return {
+    externalId: patient.externalId || undefined,
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    dateOfBirth: patient.dateOfBirth,
+    sex: patient.sex === "Male" ? "MALE" : patient.sex === "Female" ? "FEMALE" : "UNKNOWN",
+    phone: patient.phone || undefined,
+  };
+}
+
+function fromPhotonPatientInput(patient: PhotonPatientInput & { externalId: string }): VisitPatient {
+  return {
+    externalId: patient.externalId,
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    dateOfBirth: patient.dateOfBirth,
+    sex: patient.sex === "MALE" ? "Male" : patient.sex === "FEMALE" ? "Female" : "Other",
+    phone: patient.phone ?? "",
+  };
+}
+
 export function useVisitWorkflow(): VisitWorkflow {
   const [state, setState] = useState<VisitState>(INITIAL_STATE);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -211,6 +254,7 @@ export function useVisitWorkflow(): VisitWorkflow {
       phase: "loading",
       reviewed: false,
       finalized: false,
+      patientSyncStatus: "pending",
       milestones: buildMilestones("loading"),
       logEntries: buildLog("loading", false),
     }));
@@ -218,9 +262,13 @@ export function useVisitWorkflow(): VisitWorkflow {
     const [instructionsResult, photonResult] = await Promise.allSettled([
       postJson<InstructionsResponse>("/api/instructions", {
         note: state.note,
+        patient: toPhotonPatientInput(state.patient),
         treatment: state.selectedTreatment,
       }),
-      postJson<PhotonSyncResponse>("/api/photon/sync", { treatment: state.selectedTreatment }),
+      postJson<PhotonSyncResponse>("/api/photon/sync", {
+        patient: toPhotonPatientInput(state.patient),
+        treatment: state.selectedTreatment,
+      }),
     ]);
 
     if (instructionsResult.status === "rejected") {
@@ -229,6 +277,18 @@ export function useVisitWorkflow(): VisitWorkflow {
         phase: "aiError",
         reviewed: false,
         finalized: false,
+        patientSyncStatus:
+          photonResult.status === "fulfilled" ? (current.patientDirty ? "updated" : "synced") : "none",
+        patientDirty: photonResult.status === "fulfilled" ? false : current.patientDirty,
+        patientId: photonResult.status === "fulfilled" ? photonResult.value.patientId : current.patientId,
+        patient:
+          photonResult.status === "fulfilled" && photonResult.value.patient
+            ? fromPhotonPatientInput(photonResult.value.patient)
+            : current.patient,
+        draftPatient:
+          photonResult.status === "fulfilled" && photonResult.value.patient
+            ? fromPhotonPatientInput(photonResult.value.patient)
+            : current.draftPatient,
         milestones: photonResult.status === "fulfilled" ? photonResult.value.milestones : buildMilestones("aiError"),
         logEntries:
           photonResult.status === "fulfilled"
@@ -253,6 +313,7 @@ export function useVisitWorkflow(): VisitWorkflow {
         phase: "apiError",
         reviewed: false,
         finalized: false,
+        patientSyncStatus: "none",
         integrationMode: instructions.mode,
         instructionsHeading: instructions.headingEs,
         instructions: instructions.blocks,
@@ -276,6 +337,10 @@ export function useVisitWorkflow(): VisitWorkflow {
       instructionsPlainText: instructions.plainText,
       patientId: photon.patientId,
       treatmentId: photon.treatmentId,
+      patientSyncStatus: current.patientDirty ? "updated" : "synced",
+      patientDirty: false,
+      patient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.patient,
+      draftPatient: photon.patient ? fromPhotonPatientInput(photon.patient) : current.draftPatient,
       milestones: photon.milestones,
       logEntries: mergeLogEntries(instructions, photon),
     }));
@@ -360,6 +425,14 @@ export function useVisitWorkflow(): VisitWorkflow {
         showToast("Generate the Spanish instructions first");
         return;
       }
+      if (derived.patientDirty) {
+        showToast("Generate to sync patient edits to Photon first");
+        return;
+      }
+      if (!derived.patientSynced) {
+        showToast("Generate to sync the patient to Photon first");
+        return;
+      }
       if (!state.reviewed) {
         showToast("Mark the AI output reviewed first");
         return;
@@ -408,6 +481,40 @@ export function useVisitWorkflow(): VisitWorkflow {
       if (derived.hasInstructions && treatment.id !== state.treatmentId) {
         showToast("Treatment changed · regenerate instructions before handoff");
       }
+    },
+    togglePatientEdit: () => {
+      setState((current) => ({
+        ...current,
+        draftPatient: current.patientEditing ? current.draftPatient : { ...current.patient },
+        patientEditing: !current.patientEditing,
+      }));
+    },
+    setDraftPatientField: (field, value) => {
+      setState((current) => ({
+        ...current,
+        draftPatient: { ...current.draftPatient, [field]: value },
+      }));
+    },
+    savePatient: () => {
+      setState((current) => ({
+        ...current,
+        patient: { ...current.draftPatient },
+        patientEditing: false,
+        patientDirty: true,
+        finalized: false,
+        logEntries: [
+          ...current.logEntries,
+          { t: new Date().toTimeString().slice(0, 8), code: "200", msg: "Patient saved locally" },
+        ],
+      }));
+      showToast("Patient saved · run Generate to sync Photon");
+    },
+    cancelPatientEdit: () => {
+      setState((current) => ({
+        ...current,
+        draftPatient: { ...current.patient },
+        patientEditing: false,
+      }));
     },
     setPatientDraft: (value) => setState((current) => ({ ...current, patientDraft: value })),
     setClinicianReply: (value) => setState((current) => ({ ...current, clinicianReply: value })),

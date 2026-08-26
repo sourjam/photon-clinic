@@ -57,6 +57,19 @@ export type VisitTreatment = {
 
 export type TreatmentSearchStatus = "idle" | "loading" | "ready" | "error";
 
+export type PatientSex = "Female" | "Male" | "Other";
+
+export type VisitPatient = {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  sex: PatientSex;
+  phone: string;
+  externalId: string;
+};
+
+export type PatientSyncStatus = "none" | "pending" | "synced" | "updated";
+
 export type VisitState = {
   phase: Phase;
   note: string;
@@ -67,6 +80,11 @@ export type VisitState = {
   instructionsHeading: string;
   instructions: InstructionBlock[];
   instructionsPlainText: string;
+  patient: VisitPatient;
+  draftPatient: VisitPatient;
+  patientEditing: boolean;
+  patientDirty: boolean;
+  patientSyncStatus: PatientSyncStatus;
   patientId: string;
   treatmentId: string;
   selectedTreatment: VisitTreatment;
