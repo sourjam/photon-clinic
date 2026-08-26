@@ -206,7 +206,7 @@ export function PatientContextCard(props: PatientContextCardProps) {
               ? "Existing Photon patient was updated"
               : props.syncStatus === "synced"
                 ? "Patient record synced to Photon"
-                : "Run Generate to sync this patient to Photon"}
+                : "Use Generate Spanish instructions to sync this patient to Photon"}
         </span>
       </div>
       <dl className="flex flex-wrap">

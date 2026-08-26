@@ -426,11 +426,11 @@ export function useVisitWorkflow(): VisitWorkflow {
         return;
       }
       if (derived.patientDirty) {
-        showToast("Generate to sync patient edits to Photon first");
+        showToast("Use Generate Spanish instructions to sync patient edits to Photon first");
         return;
       }
       if (!derived.patientSynced) {
-        showToast("Generate to sync the patient to Photon first");
+        showToast("Use Generate Spanish instructions to sync the patient to Photon first");
         return;
       }
       if (!state.reviewed) {
@@ -507,7 +507,7 @@ export function useVisitWorkflow(): VisitWorkflow {
           { t: new Date().toTimeString().slice(0, 8), code: "200", msg: "Patient saved locally" },
         ],
       }));
-      showToast("Patient saved · run Generate to sync Photon");
+      showToast("Patient saved · use Generate Spanish instructions to sync Photon");
     },
     cancelPatientEdit: () => {
       setState((current) => ({
