@@ -1,6 +1,49 @@
-# vinext app
+# Photon Health Case Study
 
-This project was created with create-vinext-app.
+A clinician workspace for syncing Photon patient/treatment context and generating reviewed Spanish patient instructions.
+
+## Run Locally
+
+Install dependencies:
+
+```sh
+npm install
+```
+
+Start the app in fixture/demo mode:
+
+```sh
+cp .env.example .env.local
+npm run dev
+```
+
+Open the local URL printed by `vinext dev`, usually `http://localhost:3000`.
+
+To run real OpenAI and Photon calls locally, fill these values in `.env.local`:
+
+```sh
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+
+PHOTON_CLIENT_ID=
+PHOTON_CLIENT_SECRET=
+PHOTON_AUTH_TOKEN=
+```
+
+For local Cloudflare Worker-style testing:
+
+```sh
+cp .dev.vars.example .dev.vars
+npm run build
+npm run start
+```
+
+Smoke test a local or deployed URL:
+
+```sh
+SMOKE_BASE_URL=http://localhost:3000 npm run test:smoke
+SMOKE_BASE_URL=http://localhost:3000 LIVE_SMOKE=1 npm run test:smoke
+```
 
 ## Live Deploy
 
@@ -16,10 +59,10 @@ Deployed app: https://photon-clinic.jimyyang-cf.workers.dev
 
 ## Scripts
 
-- `pnpm run dev` starts the vinext dev server.
-- `pnpm run build` builds the Cloudflare Worker output.
-- `pnpm run start` starts the built Worker locally with Wrangler.
-- `pnpm run deploy` deploys the Cloudflare Worker.
+- `npm run dev` starts the vinext dev server.
+- `npm run build` builds the Cloudflare Worker output.
+- `npm run start` starts the built Worker locally with Wrangler.
+- `npm run deploy` deploys the Cloudflare Worker.
 - `npm run test:smoke` runs deployed API smoke tests.
 
 ## Prototype Controls
