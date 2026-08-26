@@ -60,7 +60,7 @@ export function MedicationPrepCard({
 
   return (
     <Card>
-      <CardHeader title="Medication prep" meta="Photon catalog lookup · no prescribing" />
+      <CardHeader title="Medication prep" />
       <div className="border-b border-line-soft px-[14px] py-3">
         <form
           className="flex flex-wrap gap-2"

@@ -97,7 +97,7 @@ export function PatientFollowUpCard({
 }: PatientFollowUpCardProps) {
   return (
     <Card>
-      <CardHeader title="Patient follow-up" meta="OpenAI translation · questions routed to clinician" />
+      <CardHeader title="Patient follow-up" />
       {thread.length === 0 ? (
         <div className="px-4 py-5 text-center text-[12.5px] text-muted-3">
           No follow-up questions yet. Either side can start the thread below.

@@ -4,47 +4,40 @@ import { describe, expect, it, vi } from "vitest";
 import { ActionBar } from "./ActionBar";
 
 describe("ActionBar", () => {
-  it("renders New visit next to Reset demo", () => {
-    const markup = renderToStaticMarkup(
+  function renderActionBar() {
+    return renderToStaticMarkup(
       React.createElement(ActionBar, {
-        canCopy: false,
-        canFinalize: false,
-        finalized: false,
         hint: "",
-        onCopy: vi.fn(),
-        onFinalize: vi.fn(),
-        onGenerate: vi.fn(),
         onNewVisit: vi.fn(),
         onReset: vi.fn(),
-        onSyncPhoton: vi.fn(),
-        onTranslate: vi.fn(),
       }),
     );
+  }
+
+  it("renders New visit next to Reset demo", () => {
+    const markup = renderActionBar();
 
     expect(markup).toContain("New visit");
     expect(markup.indexOf("New visit")).toBeLessThan(markup.indexOf("Reset demo"));
   });
 
-  it("exposes the primary non-linear demo actions", () => {
-    const markup = renderToStaticMarkup(
-      React.createElement(ActionBar, {
-        canCopy: false,
-        canFinalize: false,
-        finalized: false,
-        hint: "",
-        onCopy: vi.fn(),
-        onFinalize: vi.fn(),
-        onGenerate: vi.fn(),
-        onNewVisit: vi.fn(),
-        onReset: vi.fn(),
-        onSyncPhoton: vi.fn(),
-        onTranslate: vi.fn(),
-      }),
-    );
+  it("keeps only global visit reset actions in the bottom bar", () => {
+    const markup = renderActionBar();
 
-    expect(markup).toContain("Generate instructions");
-    expect(markup).toContain("Sync Photon");
-    expect(markup).toContain("Translate");
-    expect(markup).toContain("Finalize handoff");
+    expect(markup).toContain("New visit");
+    expect(markup).toContain("Reset demo");
+    expect(markup).not.toContain("Generate instructions");
+    expect(markup).not.toContain("Sync Photon");
+    expect(markup).not.toContain("Translate");
+    expect(markup).not.toContain("Finalize handoff");
+    expect(markup).not.toContain("Copy Spanish instructions");
+  });
+
+  it("stays fixed as a bottom action bar while content scrolls", () => {
+    const markup = renderActionBar();
+
+    expect(markup).toContain("fixed");
+    expect(markup).toContain("inset-x-0");
+    expect(markup).toContain("bottom-0");
   });
 });

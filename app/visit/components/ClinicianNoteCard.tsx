@@ -31,7 +31,7 @@ export function ClinicianNoteCard({
 
   return (
     <Card>
-      <CardHeader title="Clinician note" meta="English · source of truth" />
+      <CardHeader title="Clinician note" />
       <div className="px-[14px] py-3">
         <label className="sr-only" htmlFor="clinician-note">
           Clinician note, English
